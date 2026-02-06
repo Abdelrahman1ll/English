@@ -185,15 +185,15 @@ export function DigraphsPage() {
   const { speak } = useSpeech();
 
   const handleDigraphClick = (item: DigraphData) => {
-    setPlayingItem(item.digraph);
     speak(item.digraph, () => setPlayingItem(null));
+    setPlayingItem(item.digraph);
     setPracticeWord(item.digraph);
   };
 
   const handleExampleClick = (e: React.MouseEvent, word: string) => {
     e.stopPropagation();
-    setPlayingItem(word);
     speak(word, () => setPlayingItem(null));
+    setPlayingItem(word);
     setPracticeWord(word);
   };
 

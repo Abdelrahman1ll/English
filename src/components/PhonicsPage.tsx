@@ -229,8 +229,8 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
   }, [type, cancel]);
 
   const handleWordClick = (word: string) => {
-    setActiveWord(word);
     speak(word);
+    setActiveWord(word);
     setPracticeWord(word);
   };
 

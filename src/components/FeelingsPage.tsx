@@ -146,8 +146,8 @@ export function FeelingsPage() {
   const { speak } = useSpeech();
 
   const handleCardClick = (item: FeelingItem) => {
-    setPlayingItem(item.word);
     speak(item.word, () => setPlayingItem(null));
+    setPlayingItem(item.word);
     setPracticeWord(item.word);
   };
 

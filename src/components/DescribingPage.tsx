@@ -199,8 +199,8 @@ export function DescribingPage() {
   const { speak } = useSpeech();
 
   const handleCardClick = (text: string) => {
-    setPlayingItem(text);
     speak(text, () => setPlayingItem(null));
+    setPlayingItem(text);
     setPracticeWord(text);
   };
 

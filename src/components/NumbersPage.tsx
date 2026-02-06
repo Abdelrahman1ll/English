@@ -90,8 +90,8 @@ export function NumbersPage() {
   const { speak } = useSpeech();
 
   const handleCardClick = (item: NumberItem) => {
-    setPlayingItem(item.word);
     speak(item.word, () => setPlayingItem(null));
+    setPlayingItem(item.word);
     setPracticeWord(item.word);
   };
 

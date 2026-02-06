@@ -194,27 +194,27 @@ export function GrammarPage() {
   const { speak } = useSpeech();
 
   const handleItemClick = (text: string) => {
-    setPlayingItem(text);
     speak(text, () => setPlayingItem(null));
+    setPlayingItem(text);
     setPracticeWord(text);
   };
 
   const handleQuizOptionClick = (questionIndex: number, option: string) => {
-    setQuizAnswers((prev) => ({ ...prev, [questionIndex]: option }));
     if (option === PRONOUNS_QUIZ[questionIndex].answer) {
       speak("Correct!");
     } else {
       speak("Try again.");
     }
+    setQuizAnswers((prev) => ({ ...prev, [questionIndex]: option }));
   };
 
   const handleToBeQuizOptionClick = (questionIndex: number, option: string) => {
-    setToBeQuizAnswers((prev) => ({ ...prev, [questionIndex]: option }));
     if (option === TO_BE_QUIZ[questionIndex].answer) {
       speak("Correct!");
     } else {
       speak("Try again.");
     }
+    setToBeQuizAnswers((prev) => ({ ...prev, [questionIndex]: option }));
   };
 
   const renderCard = (

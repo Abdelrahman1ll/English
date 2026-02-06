@@ -24,8 +24,8 @@ export function ShapesPage() {
   const { speak } = useSpeech();
 
   const handleCardClick = (item: ShapeItem) => {
-    setActiveShape(item.name);
     speak(item.name, () => setActiveShape(null));
+    setActiveShape(item.name);
     setPracticeWord(item.name);
   };
 

@@ -211,19 +211,22 @@ export function AlphabetPage() {
 
   const { speak } = useSpeech();
 
-  const handleLetterClick = (letter: string) => {
-    setActiveLetter(letter);
-    const data = ALPHABET_DATA[letter];
+const handleLetterClick = (letter: string) => {
+  const data = ALPHABET_DATA[letter];
 
-    // Set global practice word
-    setPracticeWord(letter, {
-      name: data.name,
-      sound: data.sound,
-      soundAlternatives: data.soundAlternatives,
-    });
+  // ✅ 1) الصوت لازم يشتغل فورًا
+  speak(`${data.name}, ${data.sound}`);
 
-    speak(`${data.name}, ${data.sound}`);
-  };
+  // ✅ 2) بعد كده أي state أو context
+  setActiveLetter(letter);
+
+  setPracticeWord(letter, {
+    name: data.name,
+    sound: data.sound,
+    soundAlternatives: data.soundAlternatives,
+  });
+};
+
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">

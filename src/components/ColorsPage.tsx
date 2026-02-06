@@ -30,8 +30,8 @@ export function ColorsPage() {
   const { speak } = useSpeech();
 
   const handleColorClick = (color: ColorItem) => {
-    setActiveColor(color.name);
     speak(color.name, () => setActiveColor(null));
+    setActiveColor(color.name);
     setPracticeWord(color.name);
   };
 

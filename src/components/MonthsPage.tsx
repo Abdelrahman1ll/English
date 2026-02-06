@@ -127,16 +127,16 @@ export function MonthsPage() {
   }, [activeTab, cancel]);
 
   const handleWordClick = (word: string, sentence?: string) => {
+    speak(sentence || word, () => setPlayingItem(null));
     setActiveWord(word);
     setPlayingItem(sentence || word);
-    speak(sentence || word, () => setPlayingItem(null));
     // For days, we practice the day name, but we can speak the whole sentence
     setPracticeWord(word);
   };
 
   const handleVocabClick = (text: string) => {
-    setPlayingItem(text);
     speak(text, () => setPlayingItem(null));
+    setPlayingItem(text);
     setPracticeWord(text);
   };
 

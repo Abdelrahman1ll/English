@@ -390,8 +390,8 @@ export function GreetingsPage() {
   const { speak } = useSpeech();
 
   const handleCardClick = (item: GreetingItem) => {
-    setPlayingItem(item.text);
     speak(item.text, () => setPlayingItem(null));
+    setPlayingItem(item.text);
     // Clean up punctuation for practice if needed, though PracticeWidget handles it
     setPracticeWord(item.text);
   };

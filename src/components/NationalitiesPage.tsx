@@ -66,8 +66,8 @@ export function NationalitiesPage() {
   const { speak } = useSpeech();
 
   const handleItemClick = (text: string) => {
-    setPlayingItem(text);
     speak(text, () => setPlayingItem(null));
+    setPlayingItem(text);
     setPracticeWord(text);
   };
 
