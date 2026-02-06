@@ -22,7 +22,7 @@ function App() {
     <LevelProvider>
       <Layout>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/English" element={<HomePage />} />
           <Route path="/:levelId/alphabet" element={<AlphabetPage />} />
           <Route
             path="/:levelId/magic-e"
