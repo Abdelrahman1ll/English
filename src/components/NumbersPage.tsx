@@ -1,0 +1,196 @@
+import { useState } from "react";
+import { Volume2 } from "lucide-react";
+
+type NumberItem = {
+  digit: string;
+  word: string;
+};
+
+const BASICS: NumberItem[] = [
+  { digit: "0", word: "Zero" },
+  { digit: "1", word: "One" },
+  { digit: "2", word: "Two" },
+  { digit: "3", word: "Three" },
+  { digit: "4", word: "Four" },
+  { digit: "5", word: "Five" },
+  { digit: "6", word: "Six" },
+  { digit: "7", word: "Seven" },
+  { digit: "8", word: "Eight" },
+  { digit: "9", word: "Nine" },
+  { digit: "10", word: "Ten" },
+];
+
+const TEENS: NumberItem[] = [
+  { digit: "11", word: "Eleven" },
+  { digit: "12", word: "Twelve" },
+  { digit: "13", word: "Thirteen" },
+  { digit: "14", word: "Fourteen" },
+  { digit: "15", word: "Fifteen" },
+  { digit: "16", word: "Sixteen" },
+  { digit: "17", word: "Seventeen" },
+  { digit: "18", word: "Eighteen" },
+  { digit: "19", word: "Nineteen" },
+];
+
+const TENS: NumberItem[] = [
+  { digit: "20", word: "Twenty" },
+  { digit: "30", word: "Thirty" },
+  { digit: "40", word: "Forty" },
+  { digit: "50", word: "Fifty" },
+  { digit: "60", word: "Sixty" },
+  { digit: "70", word: "Seventy" },
+  { digit: "80", word: "Eighty" },
+  { digit: "90", word: "Ninety" },
+];
+
+const BIG: NumberItem[] = [
+  { digit: "100", word: "Hundred" },
+  { digit: "1,000", word: "Thousand" },
+  { digit: "1m", word: "Million" },
+];
+
+const ORDINALS: (NumberItem & { arabic: string })[] = [
+  { digit: "1st", word: "First", arabic: "الأول" },
+  { digit: "2nd", word: "Second", arabic: "الثاني" },
+  { digit: "3rd", word: "Third", arabic: "الثالث" },
+  { digit: "4th", word: "Fourth", arabic: "الرابع" },
+  { digit: "5th", word: "Fifth", arabic: "خامس" },
+  { digit: "6th", word: "Sixth", arabic: "سادس" },
+  { digit: "7th", word: "Seventh", arabic: "سابع" },
+  { digit: "8th", word: "Eighth", arabic: "ثامن" },
+  { digit: "9th", word: "Ninth", arabic: "تاسع" },
+  { digit: "10th", word: "Tenth", arabic: "عاشر" },
+  { digit: "11th", word: "Eleventh", arabic: "الحادي عشر" },
+  { digit: "12th", word: "Twelfth", arabic: "الثاني عشر" },
+  { digit: "13th", word: "Thirteenth", arabic: "الثالث عشر" },
+  { digit: "14th", word: "Fourteenth", arabic: "الرابع عشر" },
+  { digit: "15th", word: "Fifteenth", arabic: "الخامس عشر" },
+  { digit: "16th", word: "Sixteenth", arabic: "السادس عشر" },
+  { digit: "17th", word: "Seventeenth", arabic: "السابع عشر" },
+  { digit: "18th", word: "Eighteenth", arabic: "الثامن عشر" },
+  { digit: "19th", word: "Nineteenth", arabic: "التاسع عشر" },
+  { digit: "20th", word: "Twentieth", arabic: "العشرون" },
+  { digit: "21st", word: "Twenty-first", arabic: "الحادي والعشرون" },
+  { digit: "22nd", word: "Twenty-second", arabic: "الثاني والعشرون" },
+  { digit: "23rd", word: "Twenty-third", arabic: "الثالث والعشرون" },
+  { digit: "24th", word: "Twenty-fourth", arabic: "الرابع والعشرون" },
+  { digit: "25th", word: "Twenty-fifth", arabic: "الخامس والعشرون" },
+  { digit: "26th", word: "Twenty-sixth", arabic: "السادس والعشرون" },
+  { digit: "27th", word: "Twenty-seventh", arabic: "السابع والعشرون" },
+  { digit: "28th", word: "Twenty-eighth", arabic: "الثامن والعشرون" },
+  { digit: "29th", word: "Twenty-ninth", arabic: "التاسع والعشرون" },
+  { digit: "30th", word: "Thirtieth", arabic: "الثلاثون" },
+];
+
+export function NumbersPage() {
+  const [playingItem, setPlayingItem] = useState<string | null>(null);
+
+  const speak = (text: string) => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      setPlayingItem(text);
+      utterance.onend = () => setPlayingItem(null);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const NumberCard = ({ item }: { item: NumberItem & { arabic?: string } }) => (
+    <button
+      onClick={() => speak(item.word)}
+      className={`group flex flex-col items-center justify-center p-6 rounded-2xl border transition-all ${
+        playingItem === item.word
+          ? "bg-blue-600 border-transparent scale-105"
+          : "bg-[#1e1e1e] border-white/5 hover:bg-[#2a2a2a] hover:border-white/10"
+      }`}
+    >
+      <div
+        className={`text-4xl font-bold mb-2 ${playingItem === item.word ? "text-white" : "text-blue-400"}`}
+      >
+        {item.digit}
+      </div>
+      <div
+        className={`flex flex-col items-center gap-1 text-sm font-medium ${playingItem === item.word ? "text-white/90" : "text-neutral-400"}`}
+      >
+        <div className="flex items-center gap-2">
+          <span>{item.word}</span>
+          <Volume2
+            size={14}
+            className={`transition-opacity ${playingItem === item.word ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          />
+        </div>
+        {item.arabic && (
+          <span className="text-xs opacity-70 font-arabic">{item.arabic}</span>
+        )}
+      </div>
+    </button>
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
+      <div className="border-b border-white/5 pb-6">
+        <h1 className="text-3xl font-bold text-white tracking-tight">
+          Numbers
+        </h1>
+        <p className="text-neutral-400 mt-2">Count from zero to a million.</p>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-blue-500">
+          Basics (0-10)
+        </h2>
+        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {BASICS.map((item) => (
+            <NumberCard key={item.digit} item={item} />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-purple-500">
+          The Teens (11-19)
+        </h2>
+        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {TEENS.map((item) => (
+            <NumberCard key={item.digit} item={item} />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-amber-500">
+          The Tens
+        </h2>
+        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {TENS.map((item) => (
+            <NumberCard key={item.digit} item={item} />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-rose-500">
+          Ordinal Numbers
+        </h2>
+        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {ORDINALS.map((item) => (
+            <NumberCard key={item.digit} item={item} />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-emerald-500">
+          Big Numbers
+        </h2>
+        <div className="grid grid-cols-1 small:grid-cols-3 gap-4">
+          {BIG.map((item) => (
+            <NumberCard key={item.digit} item={item} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
