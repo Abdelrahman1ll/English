@@ -1,117 +1,128 @@
-import { useCallback, useRef, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * Universal Speech Hook
+ * - Uses Web Speech API when available
+ * - Falls back to Audio TTS on unsupported browsers (Huawei, WebView)
+ */
 export function useSpeech() {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
-  // Load voices
+  // ----------------------------
+  // Load voices (Chrome / Safari)
+  // ----------------------------
   useEffect(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      const loadVoices = () => {
-        try {
-          const vs = window.speechSynthesis.getVoices();
-          setVoices(vs);
-        } catch (e) {
-          console.error("Failed to load voices:", e);
-        }
-      };
+    if (!("speechSynthesis" in window)) return;
 
-      loadVoices();
+    const loadVoices = () => {
+      const list = window.speechSynthesis.getVoices();
+      if (list.length) setVoices(list);
+    };
 
-      try {
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-      } catch (e) {
-        console.error("Failed to set onvoiceschanged:", e);
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }, []);
+
+  // ----------------------------------
+  // Audio fallback (Huawei-safe)
+  // ----------------------------------
+  const playAudioFallback = useCallback((text: string, onEnd?: () => void) => {
+    try {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
+
+      const audio = new Audio(
+        `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(
+          text,
+        )}`,
+      );
+
+      audio.onended = onEnd ?? null;
+      audio.onerror = () => onEnd?.();
+
+      audioRef.current = audio;
+      audio.play();
+    } catch {
+      onEnd?.();
     }
   }, []);
 
-  // Function to unlock audio on mobile
-  const unlockAudio = useCallback(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      try {
-        // Create a silent utterance to unlock the speech engine
-        const silent = new SpeechSynthesisUtterance("");
-        silent.volume = 0;
-        window.speechSynthesis.speak(silent);
-        window.speechSynthesis.cancel();
-      } catch (e) {
-        console.error("Failed to unlock audio:", e);
-      }
-    }
-  }, []);
-
+  // ----------------------------------
+  // Main speak function (SAFE)
+  // ----------------------------------
   const speak = useCallback(
     (text: string, onEnd?: () => void, rate = 0.9) => {
-      if (typeof window === "undefined" || !("speechSynthesis" in window))
-        return;
+      if (!text) return;
 
-      try {
-        // Cancel current speech first
-        window.speechSynthesis.cancel();
-      } catch (e) {
-        console.error("Failed to cancel speech:", e);
-      }
-
-      // Small timeout to allow cancel to complete (crucial for some Android devices)
-      setTimeout(() => {
+      // Try Web Speech API first
+      if ("speechSynthesis" in window) {
         try {
+          window.speechSynthesis.cancel();
+
           const utterance = new SpeechSynthesisUtterance(text);
 
-          // Try to find a good English voice
-          const voice = voices.find(
-            (v) =>
-              (v.name.includes("Google") && v.lang.includes("en-US")) ||
-              (v.name.includes("Samantha") && v.lang.includes("en")) ||
-              v.lang === "en-US",
-          );
+          // Pick best English voice
+          const voice =
+            voices.find(
+              (v) =>
+                v.lang === "en-US" &&
+                (v.name.includes("Google") || v.name.includes("Samantha")),
+            ) || voices.find((v) => v.lang.startsWith("en"));
 
-          if (voice) {
-            utterance.voice = voice;
-          }
+          if (voice) utterance.voice = voice;
 
           utterance.lang = "en-US";
           utterance.rate = rate;
+          utterance.onend = onEnd ?? null;
 
-          if (onEnd) {
-            utterance.onend = onEnd;
-          }
-
-          // Keep reference to prevent GC on mobile
           utteranceRef.current = utterance;
-
-          // Ensure we're not paused
-          if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-          }
-
           window.speechSynthesis.speak(utterance);
-        } catch (e) {
-          console.error("Failed to speak:", e);
-          // If speaking fails, call onEnd immediately so the UI doesn't get stuck
-          if (onEnd) onEnd();
+
+          // 🔴 Huawei / broken engines detection
+          setTimeout(() => {
+            if (!window.speechSynthesis.speaking) {
+              playAudioFallback(text, onEnd);
+            }
+          }, 600);
+
+          return;
+        } catch {
+          // fallback below
         }
-      }, 50);
+      }
+
+      // Fallback audio
+      playAudioFallback(text, onEnd);
     },
-    [voices],
+    [voices, playAudioFallback],
   );
 
+  // ----------------------------
+  // Cancel everything
+  // ----------------------------
   const cancel = useCallback(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      try {
+    try {
+      if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
-      } catch (e) {
-        console.error("Failed to cancel:", e);
       }
-    }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    } catch {}
   }, []);
 
-  // Basic cleanup
+  // Cleanup
   useEffect(() => {
-    return () => {
-      cancel();
-    };
+    return () => cancel();
   }, [cancel]);
 
-  return { speak, cancel, unlockAudio };
+  return {
+    speak,
+    cancel,
+  };
 }

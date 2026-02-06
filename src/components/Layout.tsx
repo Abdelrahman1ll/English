@@ -69,12 +69,12 @@ export function Layout({ children }: PropsWithChildren) {
   const [, setShowScrollTop] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { unlockAudio } = useSpeech();
+  const { speak } = useSpeech();
 
   // One-time audio unlock for mobile
   useEffect(() => {
     const handleFirstInteraction = () => {
-      unlockAudio();
+      speak("");
       window.removeEventListener("click", handleFirstInteraction);
       window.removeEventListener("touchstart", handleFirstInteraction);
     };
@@ -84,7 +84,7 @@ export function Layout({ children }: PropsWithChildren) {
       window.removeEventListener("click", handleFirstInteraction);
       window.removeEventListener("touchstart", handleFirstInteraction);
     };
-  }, [unlockAudio]);
+  }, [speak]);
 
   // Sync level from URL
   useEffect(() => {
