@@ -8,6 +8,7 @@ import {
   Volume2,
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 export function PracticeWidget() {
   const {
@@ -46,15 +47,7 @@ export function PracticeWidget() {
     }
   }, [activeWord, practiceMode]);
 
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleWritingCheck = () => {
     if (!userText.trim() || !activeWord) return;

@@ -1,34 +1,179 @@
 import { useState } from "react";
 import { Volume2, Split } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 type DigraphData = {
   digraph: string;
-  examples: string[];
+  examples: { text: string; translation: string }[];
 };
 
 const CONSONANT_DIGRAPHS: DigraphData[] = [
-  { digraph: "ch", examples: ["chair", "chore", "each", "much"] },
-  { digraph: "ck", examples: ["back", "duck", "neck", "rock"] },
-  { digraph: "gh", examples: ["cough", "laugh", "rough", "tough"] },
-  { digraph: "kn", examples: ["knee", "knife", "knot", "know"] },
-  { digraph: "ll", examples: ["all", "ball", "fall", "wall"] },
-  { digraph: "ng", examples: ["king", "ring", "sing", "wing"] },
-  { digraph: "ph", examples: ["phone", "photo", "graph", "gopher"] },
-  { digraph: "qu", examples: ["quack", "queen", "quiet", "quiz"] },
-  { digraph: "sh", examples: ["dish", "fish", "ship", "shoe"] },
-  { digraph: "th", examples: ["bath", "both", "than", "thing"] },
-  { digraph: "wh", examples: ["whale", "what", "when", "white"] },
-  { digraph: "wr", examples: ["wrap", "wrist", "write", "wreath"] },
+  {
+    digraph: "ch",
+    examples: [
+      { text: "chair", translation: "كرسي" },
+      { text: "chore", translation: "عمل روتيني" },
+      { text: "each", translation: "كل" },
+      { text: "much", translation: "كثير" },
+    ],
+  },
+  {
+    digraph: "ck",
+    examples: [
+      { text: "back", translation: "ظهر" },
+      { text: "duck", translation: "بطة" },
+      { text: "neck", translation: "رقبة" },
+      { text: "rock", translation: "صخرة" },
+    ],
+  },
+  {
+    digraph: "gh",
+    examples: [
+      { text: "cough", translation: "سعال" },
+      { text: "laugh", translation: "ضحك" },
+      { text: "rough", translation: "خشن" },
+      { text: "tough", translation: "صعب/قوي" },
+    ],
+  },
+  {
+    digraph: "kn",
+    examples: [
+      { text: "knee", translation: "ركبة" },
+      { text: "knife", translation: "سكين" },
+      { text: "knot", translation: "عقدة" },
+      { text: "know", translation: "يعرف" },
+    ],
+  },
+  {
+    digraph: "ll",
+    examples: [
+      { text: "all", translation: "الكل" },
+      { text: "ball", translation: "كرة" },
+      { text: "fall", translation: "يسقط/خريف" },
+      { text: "wall", translation: "جدار" },
+    ],
+  },
+  {
+    digraph: "ng",
+    examples: [
+      { text: "king", translation: "ملك" },
+      { text: "ring", translation: "خاتم" },
+      { text: "sing", translation: "يغني" },
+      { text: "wing", translation: "جناح" },
+    ],
+  },
+  {
+    digraph: "ph",
+    examples: [
+      { text: "phone", translation: "هاتف" },
+      { text: "photo", translation: "صورة" },
+      { text: "graph", translation: "رسم بياني" },
+      { text: "gopher", translation: "سنجاب الأرض" },
+    ],
+  },
+  {
+    digraph: "qu",
+    examples: [
+      { text: "quack", translation: "بطبطة" },
+      { text: "queen", translation: "ملكة" },
+      { text: "quiet", translation: "هادئ" },
+      { text: "quiz", translation: "اختبار قصير" },
+    ],
+  },
+  {
+    digraph: "sh",
+    examples: [
+      { text: "dish", translation: "طبق" },
+      { text: "fish", translation: "سمكة" },
+      { text: "ship", translation: "سفينة" },
+      { text: "shoe", translation: "حذاء" },
+    ],
+  },
+  {
+    digraph: "th",
+    examples: [
+      { text: "bath", translation: "حمّام" },
+      { text: "both", translation: "كلاهما" },
+      { text: "than", translation: "مِن" },
+      { text: "thing", translation: "شيء" },
+    ],
+  },
+  {
+    digraph: "wh",
+    examples: [
+      { text: "whale", translation: "حوت" },
+      { text: "what", translation: "ماذا" },
+      { text: "when", translation: "متى" },
+      { text: "white", translation: "أبيض" },
+    ],
+  },
+  {
+    digraph: "wr",
+    examples: [
+      { text: "wrap", translation: "يلف" },
+      { text: "wrist", translation: "معصم" },
+      { text: "write", translation: "يكتب" },
+      { text: "wreath", translation: "إكليل" },
+    ],
+  },
 ];
 
 const VOWEL_DIGRAPHS: DigraphData[] = [
-  { digraph: "ai", examples: ["main", "paint", "rain", "train"] },
-  { digraph: "ay", examples: ["day", "play", "stay", "today"] },
-  { digraph: "ea", examples: ["eat", "read", "seat", "team"] },
-  { digraph: "ee", examples: ["bee", "free", "see", "tree"] },
-  { digraph: "oa", examples: ["boat", "coat", "road", "soap"] },
-  { digraph: "ue", examples: ["blue", "clue", "glue", "true"] },
+  {
+    digraph: "ai",
+    examples: [
+      { text: "main", translation: "رئيسي" },
+      { text: "paint", translation: "طلاء" },
+      { text: "rain", translation: "مطر" },
+      { text: "train", translation: "قطار" },
+    ],
+  },
+  {
+    digraph: "ay",
+    examples: [
+      { text: "day", translation: "يوم" },
+      { text: "play", translation: "يلعب" },
+      { text: "stay", translation: "يبقى" },
+      { text: "today", translation: "اليوم" },
+    ],
+  },
+  {
+    digraph: "ea",
+    examples: [
+      { text: "eat", translation: "يأكل" },
+      { text: "read", translation: "يقرأ" },
+      { text: "seat", translation: "مقعد" },
+      { text: "team", translation: "فريق" },
+    ],
+  },
+  {
+    digraph: "ee",
+    examples: [
+      { text: "bee", translation: "نحلة" },
+      { text: "free", translation: "حر" },
+      { text: "see", translation: "يرى" },
+      { text: "tree", translation: "شجرة" },
+    ],
+  },
+  {
+    digraph: "oa",
+    examples: [
+      { text: "boat", translation: "قارب" },
+      { text: "coat", translation: "معطف" },
+      { text: "road", translation: "طريق" },
+      { text: "soap", translation: "صابون" },
+    ],
+  },
+  {
+    digraph: "ue",
+    examples: [
+      { text: "blue", translation: "أزرق" },
+      { text: "clue", translation: "دليل" },
+      { text: "glue", translation: "غراء" },
+      { text: "true", translation: "حقيقي" },
+    ],
+  },
 ];
 
 export function DigraphsPage() {
@@ -37,27 +182,18 @@ export function DigraphsPage() {
   );
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string, id: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(id);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleDigraphClick = (item: DigraphData) => {
-    speak(item.digraph, item.digraph);
+    setPlayingItem(item.digraph);
+    speak(item.digraph, () => setPlayingItem(null));
     setPracticeWord(item.digraph);
   };
 
   const handleExampleClick = (e: React.MouseEvent, word: string) => {
     e.stopPropagation();
-    speak(word, word);
+    setPlayingItem(word);
+    speak(word, () => setPlayingItem(null));
     setPracticeWord(word);
   };
 
@@ -83,7 +219,7 @@ export function DigraphsPage() {
             onClick={() => setActiveTab("consonants")}
             className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === "consonants"
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/5"
                 : "text-neutral-500 hover:text-white"
             }`}
           >
@@ -91,10 +227,10 @@ export function DigraphsPage() {
           </button>
           <button
             onClick={() => setActiveTab("vowels")}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
               activeTab === "vowels"
-                ? "bg-rose-600 text-white shadow-lg shadow-rose-500/20"
-                : "text-neutral-500 hover:text-white"
+                ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/5"
+                : "border-transparent text-neutral-500 hover:text-white"
             }`}
           >
             Vowels
@@ -128,18 +264,25 @@ export function DigraphsPage() {
             <div className="w-full space-y-2.5 relative z-10">
               {item.examples.map((ex) => (
                 <button
-                  key={ex}
-                  onClick={(e) => handleExampleClick(e, ex)}
+                  key={ex.text}
+                  onClick={(e) => handleExampleClick(e, ex.text)}
                   className={`w-full rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between transition-all border ${
-                    activeWord === ex
+                    activeWord === ex.text
                       ? "bg-amber-500/20 border-amber-500/50 text-white scale-[1.05] shadow-lg z-20"
                       : "bg-black/40 text-neutral-300 border-transparent hover:bg-white/10 hover:border-white/5"
                   }`}
                 >
-                  <span className="capitalize">{ex}</span>
+                  <div className="flex flex-col text-left">
+                    <span className="capitalize">{ex.text}</span>
+                    <span
+                      className={`text-[10px] font-arabic leading-none mt-1 ${activeWord === ex.text ? "text-white/80" : "text-neutral-500"}`}
+                    >
+                      {ex.translation}
+                    </span>
+                  </div>
                   <Volume2
                     size={14}
-                    className={`transition-all ${playingItem === ex ? "text-white scale-125 opacity-100" : activeWord === ex ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40"}`}
+                    className={`transition-all ${playingItem === ex.text ? "text-white scale-125 opacity-100" : activeWord === ex.text ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40"}`}
                   />
                 </button>
               ))}

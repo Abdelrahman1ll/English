@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 // Expanded Data with Phonics
 const ALPHABET_DATA: Record<
@@ -208,15 +209,7 @@ export function AlphabetPage() {
     setShowReference(!showReference);
   };
 
-  const speak = (text: string, rate = 1.0) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = rate;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleLetterClick = (letter: string) => {
     setActiveLetter(letter);
@@ -264,10 +257,10 @@ export function AlphabetPage() {
           <button
             key={letter}
             onClick={() => handleLetterClick(letter)}
-            className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all relative overflow-hidden group border border-white/5 ${
+            className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all relative overflow-hidden group border ${
               activeLetter === letter
-                ? "bg-blue-600 text-white scale-110 z-10 shadow-xl shadow-blue-500/20"
-                : "bg-[#1e1e1e] text-neutral-300 hover:bg-[#2a2a2a]"
+                ? "bg-blue-500/10 border-blue-500/50 text-blue-400 scale-110 z-10 shadow-xl shadow-blue-500/10"
+                : "bg-[#1e1e1e] text-neutral-300 border-white/5 hover:bg-[#2a2a2a]"
             }`}
           >
             <span className="text-xl sm:text-2xl md:text-3xl font-bold">

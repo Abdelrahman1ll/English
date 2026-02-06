@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Globe, Languages, MessageSquare, Volume2 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 const LANGUAGES_DATA = [
   { text: "Arabic", translation: "العربية" },
@@ -62,21 +63,11 @@ const PHRASES_DATA = [
 export function NationalitiesPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleItemClick = (text: string) => {
-    speak(text);
+    setPlayingItem(text);
+    speak(text, () => setPlayingItem(null));
     setPracticeWord(text);
   };
 
@@ -107,7 +98,7 @@ export function NationalitiesPage() {
               onClick={() => handleItemClick(lang.text)}
               className={`p-6 rounded-3xl border transition-all text-center group relative overflow-hidden ${
                 playingItem === lang.text
-                  ? "bg-blue-600 border-transparent shadow-2xl scale-105 z-10"
+                  ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
                   : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
@@ -171,13 +162,13 @@ export function NationalitiesPage() {
                     onClick={() => handleItemClick(ans.text)}
                     className={`w-full text-left p-6 rounded-3xl transition-all group border ${
                       playingItem === ans.text
-                        ? "bg-emerald-600 border-transparent shadow-xl scale-[1.02]"
+                        ? "bg-emerald-500/10 border-emerald-500/50 shadow-xl scale-[1.02]"
                         : "bg-black/20 hover:bg-black/40 border-white/5"
                     }`}
                   >
                     <div className={`flex justify-between items-center mb-1`}>
                       <span
-                        className={`text-lg font-bold ${playingItem === ans.text ? "text-white" : "text-white group-hover:text-emerald-400"}`}
+                        className={`text-lg font-bold ${playingItem === ans.text ? "text-emerald-400" : "text-white group-hover:text-emerald-400"}`}
                       >
                         A: {ans.text}
                       </span>

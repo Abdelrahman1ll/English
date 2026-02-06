@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Ghost } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 // Data structures
 const MAGIC_E_DATA = [
@@ -219,21 +220,13 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
   const [activeWord, setActiveWord] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
 
+  const { speak, cancel } = useSpeech();
+
   // Stop synthesis when switching type
   useEffect(() => {
     setActiveWord(null);
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-  }, [type]);
-
-  const speak = (text: string, rate = 0.9) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = rate;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+    cancel();
+  }, [type, cancel]);
 
   const handleWordClick = (word: string) => {
     setActiveWord(word);
@@ -267,11 +260,11 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
                     onClick={() => handleWordClick(pair.short)}
                     className={`p-3 rounded-xl border transition-all text-center relative ${
                       activeWord === pair.short
-                        ? "bg-blue-600 border-blue-400 text-white shadow-lg scale-105 z-10"
+                        ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg scale-105 z-10"
                         : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                     }`}
                   >
-                    <span className="text-sm font-bold block opacity-50 uppercase mb-1">
+                    <span className="text-[10px] sm:text-sm font-bold block opacity-50 uppercase mb-1">
                       {pair.shortAr}
                     </span>
                     <span className="text-xl font-bold">{pair.short}</span>
@@ -280,11 +273,11 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
                     onClick={() => handleWordClick(pair.long)}
                     className={`p-3 rounded-xl border transition-all text-center relative ${
                       activeWord === pair.long
-                        ? "bg-amber-600 border-amber-400 text-white shadow-lg scale-105 z-10"
+                        ? "bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-lg scale-105 z-10"
                         : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                     }`}
                   >
-                    <span className="text-sm font-bold block opacity-50 uppercase mb-1">
+                    <span className="text-[10px] sm:text-sm font-bold block opacity-50 uppercase mb-1">
                       {pair.longAr}
                     </span>
                     <span className="text-xl font-bold">{pair.long}</span>
@@ -304,9 +297,9 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
                       <button
                         key={item.word}
                         onClick={() => handleWordClick(item.word)}
-                        className={`px-6 py-3 rounded-xl border transition-all relative ${
+                        className={`px-4 py-2 sm:px-6 sm:py-3 rounded-xl border transition-all relative ${
                           activeWord === item.word
-                            ? "bg-rose-600 border-rose-400 text-white shadow-lg scale-105 z-10"
+                            ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg scale-105 z-10"
                             : "bg-[#2a2a2a] border-white/5 text-neutral-300 hover:bg-[#333]"
                         }`}
                       >

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Smile, Volume2 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 type FeelingItem = {
   word: string;
@@ -142,21 +143,11 @@ const FEELINGS_DATA: { category: string; items: FeelingItem[] }[] = [
 export function FeelingsPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleCardClick = (item: FeelingItem) => {
-    speak(item.word);
+    setPlayingItem(item.word);
+    speak(item.word, () => setPlayingItem(null));
     setPracticeWord(item.word);
   };
 
@@ -184,13 +175,13 @@ export function FeelingsPage() {
                   onClick={() => handleCardClick(item)}
                   className={`group flex flex-col p-6 rounded-3xl border transition-all text-left ${
                     playingItem === item.word
-                      ? "bg-pink-600 border-transparent scale-105 shadow-xl shadow-pink-500/20 z-10"
+                      ? "bg-pink-500/10 border-pink-500/50 scale-105 shadow-xl shadow-pink-500/20 z-10"
                       : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20 shadow-lg"
                   }`}
                 >
                   <div className="flex justify-between items-start w-full mb-2">
                     <span
-                      className={`text-xl font-black ${playingItem === item.word ? "text-white" : "text-pink-400"}`}
+                      className={`text-xl font-black transition-colors ${playingItem === item.word ? "text-pink-400" : "text-white"}`}
                     >
                       {item.word}
                     </span>

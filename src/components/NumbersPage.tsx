@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Volume2, Hash } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 type NumberItem = {
   digit: string;
@@ -86,21 +87,11 @@ const ORDINALS: (NumberItem & { arabic: string })[] = [
 export function NumbersPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleCardClick = (item: NumberItem) => {
-    speak(item.word);
+    setPlayingItem(item.word);
+    speak(item.word, () => setPlayingItem(null));
     setPracticeWord(item.word);
   };
 
@@ -109,12 +100,12 @@ export function NumbersPage() {
       onClick={() => handleCardClick(item)}
       className={`group flex flex-col items-center justify-center p-6 rounded-3xl border transition-all ${
         playingItem === item.word
-          ? "bg-blue-600 border-transparent scale-105 shadow-xl shadow-blue-500/20 z-10"
+          ? "bg-blue-500/10 border-blue-500/50 scale-105 shadow-xl shadow-blue-500/20 z-10"
           : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20"
       }`}
     >
       <div
-        className={`text-4xl font-black mb-3 ${playingItem === item.word ? "text-white" : "text-blue-400"}`}
+        className={`text-4xl font-black mb-3 transition-colors ${playingItem === item.word ? "text-blue-400" : "text-blue-400/80"}`}
       >
         {item.digit}
       </div>

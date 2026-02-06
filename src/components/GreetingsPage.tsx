@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 type GreetingItem = {
   text: string;
@@ -381,24 +382,16 @@ const GREETINGS_DATA: GreetingCategory[] = [
   },
 ];
 
+// (Import moved to top)
+
 export function GreetingsPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleCardClick = (item: GreetingItem) => {
-    speak(item.text);
+    setPlayingItem(item.text);
+    speak(item.text, () => setPlayingItem(null));
     // Clean up punctuation for practice if needed, though PracticeWidget handles it
     setPracticeWord(item.text);
   };
@@ -432,15 +425,15 @@ export function GreetingsPage() {
                 <button
                   key={item.text}
                   onClick={() => handleCardClick(item)}
-                  className={`w-full text-left p-4 rounded-2xl transition-all border border-transparent flex items-center justify-between group ${
+                  className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
                     playingItem === item.text
-                      ? "bg-blue-600 border-transparent scale-[1.02] shadow-xl shadow-blue-500/10 z-10"
-                      : "bg-[#141414] hover:bg-[#1a1a1a] hover:border-white/5"
+                      ? "bg-blue-500/10 border-blue-500/50 scale-[1.02] shadow-xl shadow-blue-500/10 z-10"
+                      : "bg-[#141414] border-transparent hover:bg-[#1a1a1a] hover:border-white/5"
                   }`}
                 >
                   <div className="flex-1">
                     <div
-                      className={`font-bold text-lg ${playingItem === item.text ? "text-white" : "text-neutral-200"}`}
+                      className={`font-bold text-lg transition-colors ${playingItem === item.text ? "text-blue-400" : "text-neutral-200"}`}
                     >
                       {item.text}
                     </div>
@@ -458,7 +451,7 @@ export function GreetingsPage() {
                   </div>
                   <Volume2
                     size={16}
-                    className={`transition-all ${playingItem === item.text ? "text-white opacity-100 scale-110" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                    className={`transition-all ${playingItem === item.text ? "text-blue-400 opacity-100 scale-110" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
                   />
                 </button>
               ))}

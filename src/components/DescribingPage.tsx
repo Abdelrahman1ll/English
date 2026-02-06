@@ -1,16 +1,17 @@
 import { useState } from "react";
 import {
-  User,
   Volume2,
-  Search,
-  Smile,
-  Dumbbell,
-  Scissors,
+  User,
   Ruler,
   Calendar,
   Star,
+  Smile,
+  Dumbbell,
+  Scissors,
+  Search,
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 type DescribingItem = {
   text: string;
@@ -195,21 +196,11 @@ const CHARACTER_SENTENCES: DescribingItem[] = [
 export function DescribingPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
-
-  const speak = (text: string) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.9;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  const { speak } = useSpeech();
 
   const handleCardClick = (text: string) => {
-    speak(text);
+    setPlayingItem(text);
+    speak(text, () => setPlayingItem(null));
     setPracticeWord(text);
   };
 
@@ -239,14 +230,14 @@ export function DescribingPage() {
             <button
               key={item.text}
               onClick={() => handleCardClick(item.text)}
-              className={`text-left p-6 rounded-3xl border transition-all group relative overflow-hidden ${
+              className={`text-left p-5 sm:p-6 rounded-3xl border transition-all group relative overflow-hidden ${
                 playingItem === item.text
-                  ? "bg-pink-600 border-transparent scale-[1.02] shadow-2xl shadow-pink-500/20 z-10"
+                  ? "bg-pink-500/10 border-pink-500/50 scale-[1.01] shadow-xl z-10"
                   : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`text-xl font-bold mb-2 ${playingItem === item.text ? "text-white" : "text-white"}`}
+                className={`text-xl font-bold mb-2 transition-colors ${playingItem === item.text ? "text-pink-400" : "text-white"}`}
               >
                 "{item.text}"
               </div>
@@ -256,7 +247,7 @@ export function DescribingPage() {
                 {item.translation}
               </div>
               <div
-                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${playingItem === item.text ? "text-white" : "text-neutral-600 opacity-0 group-hover:opacity-100 transition-opacity"}`}
+                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === item.text ? "text-pink-400 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
               >
                 <Volume2 size={14} /> Practice
               </div>
@@ -280,14 +271,14 @@ export function DescribingPage() {
             <button
               key={item.text}
               onClick={() => handleCardClick(item.text)}
-              className={`text-left p-6 rounded-3xl border transition-all group relative overflow-hidden ${
+              className={`text-left p-5 sm:p-6 rounded-3xl border transition-all group relative overflow-hidden ${
                 playingItem === item.text
-                  ? "bg-yellow-600 border-transparent scale-[1.02] shadow-2xl shadow-yellow-500/20 z-10"
+                  ? "bg-yellow-500/10 border-yellow-500/50 scale-[1.01] shadow-xl z-10"
                   : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`text-xl font-bold mb-2 ${playingItem === item.text ? "text-white" : "text-white"}`}
+                className={`text-xl font-bold mb-2 transition-colors ${playingItem === item.text ? "text-yellow-400" : "text-white"}`}
               >
                 "{item.text}"
               </div>
@@ -297,7 +288,7 @@ export function DescribingPage() {
                 {item.translation}
               </div>
               <div
-                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${playingItem === item.text ? "text-white" : "text-neutral-600 opacity-0 group-hover:opacity-100 transition-opacity"}`}
+                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === item.text ? "text-yellow-400 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
               >
                 <Volume2 size={14} /> Practice
               </div>
@@ -336,10 +327,10 @@ export function DescribingPage() {
                   <button
                     key={item.text}
                     onClick={() => handleCardClick(item.text)}
-                    className={`w-full text-left p-4 rounded-2xl transition-all flex items-center justify-between group ${
+                    className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
                       playingItem === item.text
-                        ? "bg-pink-600 text-white scale-[1.02] shadow-lg z-10"
-                        : "hover:bg-white/5 text-neutral-300 hover:text-white"
+                        ? "bg-pink-500/10 border-pink-500/50 text-pink-400 scale-[1.02] shadow-lg z-10"
+                        : "bg-transparent border-transparent hover:bg-white/5 text-neutral-300 hover:text-white"
                     }`}
                   >
                     <div className="flex flex-col">
@@ -352,7 +343,7 @@ export function DescribingPage() {
                     </div>
                     <Volume2
                       size={16}
-                      className={`transition-all ${playingItem === item.text ? "text-white opacity-100 scale-125" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                      className={`transition-all ${playingItem === item.text ? "text-pink-400 opacity-100 scale-125" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
                     />
                   </button>
                 ))}

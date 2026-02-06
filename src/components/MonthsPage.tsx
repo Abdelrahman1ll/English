@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, Volume2 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
+import { useSpeech } from "../hooks/useSpeech";
 
 // Data structures
 const MONTHS_DATA = [
@@ -117,34 +118,25 @@ export function MonthsPage() {
   const [activeWord, setActiveWord] = useState<string | null>(null);
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
+  const { speak, cancel } = useSpeech();
 
   // Stop synthesis when switching tabs
   useEffect(() => {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    cancel();
     setActiveWord(null);
-  }, [activeTab]);
-
-  const speak = (text: string, rate = 0.9) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = rate;
-      setPlayingItem(text);
-      utterance.onend = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  }, [activeTab, cancel]);
 
   const handleWordClick = (word: string, sentence?: string) => {
     setActiveWord(word);
-    speak(sentence || word);
+    setPlayingItem(sentence || word);
+    speak(sentence || word, () => setPlayingItem(null));
     // For days, we practice the day name, but we can speak the whole sentence
     setPracticeWord(word);
   };
 
   const handleVocabClick = (text: string) => {
-    speak(text);
+    setPlayingItem(text);
+    speak(text, () => setPlayingItem(null));
     setPracticeWord(text);
   };
 
@@ -186,16 +178,16 @@ export function MonthsPage() {
                   <button
                     key={month.name}
                     onClick={() => handleWordClick(month.name)}
-                    className={`p-6 rounded-xl border transition-all text-center relative ${
+                    className={`p-4 sm:p-6 rounded-xl border transition-all text-center relative ${
                       activeWord === month.name
-                        ? "bg-blue-600 border-blue-400 text-white shadow-lg scale-105 z-10"
+                        ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg scale-105 z-10"
                         : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                     }`}
                   >
-                    <span className="text-xl font-bold block">
+                    <span className="text-lg sm:text-xl font-bold block">
                       {month.name}
                     </span>
-                    <span className="text-[10px] text-neutral-500 block mt-1 font-medium font-arabic">
+                    <span className="text-[9px] sm:text-[10px] text-neutral-500 block mt-1 font-medium font-arabic line-clamp-1">
                       {month.arabic}
                     </span>
                   </button>
@@ -219,7 +211,7 @@ export function MonthsPage() {
                       onClick={() => handleWordClick(day.name, day.sentence)}
                       className={`p-5 rounded-xl border transition-all text-left relative flex items-center justify-between group ${
                         activeWord === day.name
-                          ? "bg-purple-600 border-purple-400 text-white shadow-lg scale-[1.02] z-10"
+                          ? "bg-purple-500/10 border-purple-500/50 text-purple-400 shadow-lg scale-[1.02] z-10"
                           : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                       }`}
                     >
@@ -268,16 +260,19 @@ export function MonthsPage() {
                           <button
                             key={item.text}
                             onClick={() => handleVocabClick(item.text)}
-                            className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between group ${
+                            className={`w-full text-left p-3 rounded-xl transition-all border flex items-center justify-between group ${
                               playingItem === item.text
-                                ? "bg-amber-500/20 text-amber-300"
-                                : "hover:bg-white/5 text-neutral-300 hover:text-white"
+                                ? "bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-lg z-10"
+                                : "bg-transparent border-transparent hover:bg-white/5 text-neutral-300 hover:text-white"
                             }`}
                           >
                             <span className="font-bold flex items-center gap-2">
                               {item.text}
                               {playingItem === item.text && (
-                                <Volume2 size={14} className="animate-pulse" />
+                                <Volume2
+                                  size={14}
+                                  className="animate-pulse text-amber-500"
+                                />
                               )}
                             </span>
                             <span className="text-sm text-neutral-500 font-arabic group-hover:text-neutral-400">
