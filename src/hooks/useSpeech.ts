@@ -6,14 +6,14 @@ export function useSpeech() {
 
   // Load voices
   useEffect(() => {
-    const loadVoices = () => {
-      const vs = window.speechSynthesis.getVoices();
-      setVoices(vs);
-    };
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const loadVoices = () => {
+        const vs = window.speechSynthesis.getVoices();
+        setVoices(vs);
+      };
 
-    loadVoices();
+      loadVoices();
 
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
   }, []);
