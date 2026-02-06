@@ -29,6 +29,7 @@ export type LevelConfig = {
   description: string;
   modules: Module[];
   color: string;
+  fallback: string;
 };
 
 export const LEVELS: LevelConfig[] = [
@@ -38,6 +39,7 @@ export const LEVELS: LevelConfig[] = [
     description:
       "Beginner foundations: Alphabet, Numbers, Colors, and Basic Greetings.",
     color: "from-blue-400 to-indigo-400",
+    fallback: "bg-blue-500",
     modules: [
       { to: "/A1/alphabet", icon: CaseUpper, title: "Alphabet" },
       { to: "/A1/digraphs", icon: Split, title: "Digraphs" },
@@ -61,6 +63,7 @@ export const LEVELS: LevelConfig[] = [
     description:
       "Elementary communication: Daily routines, Family, and Basic Verbs.",
     color: "from-emerald-400 to-teal-400",
+    fallback: "bg-emerald-500",
     modules: [],
   },
   {
@@ -68,6 +71,7 @@ export const LEVELS: LevelConfig[] = [
     title: "Level B1",
     description: "Pre-intermediate: Shopping, Travel, and Expressing Opinions.",
     color: "from-amber-400 to-orange-400",
+    fallback: "bg-amber-500",
     modules: [],
   },
   {
@@ -75,6 +79,7 @@ export const LEVELS: LevelConfig[] = [
     title: "Level B2",
     description: "Intermediate: Work life, Media, and Narrative Tenses.",
     color: "from-rose-400 to-pink-400",
+    fallback: "bg-rose-500",
     modules: [],
   },
   {
@@ -83,6 +88,7 @@ export const LEVELS: LevelConfig[] = [
     description:
       "Upper-intermediate: Academic topics, Literature, and Complex Grammar.",
     color: "from-violet-400 to-purple-400",
+    fallback: "bg-violet-500",
     modules: [],
   },
 ];

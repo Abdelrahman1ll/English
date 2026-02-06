@@ -15,6 +15,7 @@ import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
 import { PracticeProvider } from "../context/PracticeContext";
 import { PracticeWidget } from "./PracticeWidget";
+import { useSpeech } from "../hooks/useSpeech";
 
 const NavItem = ({
   to,
@@ -68,6 +69,22 @@ export function Layout({ children }: PropsWithChildren) {
   const [, setShowScrollTop] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { unlockAudio } = useSpeech();
+
+  // One-time audio unlock for mobile
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      unlockAudio();
+      window.removeEventListener("click", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+    };
+    window.addEventListener("click", handleFirstInteraction);
+    window.addEventListener("touchstart", handleFirstInteraction);
+    return () => {
+      window.removeEventListener("click", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+    };
+  }, [unlockAudio]);
 
   // Sync level from URL
   useEffect(() => {
