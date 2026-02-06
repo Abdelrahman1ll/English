@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { Mic, PenLine, Ghost, Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Ghost } from "lucide-react";
+import { usePractice } from "../context/PracticeContext";
 
 // Data structures
 const MAGIC_E_DATA = [
@@ -214,35 +215,15 @@ const SILENT_LETTERS_DATA: Record<string, { word: string; arabic: string }[]> =
     ],
   };
 
-type Feedback = {
-  type: "success" | "error" | "neutral";
-  message: string;
-} | null;
-
 export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
   const [activeWord, setActiveWord] = useState<string | null>(null);
-  const [userText, setUserText] = useState("");
-  const [showPracticeWord, setShowPracticeWord] = useState(true);
-  const [writeFeedback, setWriteFeedback] = useState<Feedback>(null);
-  const [speakFeedback, setSpeakFeedback] = useState<Feedback>(null);
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
-
-  const recognitionRef = useRef<any>(null);
-  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { setPracticeWord } = usePractice();
 
   // Stop synthesis when switching type
   useEffect(() => {
     setActiveWord(null);
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }, [type]);
-
-  // Auto-hide word when typing starts
-  useEffect(() => {
-    if (userText.length > 0 && showPracticeWord) {
-      setShowPracticeWord(false);
-    }
-  }, [userText, showPracticeWord]);
 
   const speak = (text: string, rate = 0.9) => {
     if ("speechSynthesis" in window) {
@@ -255,123 +236,13 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
   };
 
   const handleWordClick = (word: string) => {
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch (e) {}
-    }
     setActiveWord(word);
     speak(word);
-    setWriteFeedback(null);
-    setSpeakFeedback(null);
-    setUserText("");
-    setTranscript("");
-    setShowPracticeWord(true); // Reset visibility when selecting a new word
-  };
-
-  const handleCheckAnswer = () => {
-    if (!userText.trim() || !activeWord) return;
-    if (userText.trim().toLowerCase() === activeWord.toLowerCase()) {
-      setWriteFeedback({
-        type: "success",
-        message: "Perfect! Correct spelling.",
-      });
-      speak("Perfect!");
-    } else {
-      setWriteFeedback({ type: "error", message: "Try again." });
-      speak("Not quite.");
-    }
-  };
-
-  const startListening = () => {
-    if (!activeWord) return;
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition is not supported. Use Chrome.");
-      return;
-    }
-
-    if (recognitionRef.current) recognitionRef.current.stop();
-    setTranscript("");
-    setSpeakFeedback(null);
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    const resetTimer = () => {
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = setTimeout(() => {
-        if (isListening) {
-          recognition.stop();
-          setSpeakFeedback({
-            type: "error",
-            message: "Silence timeout. Try again!",
-          });
-        }
-      }, 10000); // 10 seconds for phonics
-    };
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      resetTimer();
-    };
-    recognition.onend = () => {
-      setIsListening(false);
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-    };
-    recognition.onerror = (e: any) => {
-      setIsListening(false);
-      setSpeakFeedback({ type: "error", message: `Mic Error: ${e.error}` });
-    };
-
-    recognition.onresult = (event: any) => {
-      let interimTranscript = "";
-      let finalTranscript = "";
-
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-
-      resetTimer();
-      const result = (finalTranscript || interimTranscript)
-        .trim()
-        .toLowerCase();
-      setTranscript(result);
-
-      if (!result) return;
-
-      const normalize = (s: string) =>
-        s.toLowerCase().replace(/[^a-z0-9]/g, "");
-      const normResult = normalize(result);
-      const targetWord = normalize(activeWord);
-
-      if (normResult.includes(targetWord)) {
-        setSpeakFeedback({ type: "success", message: "Perfect! You got it." });
-        recognition.stop();
-        speak("Perfect!");
-      } else {
-        setSpeakFeedback({
-          type: "error",
-          message: `Try saying: "${activeWord}"`,
-        });
-      }
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
+    setPracticeWord(word);
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight capitalize">
@@ -385,74 +256,62 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="space-y-8">
         {/* Main Grid/List */}
-        <div className="lg:col-span-2 bg-[#1e1e1e] p-6 rounded-3xl border border-white/5 shadow-lg max-h-[700px] overflow-y-auto custom-scrollbar">
+        <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg">
           {type === "magic-e" ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
               {MAGIC_E_DATA.map((pair, idx) => (
                 <div key={idx} className="flex flex-col gap-2">
                   <button
                     onClick={() => handleWordClick(pair.short)}
                     className={`p-3 rounded-xl border transition-all text-center relative ${
                       activeWord === pair.short
-                        ? "bg-blue-600 border-blue-400 text-white shadow-lg"
+                        ? "bg-blue-600 border-blue-400 text-white shadow-lg scale-105 z-10"
                         : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                     }`}
                   >
                     <span className="text-sm font-bold block opacity-50 uppercase mb-1">
                       {pair.shortAr}
                     </span>
-                    <span
-                      className={`text-xl font-bold transition-all duration-300 ${activeWord === pair.short && !showPracticeWord ? "blur-xl opacity-0" : "blur-none opacity-100"}`}
-                    >
-                      {pair.short}
-                    </span>
+                    <span className="text-xl font-bold">{pair.short}</span>
                   </button>
                   <button
                     onClick={() => handleWordClick(pair.long)}
                     className={`p-3 rounded-xl border transition-all text-center relative ${
                       activeWord === pair.long
-                        ? "bg-amber-600 border-amber-400 text-white shadow-lg"
+                        ? "bg-amber-600 border-amber-400 text-white shadow-lg scale-105 z-10"
                         : "bg-[#2a2a2a] border-white/5 text-neutral-400 hover:border-white/20"
                     }`}
                   >
                     <span className="text-sm font-bold block opacity-50 uppercase mb-1">
                       {pair.longAr}
                     </span>
-                    <span
-                      className={`text-xl font-bold transition-all duration-300 ${activeWord === pair.long && !showPracticeWord ? "blur-xl opacity-0" : "blur-none opacity-100"}`}
-                    >
-                      {pair.long}
-                    </span>
+                    <span className="text-xl font-bold">{pair.long}</span>
                   </button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-12">
               {Object.entries(SILENT_LETTERS_DATA).map(([letter, words]) => (
-                <div key={letter} className="space-y-3">
-                  <h3 className="text-lg font-bold text-rose-400 flex items-center gap-2">
+                <div key={letter} className="space-y-4">
+                  <h3 className="text-lg font-bold text-rose-400 flex items-center gap-2 uppercase tracking-widest">
                     <Ghost size={18} /> Silent {letter}
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {words.map((item) => (
                       <button
                         key={item.word}
                         onClick={() => handleWordClick(item.word)}
-                        className={`px-4 py-2 rounded-xl border transition-all relative ${
+                        className={`px-6 py-3 rounded-xl border transition-all relative ${
                           activeWord === item.word
-                            ? "bg-rose-600 border-rose-400 text-white shadow-lg"
+                            ? "bg-rose-600 border-rose-400 text-white shadow-lg scale-105 z-10"
                             : "bg-[#2a2a2a] border-white/5 text-neutral-300 hover:bg-[#333]"
                         }`}
                       >
-                        <span
-                          className={`transition-all duration-300 ${activeWord === item.word && !showPracticeWord ? "blur-xl opacity-0" : "blur-none opacity-100"}`}
-                        >
-                          {item.word}
-                        </span>
-                        <span className="text-[10px] text-neutral-500 block mt-1 font-medium">
+                        <span className="text-lg font-bold">{item.word}</span>
+                        <span className="text-[10px] text-neutral-500 block mt-1 font-medium italic">
                           {item.arabic}
                         </span>
                       </button>
@@ -464,131 +323,13 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
           )}
         </div>
 
-        {/* Practice Sidebar */}
-        <div className="space-y-6 sm:space-y-8 lg:sticky lg:top-6">
-          {/* Writing Practice */}
-          <div className="bg-[#1e1e1e] p-4 sm:p-6 rounded-3xl border border-white/5 shadow-lg">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <div className="flex items-center gap-2 sm:gap-3 text-amber-400 font-semibold text-sm sm:text-base">
-                <PenLine size={20} /> Writing Practice
-              </div>
-              {activeWord && (
-                <button
-                  onClick={() => setShowPracticeWord(!showPracticeWord)}
-                  className="p-2 rounded-lg bg-white/5 text-neutral-400 hover:text-white transition-colors"
-                >
-                  {showPracticeWord ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              )}
-            </div>
-
-            {activeWord ? (
-              <div className="space-y-4">
-                <div className="text-center py-4 border-b border-white/5 mb-4 relative min-h-[60px] flex items-center justify-center">
-                  <span
-                    className={`text-4xl font-black text-white transition-all duration-300 ${!showPracticeWord ? "blur-xl opacity-0 scale-90" : "blur-none opacity-100 scale-100"}`}
-                  >
-                    {activeWord}
-                  </span>
-                  {!showPracticeWord && (
-                    <div className="absolute inset-0 flex items-center justify-center text-neutral-500 text-sm animate-pulse font-medium">
-                      Memory Mode Active
-                    </div>
-                  )}
-                </div>
-
-                <p className="text-neutral-400 text-sm">
-                  Type the word from memory:
-                </p>
-                <input
-                  type="text"
-                  value={userText}
-                  onChange={(e) => setUserText(e.target.value)}
-                  placeholder="Type here..."
-                  className="w-full bg-[#141414] rounded-xl p-4 text-white border border-white/5 focus:border-amber-500/50 outline-none transition-all"
-                  onKeyDown={(e) => e.key === "Enter" && handleCheckAnswer()}
-                />
-
-                {writeFeedback && (
-                  <div
-                    className={`text-sm font-medium ${writeFeedback.type === "success" ? "text-emerald-400" : "text-rose-400"}`}
-                  >
-                    {writeFeedback.message}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleCheckAnswer}
-                  className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition-all shadow-lg shadow-amber-500/10"
-                >
-                  Check Spelling
-                </button>
-              </div>
-            ) : (
-              <p className="text-neutral-500 text-center py-10">
-                Select a word to start writing
-              </p>
-            )}
-          </div>
-
-          {/* Speaking Practice */}
-          <div className="bg-[#1e1e1e] p-4 sm:p-6 rounded-3xl border border-white/5 shadow-lg flex flex-col min-h-[300px]">
-            <div className="flex items-center gap-2 sm:gap-3 text-rose-400 mb-4 sm:mb-6 font-semibold text-sm sm:text-base">
-              <Mic size={20} /> Speaking Practice
-            </div>
-
-            {activeWord ? (
-              <div className="flex-1 flex flex-col justify-between text-center">
-                <div>
-                  <div className="text-4xl font-black text-white py-4">
-                    {activeWord}
-                  </div>
-
-                  {transcript && (
-                    <div className="bg-white/5 px-4 py-2 rounded-lg truncate max-w-full mb-4">
-                      <span className="text-neutral-400 text-xs uppercase font-bold mr-2">
-                        Heard:
-                      </span>
-                      <span className="text-white font-medium italic">
-                        "{transcript}"
-                      </span>
-                    </div>
-                  )}
-
-                  {speakFeedback && (
-                    <div
-                      className={`font-medium mb-4 ${speakFeedback.type === "success" ? "text-emerald-400" : "text-rose-400"}`}
-                    >
-                      {speakFeedback.message}
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={startListening}
-                  className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isListening ? "bg-rose-500/20 text-rose-400 animate-pulse border border-rose-500" : "bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:bg-rose-600"}`}
-                >
-                  {isListening ? (
-                    <>
-                      <Mic size={20} className="animate-pulse" />
-                      <span>Listening...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Mic size={20} />
-                      <span>Click to Speak</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-neutral-500">
-                  Select a word to start speaking
-                </p>
-              </div>
-            )}
-          </div>
+        {/* Instruction Card */}
+        <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
+          <h3 className="text-xl font-bold text-white">Practice Mode</h3>
+          <p className="text-neutral-400 max-w-md mx-auto">
+            Click on any word, then use the floating menu on the right to
+            practice **Writing** or **Speaking**.
+          </p>
         </div>
       </div>
     </div>

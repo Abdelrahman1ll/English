@@ -10,6 +10,7 @@ import {
   Calendar,
   Star,
 } from "lucide-react";
+import { usePractice } from "../context/PracticeContext";
 
 type DescribingItem = {
   text: string;
@@ -193,6 +194,7 @@ const CHARACTER_SENTENCES: DescribingItem[] = [
 
 export function DescribingPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
+  const { setPracticeWord } = usePractice();
 
   const speak = (text: string) => {
     if ("speechSynthesis" in window) {
@@ -206,40 +208,57 @@ export function DescribingPage() {
     }
   };
 
+  const handleCardClick = (text: string) => {
+    speak(text);
+    setPracticeWord(text);
+  };
+
   return (
-    <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
-      <div className="border-b border-white/5 pb-6">
-        <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-          <User className="text-pink-400" /> Describing People
+    <div className="max-w-5xl mx-auto space-y-16 animate-in fade-in duration-500 pb-20">
+      <div className="border-b border-white/5 pb-8">
+        <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
+          <User className="text-pink-400" size={32} /> Describing People
         </h1>
-        <p className="text-neutral-400 mt-2">
-          Learn how to describe appearances and characteristics.
+        <p className="text-neutral-400 mt-3 text-lg">
+          Master the art of describing appearances and personalities.
         </p>
       </div>
 
       {/* Appearances Section */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Volume2 className="text-emerald-400" /> Describing Appearances
-        </h2>
+      <section className="space-y-8">
+        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+          <div className="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-400">
+            <Smile size={24} />
+          </div>
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+            Physical Appearances
+          </h2>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {DESCRIBING_SENTENCES.map((item) => (
             <button
               key={item.text}
-              onClick={() => speak(item.text)}
-              className={`text-left p-6 rounded-2xl border transition-all group ${
+              onClick={() => handleCardClick(item.text)}
+              className={`text-left p-6 rounded-3xl border transition-all group relative overflow-hidden ${
                 playingItem === item.text
-                  ? "bg-pink-600/20 border-pink-500/50"
-                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/10"
+                  ? "bg-pink-600 border-transparent scale-[1.02] shadow-2xl shadow-pink-500/20 z-10"
+                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`text-lg font-semibold mb-2 ${playingItem === item.text ? "text-pink-400" : "text-white"}`}
+                className={`text-xl font-bold mb-2 ${playingItem === item.text ? "text-white" : "text-white"}`}
               >
-                {item.text}
+                "{item.text}"
               </div>
-              <div className="text-neutral-400 font-arabic text-lg">
+              <div
+                className={`font-arabic text-lg ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+              >
                 {item.translation}
+              </div>
+              <div
+                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${playingItem === item.text ? "text-white" : "text-neutral-600 opacity-0 group-hover:opacity-100 transition-opacity"}`}
+              >
+                <Volume2 size={14} /> Practice
               </div>
             </button>
           ))}
@@ -247,30 +266,40 @@ export function DescribingPage() {
       </section>
 
       {/* Character Section */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Star className="text-yellow-400" /> Character & Personality
+      <section className="space-y-8">
+        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+          <div className="p-2.5 bg-yellow-500/20 rounded-xl text-yellow-400">
+            <Star size={24} />
+          </div>
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+            Character & Personality
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {CHARACTER_SENTENCES.map((item) => (
             <button
               key={item.text}
-              onClick={() => speak(item.text)}
-              className={`text-left p-6 rounded-2xl border transition-all group ${
+              onClick={() => handleCardClick(item.text)}
+              className={`text-left p-6 rounded-3xl border transition-all group relative overflow-hidden ${
                 playingItem === item.text
-                  ? "bg-yellow-600/20 border-yellow-500/50"
-                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/10"
+                  ? "bg-yellow-600 border-transparent scale-[1.02] shadow-2xl shadow-yellow-500/20 z-10"
+                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`text-lg font-semibold mb-2 ${playingItem === item.text ? "text-yellow-400" : "text-white"}`}
+                className={`text-xl font-bold mb-2 ${playingItem === item.text ? "text-white" : "text-white"}`}
               >
-                {item.text}
+                "{item.text}"
               </div>
-              <div className="text-neutral-400 font-arabic text-lg">
+              <div
+                className={`font-arabic text-lg ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+              >
                 {item.translation}
+              </div>
+              <div
+                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${playingItem === item.text ? "text-white" : "text-neutral-600 opacity-0 group-hover:opacity-100 transition-opacity"}`}
+              >
+                <Volume2 size={14} /> Practice
               </div>
             </button>
           ))}
@@ -278,10 +307,13 @@ export function DescribingPage() {
       </section>
 
       {/* Vocabulary Section */}
-      <section className="space-y-8">
-        <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Search className="text-blue-400" /> Vocabulary
+      <section className="space-y-10">
+        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+          <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400">
+            <Search size={24} />
+          </div>
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+            Vocabulary Essentials
           </h2>
         </div>
 
@@ -289,13 +321,13 @@ export function DescribingPage() {
           {VOCABULARY_DATA.map((category) => (
             <div
               key={category.title}
-              className="bg-[#1e1e1e] border border-white/5 rounded-3xl overflow-hidden flex flex-col"
+              className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-xl"
             >
-              <div className="p-5 bg-white/5 border-b border-white/5 flex items-center gap-3">
-                <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400">
+              <div className="p-6 bg-white/5 border-b border-white/5 flex items-center gap-4">
+                <div className="p-3 bg-pink-500/20 rounded-2xl text-pink-400 shadow-inner">
                   <category.icon size={20} />
                 </div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-xl font-black text-white tracking-tight">
                   {category.title}
                 </h3>
               </div>
@@ -303,17 +335,25 @@ export function DescribingPage() {
                 {category.items.map((item) => (
                   <button
                     key={item.text}
-                    onClick={() => speak(item.text)}
-                    className={`w-full text-left p-3 rounded-xl transition-all flex items-center justify-between group ${
+                    onClick={() => handleCardClick(item.text)}
+                    className={`w-full text-left p-4 rounded-2xl transition-all flex items-center justify-between group ${
                       playingItem === item.text
-                        ? "bg-pink-500/20 text-pink-300"
+                        ? "bg-pink-600 text-white scale-[1.02] shadow-lg z-10"
                         : "hover:bg-white/5 text-neutral-300 hover:text-white"
                     }`}
                   >
-                    <span className="font-medium">{item.text}</span>
-                    <span className="text-sm text-neutral-500 font-arabic group-hover:text-neutral-400">
-                      {item.translation}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-lg">{item.text}</span>
+                      <span
+                        className={`text-sm font-arabic ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+                      >
+                        {item.translation}
+                      </span>
+                    </div>
+                    <Volume2
+                      size={16}
+                      className={`transition-all ${playingItem === item.text ? "text-white opacity-100 scale-125" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -321,6 +361,18 @@ export function DescribingPage() {
           ))}
         </div>
       </section>
+
+      {/* Instruction Card */}
+      <div className="bg-[#1e1e1e] p-10 rounded-[3rem] border border-white/5 shadow-2xl text-center space-y-6 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-pink-500 via-yellow-500 to-blue-500 opacity-30" />
+        <h3 className="font-black text-white uppercase tracking-[0.2em] text-sm opacity-50">
+          Immersion Practice
+        </h3>
+        <p className="text-neutral-300 max-w-xl mx-auto text-xl leading-relaxed">
+          Click on any phrase or word to trigger the **Practice System**. <br />{" "}
+          Use the floating tools to master your pronunciation and writing.
+        </p>
+      </div>
     </div>
   );
 }

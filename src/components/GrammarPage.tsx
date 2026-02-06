@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Book, Volume2, AlertCircle } from "lucide-react";
+import { Book, Volume2, AlertCircle, Quote } from "lucide-react";
+import { usePractice } from "../context/PracticeContext";
 
 type GrammarItem = {
   word: string;
@@ -188,6 +189,7 @@ export function GrammarPage() {
   const [toBeQuizAnswers, setToBeQuizAnswers] = useState<{
     [key: number]: string;
   }>({});
+  const { setPracticeWord } = usePractice();
 
   const speak = (text: string) => {
     if ("speechSynthesis" in window) {
@@ -199,6 +201,11 @@ export function GrammarPage() {
       utterance.onend = () => setPlayingItem(null);
       window.speechSynthesis.speak(utterance);
     }
+  };
+
+  const handleItemClick = (text: string) => {
+    speak(text);
+    setPracticeWord(text);
   };
 
   const handleQuizOptionClick = (questionIndex: number, option: string) => {
@@ -226,29 +233,33 @@ export function GrammarPage() {
     return (
       <button
         key={item.word}
-        onClick={() => speak(displayText)}
-        className={`p-6 rounded-2xl border transition-all text-left group hover:scale-105 ${
+        onClick={() => handleItemClick(displayText)}
+        className={`p-6 rounded-3xl border transition-all text-left group relative overflow-hidden ${
           playingItem === displayText
-            ? "bg-blue-600 border-blue-400 shadow-lg"
-            : "bg-[#1e1e1e] border-white/10 hover:bg-[#252525]"
+            ? "bg-blue-600 border-transparent shadow-2xl scale-[1.02] z-10"
+            : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
         }`}
       >
         <div className="flex justify-between items-start mb-2">
           <span
-            className={`text-2xl font-bold ${playingItem === displayText ? "text-white" : "text-blue-400"}`}
+            className={`text-2xl font-black ${playingItem === displayText ? "text-white" : "text-blue-400"}`}
           >
             {item.article !== "none" && (
-              <span className="text-white/60 mr-2">{item.article}</span>
+              <span
+                className={`mr-2 transition-colors ${playingItem === displayText ? "text-white/60" : "text-white/40"}`}
+              >
+                {item.article}
+              </span>
             )}
             {item.word}
           </span>
           <Volume2
             size={20}
-            className={`transition-opacity ${playingItem === displayText ? "opacity-100 text-white" : "opacity-0 group-hover:opacity-100 text-neutral-400"}`}
+            className={`transition-all ${playingItem === displayText ? "text-white scale-110" : "opacity-0 group-hover:opacity-100 text-neutral-600"}`}
           />
         </div>
         <div
-          className={`text-lg font-arabic ${playingItem === displayText ? "text-white/90" : "text-neutral-400"}`}
+          className={`text-lg font-arabic ${playingItem === displayText ? "text-white/80" : "text-neutral-500"}`}
         >
           {item.arabic}
         </div>
@@ -258,28 +269,36 @@ export function GrammarPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in duration-500 pb-20">
-      <div className="border-b border-white/5 pb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-          <Book className="text-emerald-400" /> Grammar
+      <div className="border-b border-white/5 pb-8">
+        <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
+          <Book className="text-emerald-400" size={32} /> Grammar Essentials
         </h1>
-        <p className="text-neutral-400 mt-1 text-sm sm:text-base">
-          Singular, Plural, and Articles.
+        <p className="text-neutral-400 mt-3 text-lg leading-relaxed">
+          Master the foundation of English: Singular, Plural, and Articles.
         </p>
       </div>
 
       {/* Section 1: The Rule (A) */}
-      <section className="space-y-6">
-        <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            1. The Article "A"
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
+      <section className="space-y-8">
+        <div className="bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              1. The Article "A"
+            </h2>
+          </div>
+          <p className="text-neutral-300 text-xl leading-relaxed mb-8">
             We use{" "}
-            <span className="text-emerald-400 font-bold text-xl px-1">A</span>{" "}
-            before nouns that begin with a consonant sound.
+            <span className="text-emerald-400 font-black text-2xl px-2 bg-emerald-500/10 rounded-lg">
+              A
+            </span>{" "}
+            before nouns that begin with a **consonant sound**.
             <br />
-            <span className="text-white/60 italic text-sm mt-1 block">
-              "A" basically means "One". (A car = One car)
+            <span className="text-white/40 italic text-base mt-3 flex items-center gap-2">
+              <Quote size={14} className="rotate-180" /> "A" basically means
+              "One". (A car = One car)
             </span>
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -289,25 +308,31 @@ export function GrammarPage() {
       </section>
 
       {/* Section 2: Vowels (An) */}
-      <section className="space-y-6">
-        <div className="bg-amber-500/10 border border-amber-500/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            2. The Vowels (An)
-          </h2>
-          <div className="flex flex-wrap gap-2 mb-6">
+      <section className="space-y-8">
+        <div className="bg-amber-500/5 border border-amber-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-amber-500/20 rounded-lg text-amber-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              2. The Vowels (An)
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-3 mb-8">
             {["A", "E", "I", "O", "U"].map((vowel) => (
               <span
                 key={vowel}
-                className="w-12 h-12 flex items-center justify-center rounded-xl bg-amber-500 text-black font-black text-xl"
+                className="w-14 h-14 flex items-center justify-center rounded-2xl bg-amber-500 text-black font-black text-2xl shadow-lg shadow-amber-500/20"
               >
                 {vowel}
               </span>
             ))}
           </div>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
-            If a word starts with a <strong>Vowel</strong> (A, E, I, O, U), we
-            use{" "}
-            <span className="text-amber-400 font-bold text-xl px-1">An</span>{" "}
+          <p className="text-neutral-300 text-xl leading-relaxed mb-8">
+            If a word starts with a **Vowel** (A, E, I, O, U), we use{" "}
+            <span className="text-amber-400 font-black text-2xl px-2 bg-amber-500/10 rounded-lg">
+              An
+            </span>{" "}
             instead of "A".
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -317,18 +342,22 @@ export function GrammarPage() {
       </section>
 
       {/* Section 3: Uncountable */}
-      <section className="space-y-6">
-        <div className="bg-rose-500/10 border border-rose-500/20 p-4 sm:p-6 rounded-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <AlertCircle className="text-rose-400" />
-            <h2 className="text-xl sm:text-2xl font-bold text-white">
+      <section className="space-y-8">
+        <div className="bg-rose-500/5 border border-rose-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-rose-500/20 rounded-lg text-rose-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
               3. Uncountable Nouns
             </h2>
           </div>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
-            Some words <strong>cannot</strong> be counted (Uncountable). We do{" "}
-            <span className="text-rose-400 font-bold">NOT</span> use "a" or "an"
-            with them.
+          <p className="text-neutral-300 text-xl leading-relaxed mb-8">
+            Some words **cannot** be counted. We do{" "}
+            <span className="text-rose-400 font-bold px-1 underline decoration-2 underline-offset-4">
+              NOT
+            </span>{" "}
+            use "a" or "an" with them.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {EXAMPLES_UNCOUNTABLE.map(renderCard)}
@@ -337,34 +366,63 @@ export function GrammarPage() {
       </section>
 
       {/* Section 4: Singular vs Plural */}
-      <section className="space-y-6">
-        <div className="bg-blue-500/10 border border-blue-500/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            4. Singular & Plural
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
+      <section className="space-y-8">
+        <div className="bg-blue-500/5 border border-blue-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              4. Singular & Plural
+            </h2>
+          </div>
+          <p className="text-neutral-300 text-xl leading-relaxed mb-8">
             To make most words plural (more than one), we usually add{" "}
-            <span className="text-blue-400 font-bold text-xl px-1">S</span> at
-            the end.
+            <span className="text-blue-400 font-black text-2xl px-2 bg-blue-500/10 rounded-lg">
+              S
+            </span>{" "}
+            at the end.
           </p>
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-4">
             {EXAMPLES_PLURAL.map((item) => (
               <button
                 key={item.singular}
-                onClick={() => speak(`${item.singular}... ${item.plural}`)}
-                className="flex items-center justify-between p-4 rounded-xl bg-[#1e1e1e] border border-white/10 hover:bg-[#252525] transition-all"
+                onClick={() =>
+                  handleItemClick(`${item.singular}... ${item.plural}`)
+                }
+                className={`flex items-center justify-between p-6 rounded-3xl transition-all border group relative overflow-hidden ${
+                  playingItem === `${item.singular}... ${item.plural}`
+                    ? "bg-blue-600 border-transparent shadow-xl scale-[1.01]"
+                    : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525]"
+                }`}
               >
-                <div className="flex items-center gap-4">
-                  <div className="text-xl font-bold text-neutral-400">
+                <div className="flex items-center gap-6">
+                  <div
+                    className={`text-2xl font-bold transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/60" : "text-neutral-600"}`}
+                  >
                     {item.singular}
                   </div>
-                  <div className="text-neutral-600">→</div>
-                  <div className="text-xl font-bold text-blue-400">
+                  <div
+                    className={`transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/40" : "text-neutral-800"}`}
+                  >
+                    →
+                  </div>
+                  <div
+                    className={`text-3xl font-black transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white" : "text-blue-400"}`}
+                  >
                     {item.plural}
                   </div>
                 </div>
-                <div className="text-lg font-arabic text-neutral-500">
-                  {item.arabic}
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`text-xl font-arabic transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/80" : "text-neutral-500"}`}
+                  >
+                    {item.arabic}
+                  </div>
+                  <Volume2
+                    size={16}
+                    className={`transition-all ${playingItem === `${item.singular}... ${item.plural}` ? "text-white opacity-100" : "opacity-0 group-hover:opacity-40 text-neutral-400"}`}
+                  />
                 </div>
               </button>
             ))}
@@ -373,17 +431,21 @@ export function GrammarPage() {
       </section>
 
       {/* Section 5: Pronouns Quiz */}
-      <section className="space-y-6">
-        <div className="bg-purple-500/10 border border-purple-500/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            5. Subject Pronouns Quiz
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
+      <section className="space-y-8">
+        <div className="bg-purple-500/5 border border-purple-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              5. Subject Pronouns Quiz
+            </h2>
+          </div>
+          <p className="text-neutral-300 text-lg mb-8 bg-white/5 p-4 rounded-xl border border-white/5">
             Choose the correct pronoun:{" "}
-            <span className="font-bold text-purple-400">
+            <span className="font-black text-purple-400 px-2">
               He, She, It, They, We
             </span>
-            .
           </p>
           <div className="space-y-4">
             {PRONOUNS_QUIZ.map((q, idx) => {
@@ -393,24 +455,27 @@ export function GrammarPage() {
               return (
                 <div
                   key={idx}
-                  className="bg-[#1e1e1e] p-5 rounded-2xl border border-white/5"
+                  className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md"
                 >
-                  <p className="text-xl text-white font-medium mb-4">
-                    {idx + 1}. {q.question}
+                  <p className="text-xl text-white font-bold mb-6 flex items-center gap-4">
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
+                      {idx + 1}
+                    </span>
+                    {q.question}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {q.options.map((option) => (
                       <button
                         key={option}
                         onClick={() => handleQuizOptionClick(idx, option)}
                         disabled={isAnswered && isCorrect}
-                        className={`px-4 py-2 rounded-lg font-bold transition-all ${
+                        className={`px-6 py-3 rounded-2xl font-black transition-all border-2 ${
                           quizAnswers[idx] === option
                             ? option === q.answer
-                              ? "bg-emerald-500 text-white"
-                              : "bg-rose-500 text-white"
-                            : "bg-white/5 text-neutral-300 hover:bg-white/10"
-                        } ${isAnswered && option === q.answer ? "bg-emerald-500 text-white ring-2 ring-emerald-500/50" : ""}`}
+                              ? "bg-emerald-600 border-transparent text-white shadow-lg shadow-emerald-500/20 scale-105"
+                              : "bg-rose-600 border-transparent text-white animate-shake"
+                            : "bg-white/5 border-transparent text-neutral-400 hover:bg-white/10 hover:text-white"
+                        } ${isAnswered && option === q.answer ? "bg-emerald-600 border-transparent text-white" : ""}`}
                       >
                         {option}
                       </button>
@@ -424,28 +489,48 @@ export function GrammarPage() {
       </section>
 
       {/* Section 6: Verb To Be */}
-      <section className="space-y-6">
-        <div className="bg-orange-500/10 border border-orange-500/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            6. The Verb "To Be"
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
-            Singular (One):
-            <br />
-            <span className="text-orange-400 font-bold">I am</span>
-            <br />
-            <span className="text-orange-400 font-bold">He / She / It is</span>
-            <br />
-            <br />
-            Plural (Many):
-            <br />
-            <span className="text-orange-400 font-bold">
-              We / You / They are
-            </span>
-          </p>
+      <section className="space-y-8">
+        <div className="bg-orange-500/5 border border-orange-500/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              6. The Verb "To Be"
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+            <div className="bg-black/20 p-6 rounded-3xl border border-white/5">
+              <h4 className="text-sm font-black text-neutral-600 uppercase tracking-widest mb-4">
+                Singular (One)
+              </h4>
+              <div className="space-y-2">
+                <div className="text-2xl font-bold flex items-center justify-between">
+                  <span className="text-orange-400">I</span>{" "}
+                  <span className="text-white">am</span>
+                </div>
+                <div className="text-2xl font-bold flex items-center justify-between">
+                  <span className="text-orange-400">He / She / It</span>{" "}
+                  <span className="text-white">is</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-black/20 p-6 rounded-3xl border border-white/5">
+              <h4 className="text-sm font-black text-neutral-600 uppercase tracking-widest mb-4">
+                Plural (Many)
+              </h4>
+              <div className="space-y-2">
+                <div className="text-2xl font-bold flex items-center justify-between">
+                  <span className="text-orange-400">We / You / They</span>{" "}
+                  <span className="text-white">are</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <h3 className="text-xl font-bold text-white mb-4 mt-8 pt-6 border-t border-white/10">
-            Quiz: Am, Is, or Are?
+          <h3 className="text-xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-2">
+            <Quote size={18} className="text-orange-500" /> Quiz: Am, Is, or
+            Are?
           </h3>
           <div className="space-y-4">
             {TO_BE_QUIZ.map((q, idx) => {
@@ -455,24 +540,27 @@ export function GrammarPage() {
               return (
                 <div
                   key={idx}
-                  className="bg-[#1e1e1e] p-5 rounded-2xl border border-white/5"
+                  className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md"
                 >
-                  <p className="text-xl text-white font-medium mb-4">
-                    {idx + 1}. {q.question}
+                  <p className="text-xl text-white font-bold mb-6 flex items-center gap-4">
+                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
+                      {idx + 1}
+                    </span>
+                    {q.question}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {q.options.map((option) => (
                       <button
                         key={option}
                         onClick={() => handleToBeQuizOptionClick(idx, option)}
                         disabled={isAnswered && isCorrect}
-                        className={`px-4 py-2 rounded-lg font-bold transition-all ${
+                        className={`px-6 py-3 rounded-2xl font-black transition-all border-2 ${
                           toBeQuizAnswers[idx] === option
                             ? option === q.answer
-                              ? "bg-emerald-500 text-white"
-                              : "bg-rose-500 text-white"
-                            : "bg-white/5 text-neutral-300 hover:bg-white/10"
-                        } ${isAnswered && option === q.answer ? "bg-emerald-500 text-white ring-2 ring-emerald-500/50" : ""}`}
+                              ? "bg-emerald-600 border-transparent text-white shadow-lg shadow-emerald-500/20 scale-105"
+                              : "bg-rose-600 border-transparent text-white animate-shake"
+                            : "bg-white/5 border-transparent text-neutral-400 hover:bg-white/10 hover:text-white"
+                        } ${isAnswered && option === q.answer ? "bg-emerald-600 border-transparent text-white" : ""}`}
                       >
                         {option}
                       </button>
@@ -486,72 +574,91 @@ export function GrammarPage() {
       </section>
 
       {/* Section 7: Demonstratives */}
-      <section className="space-y-6">
-        <div className="bg-blue-600/10 border border-blue-600/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            7. Demonstratives (الإشارة)
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
-            We use these words to point things out:
+      <section className="space-y-8">
+        <div className="bg-blue-600/5 border border-blue-600/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-blue-600/20 rounded-lg text-blue-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              7. Demonstratives (الإشارة)
+            </h2>
+          </div>
+          <p className="text-neutral-300 text-lg mb-10">
+            We use these words to point things out based on distance:
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {DEMONSTRATIVES_DATA.map((group) => (
-              <div key={group.title} className="space-y-6">
-                <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest px-2">
+              <div key={group.title} className="space-y-8">
+                <h3 className="text-xs font-black text-blue-400/50 uppercase tracking-[0.3em] px-2 flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />{" "}
                   {group.title}
                 </h3>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   {group.items.map((item) => (
                     <button
                       key={item.text}
                       onClick={() =>
-                        speak(`${item.text}... means ${item.translation}`)
+                        handleItemClick(
+                          `${item.text}... means ${item.translation}`,
+                        )
                       }
-                      className={`p-4 rounded-2xl border transition-all text-center group flex flex-col items-center justify-center ${
+                      className={`p-8 rounded-4xl border transition-all text-center group flex flex-col items-center justify-center relative overflow-hidden ${
                         playingItem ===
                         `${item.text}... means ${item.translation}`
-                          ? "bg-blue-600 border-blue-400"
-                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10"
+                          ? "bg-blue-600 border-transparent shadow-2xl scale-105 z-10"
+                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-[1.02]"
                       }`}
                     >
-                      <span className="text-2xl font-black text-white">
+                      <span
+                        className={`text-3xl font-black ${playingItem === `${item.text}... means ${item.translation}` ? "text-white" : "text-white group-hover:text-blue-400"}`}
+                      >
                         {item.text}
                       </span>
-                      <span className="text-xs font-arabic text-neutral-400 mt-1">
+                      <span
+                        className={`text-sm font-arabic mt-2 ${playingItem === `${item.text}... means ${item.translation}` ? "text-white/70" : "text-neutral-500"}`}
+                      >
                         {item.translation}
                       </span>
-                      <div className="flex gap-1 mt-3">
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
+                      <div className="flex gap-2 mt-4">
+                        <span
+                          className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-tighter ${playingItem === `${item.text}... means ${item.translation}` ? "bg-white/20 text-white" : "bg-blue-500/10 text-blue-400"}`}
+                        >
                           {item.rule}
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-500">
-                          {item.category}
                         </span>
                       </div>
                     </button>
                   ))}
                 </div>
 
-                <div className="bg-black/20 rounded-2xl p-4 space-y-3">
+                <div className="bg-black/20 rounded-4xl p-6 space-y-4 border border-white/5">
                   {group.examples.map((ex) => (
                     <button
                       key={ex.text}
-                      onClick={() => speak(ex.text)}
-                      className="w-full text-left flex items-center justify-between group p-2 rounded-xl hover:bg-white/5 transition-all"
+                      onClick={() => handleItemClick(ex.text)}
+                      className={`w-full text-left flex items-center justify-between group p-4 rounded-2xl transition-all border ${
+                        playingItem === ex.text
+                          ? "bg-blue-600 border-transparent shadow-lg"
+                          : "hover:bg-white/5 border-transparent"
+                      }`}
                     >
                       <div>
-                        <div className="text-white font-medium group-hover:text-blue-400 transition-colors">
+                        <div
+                          className={`text-lg font-bold group-hover:text-blue-400 transition-colors ${playingItem === ex.text ? "text-white" : "text-white"}`}
+                        >
                           {ex.text}
                         </div>
-                        <div className="text-xs text-neutral-500 font-arabic">
+                        <div
+                          className={`text-sm font-arabic mt-1 ${playingItem === ex.text ? "text-white/70" : "text-neutral-500"}`}
+                        >
                           {ex.translation}
                         </div>
                       </div>
                       <Volume2
-                        size={16}
-                        className="text-neutral-700 group-hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-all"
+                        size={18}
+                        className={`transition-all ${playingItem === ex.text ? "text-white opacity-100 scale-110" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
                       />
                     </button>
                   ))}
@@ -561,79 +668,112 @@ export function GrammarPage() {
           </div>
         </div>
       </section>
+
       {/* Section 8: Prepositions */}
-      <section className="space-y-6">
-        <div className="bg-purple-600/10 border border-purple-600/20 p-4 sm:p-6 rounded-3xl">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-            8. Prepositions (حروف الجر)
-          </h2>
-          <p className="text-neutral-300 text-lg leading-relaxed mb-6">
-            Words that show the relationship between things:
+      <section className="space-y-8">
+        <div className="bg-purple-600/5 border border-purple-600/10 p-8 rounded-4xl shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-purple-600/20 rounded-lg text-purple-400">
+              <AlertCircle size={20} />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+              8. Prepositions (حروف الجر)
+            </h2>
+          </div>
+          <p className="text-neutral-300 text-lg mb-10 leading-relaxed">
+            Words that show the relationship between things in space or time:
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {PREPOSITIONS_DATA.map((prep) => (
               <button
                 key={prep.text}
-                onClick={() => speak(prep.text)}
-                className={`p-4 rounded-xl border transition-all text-center group ${
+                onClick={() => handleItemClick(prep.text)}
+                className={`p-6 rounded-2xl border transition-all text-center group relative overflow-hidden ${
                   playingItem === prep.text
-                    ? "bg-purple-600 border-purple-400"
-                    : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10"
+                    ? "bg-purple-600 border-transparent shadow-2xl scale-110 z-10"
+                    : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-105 hover:border-white/10 shadow-lg"
                 }`}
               >
-                <div className="text-xl font-bold text-white">{prep.text}</div>
-                <div className="text-xs text-neutral-500 font-arabic mt-1">
+                <div
+                  className={`text-2xl font-black transition-colors ${playingItem === prep.text ? "text-white" : "text-white group-hover:text-purple-400"}`}
+                >
+                  {prep.text}
+                </div>
+                <div
+                  className={`text-sm font-arabic mt-2 ${playingItem === prep.text ? "text-white/70" : "text-neutral-500"}`}
+                >
                   {prep.translation}
                 </div>
               </button>
             ))}
           </div>
 
-          <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-            <h3 className="text-lg font-bold text-white">
-              Examples: "In the world"
+          <div className="mt-12 pt-10 border-t border-white/5 space-y-6">
+            <h3 className="text-xl font-black text-white flex items-center gap-3">
+              <Quote size={20} className="text-purple-500" /> Usage: "In the
+              world"
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                onClick={() =>
-                  speak("Barcelona is the best football team in the world.")
-                }
-                className="p-5 rounded-2xl bg-black/20 border border-white/5 text-left group hover:border-purple-500/30 transition-all"
-              >
-                <div className="text-white group-hover:text-purple-400 transition-colors">
-                  Barcelona is the best football team in the world.
-                </div>
-                <div className="text-sm text-neutral-500 font-arabic mt-1">
-                  برشلونة هو أفضل فريق كرة قدم في العالم.
-                </div>
-              </button>
-              <button
-                onClick={() => speak("You are the best person in the world.")}
-                className="p-5 rounded-2xl bg-black/20 border border-white/5 text-left group hover:border-purple-500/30 transition-all"
-              >
-                <div className="text-white group-hover:text-purple-400 transition-colors">
-                  You are the best person in the world.
-                </div>
-                <div className="text-sm text-neutral-500 font-arabic mt-1">
-                  أنت أفضل شخص في العالم.
-                </div>
-              </button>
-              <button
-                onClick={() => speak("You are the worst person in the world.")}
-                className="p-5 rounded-2xl bg-black/20 border border-white/5 text-left group hover:border-purple-500/30 transition-all"
-              >
-                <div className="text-white group-hover:text-purple-400 transition-colors">
-                  You are the worst person in the world.
-                </div>
-                <div className="text-sm text-neutral-500 font-arabic mt-1">
-                  أنت أسوأ شخص في العالم.
-                </div>
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                {
+                  en: "Barcelona is the best football team in the world.",
+                  ar: "برشلونة هو أفضل فريق كرة قدم في العالم.",
+                },
+                {
+                  en: "You are the best person in the world.",
+                  ar: "أنت أفضل شخص في العالم.",
+                },
+                {
+                  en: "You are the worst person in the world.",
+                  ar: "أنت أسوأ شخص في العالم.",
+                },
+              ].map((ex) => (
+                <button
+                  key={ex.en}
+                  onClick={() => handleItemClick(ex.en)}
+                  className={`p-6 rounded-3xl transition-all border text-left group relative overflow-hidden ${
+                    playingItem === ex.en
+                      ? "bg-purple-600 border-transparent shadow-2xl scale-[1.02]"
+                      : "bg-black/20 border-white/5 hover:bg-black/30 hover:border-purple-500/30 shadow-lg"
+                  }`}
+                >
+                  <div
+                    className={`text-xl font-bold leading-relaxed ${playingItem === ex.en ? "text-white" : "text-white group-hover:text-purple-400"}`}
+                  >
+                    {ex.en}
+                  </div>
+                  <div
+                    className={`text-lg font-arabic mt-3 ${playingItem === ex.en ? "text-white/70" : "text-neutral-500 group-hover:text-neutral-400"}`}
+                  >
+                    {ex.ar}
+                  </div>
+                  <Volume2
+                    size={20}
+                    className={`absolute top-4 right-4 transition-all ${playingItem === ex.en ? "text-white opacity-100 scale-110" : "text-neutral-800 opacity-0 group-hover:opacity-100"}`}
+                  />
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Final Instruction Card */}
+      <div className="bg-[#1e1e1e] p-12 rounded-[4rem] border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-emerald-500 via-blue-500 to-rose-500 opacity-40" />
+        <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 group-hover:scale-110 transition-transform duration-500">
+          <Book className="text-blue-400" size={32} />
+        </div>
+        <h3 className="font-black text-white uppercase tracking-[0.4em] text-sm opacity-50">
+          Grammar Immersion
+        </h3>
+        <p className="text-neutral-300 max-w-2xl mx-auto text-2xl leading-relaxed font-light">
+          English rules are sets of patterns. Click on any pattern, sentence, or
+          word to trigger the **Global Practice Suite**. <br /> Mastery comes
+          through repetitive interaction.
+        </p>
+      </div>
     </div>
   );
 }

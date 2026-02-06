@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Volume2 } from "lucide-react";
+import { Volume2, Hash } from "lucide-react";
+import { usePractice } from "../context/PracticeContext";
 
 type NumberItem = {
   digit: string;
@@ -84,6 +85,7 @@ const ORDINALS: (NumberItem & { arabic: string })[] = [
 
 export function NumbersPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
+  const { setPracticeWord } = usePractice();
 
   const speak = (text: string) => {
     if ("speechSynthesis" in window) {
@@ -97,22 +99,27 @@ export function NumbersPage() {
     }
   };
 
+  const handleCardClick = (item: NumberItem) => {
+    speak(item.word);
+    setPracticeWord(item.word);
+  };
+
   const NumberCard = ({ item }: { item: NumberItem & { arabic?: string } }) => (
     <button
-      onClick={() => speak(item.word)}
-      className={`group flex flex-col items-center justify-center p-6 rounded-2xl border transition-all ${
+      onClick={() => handleCardClick(item)}
+      className={`group flex flex-col items-center justify-center p-6 rounded-3xl border transition-all ${
         playingItem === item.word
-          ? "bg-blue-600 border-transparent scale-105"
-          : "bg-[#1e1e1e] border-white/5 hover:bg-[#2a2a2a] hover:border-white/10"
+          ? "bg-blue-600 border-transparent scale-105 shadow-xl shadow-blue-500/20 z-10"
+          : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20"
       }`}
     >
       <div
-        className={`text-4xl font-bold mb-2 ${playingItem === item.word ? "text-white" : "text-blue-400"}`}
+        className={`text-4xl font-black mb-3 ${playingItem === item.word ? "text-white" : "text-blue-400"}`}
       >
         {item.digit}
       </div>
       <div
-        className={`flex flex-col items-center gap-1 text-sm font-medium ${playingItem === item.word ? "text-white/90" : "text-neutral-400"}`}
+        className={`flex flex-col items-center gap-1 text-sm font-bold ${playingItem === item.word ? "text-white/90" : "text-neutral-400"}`}
       >
         <div className="flex items-center gap-2">
           <span>{item.word}</span>
@@ -122,74 +129,87 @@ export function NumbersPage() {
           />
         </div>
         {item.arabic && (
-          <span className="text-xs opacity-70 font-arabic">{item.arabic}</span>
+          <span className="text-xs opacity-50 font-arabic italic">
+            {item.arabic}
+          </span>
         )}
       </div>
     </button>
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
       <div className="border-b border-white/5 pb-6">
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          Numbers
+        <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+          <Hash className="text-blue-400" /> Numbers
         </h1>
-        <p className="text-neutral-400 mt-2">Count from zero to a million.</p>
+        <p className="text-neutral-400 mt-2">
+          Count from zero to a million and master ordinals.
+        </p>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-blue-500">
+      <div className="space-y-6">
+        <h2 className="font-bold text-white pl-4 border-l-4 border-blue-500 uppercase tracking-widest text-sm">
           Basics (0-10)
         </h2>
-        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
           {BASICS.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-purple-500">
+      <div className="space-y-6">
+        <h2 className="font-bold text-white pl-4 border-l-4 border-purple-500 uppercase tracking-widest text-sm">
           The Teens (11-19)
         </h2>
-        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {TEENS.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-amber-500">
+      <div className="space-y-6">
+        <h2 className="font-bold text-white pl-4 border-l-4 border-amber-500 uppercase tracking-widest text-sm">
           The Tens
         </h2>
-        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
           {TENS.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-rose-500">
+      <div className="space-y-6">
+        <h2 className="font-bold text-white pl-4 border-l-4 border-rose-500 uppercase tracking-widest text-sm">
           Ordinal Numbers
         </h2>
-        <div className="grid grid-cols-2 small:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
           {ORDINALS.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white pl-2 border-l-4 border-emerald-500">
+      <div className="space-y-6">
+        <h2 className="font-bold text-white pl-4 border-l-4 border-emerald-500 uppercase tracking-widest text-sm">
           Big Numbers
         </h2>
-        <div className="grid grid-cols-1 small:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {BIG.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
+      </div>
+
+      {/* Instruction Card */}
+      <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
+        <h3 className="text-xl font-bold text-white">Practice Mode</h3>
+        <p className="text-neutral-400 max-w-md mx-auto">
+          Click on any number, then use the floating menu on the right to
+          practice **Writing** or **Speaking** its name.
+        </p>
       </div>
     </div>
   );

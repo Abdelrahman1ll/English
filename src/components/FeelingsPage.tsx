@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Smile, Volume2 } from "lucide-react";
+import { usePractice } from "../context/PracticeContext";
 
 type FeelingItem = {
   word: string;
@@ -14,7 +15,7 @@ const FEELINGS_DATA: { category: string; items: FeelingItem[] }[] = [
       { word: "Happy", arabic: "سعيد", type: "adj" },
       { word: "Happiness", arabic: "سعادة", type: "noun" },
       { word: "Joy", arabic: "الفرح / السرور", type: "noun" },
-      { word: "Glad", arabic: "مبسوط / مسرور", type: "adj" },
+      { word: "Glad", arabic: "مبوسط / مسرور", type: "adj" },
       { word: "Pleased", arabic: "مسرور", type: "adj" },
       { word: "Proud", arabic: "فخور", type: "adj" },
       { word: "Relief", arabic: "الارتياح", type: "noun" },
@@ -140,6 +141,7 @@ const FEELINGS_DATA: { category: string; items: FeelingItem[] }[] = [
 
 export function FeelingsPage() {
   const [playingItem, setPlayingItem] = useState<string | null>(null);
+  const { setPracticeWord } = usePractice();
 
   const speak = (text: string) => {
     if ("speechSynthesis" in window) {
@@ -153,40 +155,47 @@ export function FeelingsPage() {
     }
   };
 
+  const handleCardClick = (item: FeelingItem) => {
+    speak(item.word);
+    setPracticeWord(item.word);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
       <div className="border-b border-white/5 pb-6">
         <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
           <Smile className="text-pink-400" /> Feelings & Emotions
         </h1>
-        <p className="text-neutral-400 mt-2">Express how you feel.</p>
+        <p className="text-neutral-400 mt-2">
+          Learn how to express your emotions and states of being.
+        </p>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-16">
         {FEELINGS_DATA.map((category) => (
           <div key={category.category} className="space-y-6">
-            <h2 className="text-xl font-bold text-white/40 uppercase tracking-widest px-2">
+            <h2 className="font-bold text-white/40 uppercase tracking-widest text-xs border-l-2 border-pink-500/50 pl-4 ml-2">
               {category.category}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {category.items.map((item) => (
                 <button
                   key={`${item.word}-${item.type}`}
-                  onClick={() => speak(item.word)}
-                  className={`group flex flex-col p-5 rounded-2xl border transition-all text-left ${
+                  onClick={() => handleCardClick(item)}
+                  className={`group flex flex-col p-6 rounded-3xl border transition-all text-left ${
                     playingItem === item.word
-                      ? "bg-pink-600 border-pink-400 scale-105 shadow-lg"
-                      : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/10"
+                      ? "bg-pink-600 border-transparent scale-105 shadow-xl shadow-pink-500/20 z-10"
+                      : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20 shadow-lg"
                   }`}
                 >
-                  <div className="flex justify-between items-start w-full mb-1">
+                  <div className="flex justify-between items-start w-full mb-2">
                     <span
-                      className={`text-xl font-bold ${playingItem === item.word ? "text-white" : "text-pink-400"}`}
+                      className={`text-xl font-black ${playingItem === item.word ? "text-white" : "text-pink-400"}`}
                     >
                       {item.word}
                     </span>
                     <Volume2
-                      size={16}
+                      size={18}
                       className={`transition-opacity ${playingItem === item.word ? "opacity-100 text-white" : "opacity-0 group-hover:opacity-100 text-neutral-400"}`}
                     />
                   </div>
@@ -198,7 +207,9 @@ export function FeelingsPage() {
                       {item.arabic}
                     </span>
                     {item.type && (
-                      <span className="text-[10px] uppercase tracking-wider text-neutral-600 bg-black/20 px-2 py-0.5 rounded-full">
+                      <span
+                        className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${playingItem === item.word ? "bg-white/20 text-white" : "bg-black/40 text-neutral-500"}`}
+                      >
                         {item.type}
                       </span>
                     )}
@@ -208,6 +219,15 @@ export function FeelingsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Instruction Card */}
+      <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
+        <h3 className="text-xl font-bold text-white">Practice Mode</h3>
+        <p className="text-neutral-400 max-w-md mx-auto">
+          Click on any word to hear it, then use the floating menu on the right
+          to practice **Writing** or **Speaking**.
+        </p>
       </div>
     </div>
   );
