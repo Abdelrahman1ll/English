@@ -73,14 +73,19 @@ export function PracticeWidget() {
     }
   };
 
+  /* ------------------------------------------------------------
+   * Speech Recognition Logic
+   * ------------------------------------------------------------ */
+  const [interimTranscript, setInterimTranscript] = useState("");
+
   const toggleListening = () => {
     if (!activeWord) return;
 
-    // If already listening, stop and let onend handle state cleanup
+    // If already listening, stop
     if (isListening) {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
-        recognitionRef.current = null; // Clear immediately to prevent race conditions
+        recognitionRef.current = null;
       }
       setIsListening(false);
       return;
@@ -89,15 +94,16 @@ export function PracticeWidget() {
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
-      alert(
-        "Speech recognition is not supported in this browser. Please use Chrome.",
-      );
+      alert("Speech recognition is not supported in this browser.");
       return;
     }
 
+    // Reset state
     if (recognitionRef.current) recognitionRef.current.stop();
     setTranscript("");
+    setInterimTranscript("");
     setFeedback(null);
 
     const recognition = new SpeechRecognition();
@@ -105,11 +111,12 @@ export function PracticeWidget() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
+    // 10s Silence Timer
     const resetTimer = () => {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = setTimeout(() => {
         recognition.stop();
-        if (!transcript) {
+        if (!transcript && !interimTranscript) {
           setFeedback({
             type: "error",
             message: "No speech detected. Try again!",
@@ -124,47 +131,65 @@ export function PracticeWidget() {
     };
 
     recognition.onend = () => {
-      // Only update state if this is the active recognition instance
       if (recognitionRef.current === recognition) {
         setIsListening(false);
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
+        // If we have an interim result but no final, treat interim as final
+        if (!transcript && interimTranscript) {
+          setTranscript(interimTranscript);
+        }
       }
     };
 
     recognition.onerror = (e: any) => {
       if (recognitionRef.current === recognition) {
         setIsListening(false);
-        setFeedback({ type: "error", message: `Mic Error: ${e.error}` });
+        if (e.error !== "no-speech") {
+          setFeedback({ type: "error", message: `Mic Error: ${e.error}` });
+        }
       }
     };
 
     recognition.onresult = (event: any) => {
       resetTimer();
+
+      let final = "";
       let interim = "";
+
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
-          setTranscript(event.results[i][0].transcript.trim());
+          final += event.results[i][0].transcript;
         } else {
           interim += event.results[i][0].transcript;
         }
       }
 
-      const result = event.results[event.results.length - 1][0].transcript
-        .trim()
-        .toLowerCase();
+      if (final) {
+        setTranscript((prev) => prev + final);
+        // Also clear interim since we have a final
+        setInterimTranscript("");
+      } else {
+        setInterimTranscript(interim);
+      }
+
+      // Check for match against EITHER final or interim (for speed)
+      const currentText = (final || interim).trim().toLowerCase();
       const target = activeWord.toLowerCase();
 
-      // Recognition logic: check for matches with word, name, sound, or alternatives
       const normalize = (s: string) =>
         s.toLowerCase().replace(/[^a-z0-9]/g, "");
-      const normResult = normalize(result);
+      const normResult = normalize(currentText);
 
+      // 1. Exact/Close Match?
       let isCorrect = normResult.includes(normalize(target));
 
+      // 2. Phonetic Match?
       if (activePhonetics) {
         const foundName =
           normResult.includes(normalize(activePhonetics.name)) ||
           normResult.includes(normalize(activeWord));
+
         const foundSound =
           normResult.includes(normalize(activePhonetics.sound)) ||
           activePhonetics.soundAlternatives?.some((alt) =>
@@ -172,26 +197,22 @@ export function PracticeWidget() {
           );
 
         if (foundName && foundSound) isCorrect = true;
+        // If partial match, give specific feedback but don't stop yet
         else if (foundName || foundSound) {
-          setFeedback({
-            type: "neutral",
-            message: foundName
-              ? "Good! Now say the sound too."
-              : "Great sound! Now say the letter name.",
-          });
-          return;
+          // specific partial feedback logic can go here if generic feedback is annoying
         }
       }
 
       if (isCorrect) {
         setFeedback({ type: "success", message: "Perfect! You got it right." });
         speak("Perfect!");
+
+        // Save what triggered it as final transcript for display
+        setTranscript(currentText);
+        setInterimTranscript("");
+
         recognition.stop();
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Try again! Say "${activePhonetics?.name || activeWord}".`,
-        });
+        setIsListening(false);
       }
     };
 
@@ -354,13 +375,26 @@ export function PracticeWidget() {
                       )}
                     </button>
 
-                    {transcript && !isListening && (
+                    {/* Transcript Display (Final + Interim) */}
+                    {(transcript || interimTranscript) && !isListening && (
                       <div className="bg-white/5 px-6 py-4 rounded-2xl inline-block max-w-full">
                         <span className="text-neutral-500 text-xs font-bold uppercase tracking-widest block mb-1">
                           We Heard:
                         </span>
                         <span className="text-xl text-white font-medium italic">
-                          "{transcript}"
+                          "{transcript || interimTranscript}"
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Live Interim Display while Listening */}
+                    {isListening && interimTranscript && (
+                      <div className="bg-rose-500/10 border border-rose-500/20 px-6 py-4 rounded-2xl inline-block max-w-full animate-pulse">
+                        <span className="text-rose-400 text-xs font-bold uppercase tracking-widest block mb-1">
+                          Hearing...
+                        </span>
+                        <span className="text-xl text-white font-medium italic">
+                          "{interimTranscript}..."
                         </span>
                       </div>
                     )}
