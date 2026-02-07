@@ -87,7 +87,7 @@ export function useSpeech() {
             if (!window.speechSynthesis.speaking) {
               playAudioFallback(text, onEnd);
             }
-          }, 600);
+          }, 1500);
 
           return;
         } catch {

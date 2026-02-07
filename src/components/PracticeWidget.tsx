@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
+import { isFuzzyMatch } from "../utils/textUtils";
 
 export function PracticeWidget() {
   const {
@@ -27,6 +28,7 @@ export function PracticeWidget() {
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const validationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Close on Escape
   useEffect(() => {
@@ -111,7 +113,23 @@ export function PracticeWidget() {
     recognition.continuous = true;
     recognition.interimResults = true;
 
-    // 10s Silence Timer
+    // 2s Validation Timer (After speech stops)
+    const resetValidationTimer = () => {
+      if (validationTimerRef.current) clearTimeout(validationTimerRef.current);
+      validationTimerRef.current = setTimeout(() => {
+        recognition.stop();
+        // If we get here, it means silence happened but NO match was found yet
+        // So we give "Try again" feedback
+        setFeedback({
+          type: "error",
+          message: "Not quite. Listen and try again!",
+        });
+        speak("Try again.");
+        setIsListening(false);
+      }, 2000);
+    };
+
+    // 10s Silence Timer (No speech at all)
     const resetTimer = () => {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = setTimeout(() => {
@@ -128,12 +146,15 @@ export function PracticeWidget() {
     recognition.onstart = () => {
       setIsListening(true);
       resetTimer();
+      // Don't start validation timer until we actually get results
     };
 
     recognition.onend = () => {
       if (recognitionRef.current === recognition) {
         setIsListening(false);
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        if (validationTimerRef.current)
+          clearTimeout(validationTimerRef.current);
 
         // If we have an interim result but no final, treat interim as final
         if (!transcript && interimTranscript) {
@@ -153,6 +174,7 @@ export function PracticeWidget() {
 
     recognition.onresult = (event: any) => {
       resetTimer();
+      resetValidationTimer();
 
       let final = "";
       let interim = "";
@@ -182,24 +204,24 @@ export function PracticeWidget() {
       const normResult = normalize(currentText);
 
       // 1. Exact/Close Match?
-      let isCorrect = normResult.includes(normalize(target));
+      let isCorrect = isFuzzyMatch(normResult, normalize(target));
 
       // 2. Phonetic Match?
       if (activePhonetics) {
         const foundName =
-          normResult.includes(normalize(activePhonetics.name)) ||
-          normResult.includes(normalize(activeWord));
+          isFuzzyMatch(normResult, normalize(activePhonetics.name)) ||
+          isFuzzyMatch(normResult, normalize(activeWord));
 
         const foundSound =
-          normResult.includes(normalize(activePhonetics.sound)) ||
+          isFuzzyMatch(normResult, normalize(activePhonetics.sound)) ||
           activePhonetics.soundAlternatives?.some((alt) =>
-            normResult.includes(normalize(alt)),
+            isFuzzyMatch(normResult, normalize(alt)),
           );
 
         if (foundName && foundSound) isCorrect = true;
-        // If partial match, give specific feedback but don't stop yet
+        // If partial match
         else if (foundName || foundSound) {
-          // specific partial feedback logic can go here if generic feedback is annoying
+          // partial logic
         }
       }
 
@@ -211,6 +233,8 @@ export function PracticeWidget() {
         setTranscript(currentText);
         setInterimTranscript("");
 
+        if (validationTimerRef.current)
+          clearTimeout(validationTimerRef.current);
         recognition.stop();
         setIsListening(false);
       }
