@@ -1,5 +1,20 @@
 import { useState } from "react";
-import { Volume2, Shapes } from "lucide-react";
+import {
+  Volume2,
+  Shapes,
+  Circle,
+  Square,
+  Triangle,
+  Octagon,
+  Box,
+  Cylinder,
+  Cone,
+  Pyramid,
+  Star,
+  Heart,
+  Diamond,
+  Gem,
+} from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 
@@ -11,11 +26,24 @@ type ShapeItem = {
 };
 
 const SHAPES_2D: ShapeItem[] = [
-  // ... existing SHAPES_2D data ...
+  { name: "Circle", arabic: "دائرة", icon: Circle },
+  { name: "Oval", arabic: "بيضاوي", cssClass: "rounded-[50%] w-12 h-8" }, // No generic Oval icon, using CSS
+  { name: "Square", arabic: "مربع", icon: Square },
+  { name: "Triangle", arabic: "مثلث", icon: Triangle },
+  { name: "Rectangle", arabic: "مستطيل", cssClass: "w-12 h-8 bg-current" }, // Using CSS for Rectangle to distinguish from Square
+  { name: "Star", arabic: "نجمة", icon: Star },
+  { name: "Heart", arabic: "قلب", icon: Heart },
+  { name: "Diamond", arabic: "دايموند", icon: Diamond },
+  { name: "Pentagon", arabic: "خماسي", icon: Gem }, // Placeholder or use CSS. Gem is close-ish or just generic
+  { name: "Octagon", arabic: "مثمن", icon: Octagon },
 ];
 
 const SHAPES_3D: ShapeItem[] = [
-  // ... existing SHAPES_3D data ...
+  { name: "Cube", arabic: "مكعب", icon: Box },
+  { name: "Sphere", arabic: "كروي", icon: Circle }, // Sphere looks like Circle 2D, but we can style it or use Circle
+  { name: "Cylinder", arabic: "أسطواني", icon: Cylinder },
+  { name: "Cone", arabic: "قرطاس", icon: Cone },
+  { name: "Pyramid", arabic: "هرم", icon: Pyramid },
 ];
 
 export function ShapesPage() {
