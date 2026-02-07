@@ -73,8 +73,18 @@ export function PracticeWidget() {
     }
   };
 
-  const startListening = () => {
+  const toggleListening = () => {
     if (!activeWord) return;
+
+    // If already listening, stop and let onend handle state cleanup
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null; // Clear immediately to prevent race conditions
+      }
+      setIsListening(false);
+      return;
+    }
 
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
@@ -112,13 +122,20 @@ export function PracticeWidget() {
       setIsListening(true);
       resetTimer();
     };
+
     recognition.onend = () => {
-      setIsListening(false);
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      // Only update state if this is the active recognition instance
+      if (recognitionRef.current === recognition) {
+        setIsListening(false);
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      }
     };
+
     recognition.onerror = (e: any) => {
-      setIsListening(false);
-      setFeedback({ type: "error", message: `Mic Error: ${e.error}` });
+      if (recognitionRef.current === recognition) {
+        setIsListening(false);
+        setFeedback({ type: "error", message: `Mic Error: ${e.error}` });
+      }
     };
 
     recognition.onresult = (event: any) => {
@@ -313,7 +330,7 @@ export function PracticeWidget() {
                     </div>
 
                     <button
-                      onClick={startListening}
+                      onClick={toggleListening}
                       className={`w-full py-8 rounded-4xl text-2xl font-black transition-all flex items-center justify-center gap-4 ${
                         isListening
                           ? "bg-rose-500/20 text-rose-400 border-2 border-rose-500 animate-pulse"

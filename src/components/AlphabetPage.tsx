@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 
@@ -15,182 +14,182 @@ const ALPHABET_DATA: Record<
   }
 > = {
   A: {
-    name: "Ay",
+    name: "A",
     sound: "Ah",
     soundExample: "Apple",
     phoneme: "a",
     soundAlternatives: ["a", "ah", "apple", "at", "an", "as", "about"],
   },
   B: {
-    name: "Bee",
+    name: "B",
     sound: "Buh",
     soundExample: "Ball",
     phoneme: "b",
     soundAlternatives: ["ba", "buh", "ball", "be", "bee", "boy", "but"],
   },
   C: {
-    name: "See",
+    name: "C",
     sound: "Kuh",
     soundExample: "Cat",
     phoneme: "c",
     soundAlternatives: ["ka", "kuh", "cat", "car", "can", "come"],
   },
   D: {
-    name: "Dee",
+    name: "D",
     sound: "Duh",
     soundExample: "Dog",
     phoneme: "d",
     soundAlternatives: ["da", "duh", "dog", "day", "do", "dad"],
   },
   E: {
-    name: "Ee",
+    name: "E",
     sound: "Eh",
     soundExample: "Egg",
     phoneme: "e",
     soundAlternatives: ["e", "eh", "egg", "end", "elephant", "every"],
   },
   F: {
-    name: "Eff",
+    name: "F",
     sound: "Fff",
     soundExample: "Fish",
     phoneme: "f",
     soundAlternatives: ["f", "fff", "fish", "fox", "fan", "for"],
   },
   G: {
-    name: "Jee",
+    name: "G",
     sound: "Guh",
     soundExample: "Goat",
     phoneme: "g",
     soundAlternatives: ["ga", "guh", "goat", "game", "go", "good"],
   },
   H: {
-    name: "Aitch",
+    name: "H",
     sound: "Huh",
     soundExample: "Hat",
     phoneme: "h",
     soundAlternatives: ["ha", "huh", "hat", "hot", "he", "hi"],
   },
   I: {
-    name: "Eye",
+    name: "I",
     sound: "Ih",
     soundExample: "Igloo",
     phoneme: "i",
     soundAlternatives: ["i", "ih", "igloo", "it", "is", "in"],
   },
   J: {
-    name: "Jay",
+    name: "J",
     sound: "Juh",
     soundExample: "Jam",
     phoneme: "j",
     soundAlternatives: ["ja", "juh", "jam", "jet", "jar", "joy"],
   },
   K: {
-    name: "Kay",
+    name: "K",
     sound: "Kuh",
     soundExample: "Kite",
     phoneme: "k",
     soundAlternatives: ["ka", "kuh", "kite", "key", "king", "kind"],
   },
   L: {
-    name: "El",
+    name: "L",
     sound: "Lll",
     soundExample: "Lion",
     phoneme: "l",
     soundAlternatives: ["la", "lll", "lion", "leg", "let", "look"],
   },
   M: {
-    name: "Em",
+    name: "M",
     sound: "Mmm",
     soundExample: "Monkey",
     phoneme: "m",
     soundAlternatives: ["ma", "mmm", "monkey", "me", "my", "man"],
   },
   N: {
-    name: "En",
+    name: "N",
     sound: "Nnn",
     soundExample: "Nest",
     phoneme: "n",
     soundAlternatives: ["na", "nnn", "nest", "no", "not", "new"],
   },
   O: {
-    name: "Oh",
+    name: "O",
     sound: "Aw",
     soundExample: "Octopus",
     phoneme: "o",
     soundAlternatives: ["o", "aw", "octopus", "on", "off", "ox"],
   },
   P: {
-    name: "Pee",
+    name: "P",
     sound: "Puh",
     soundExample: "Pig",
     phoneme: "p",
     soundAlternatives: ["pa", "puh", "pig", "pen", "put", "pet"],
   },
   Q: {
-    name: "Cue",
+    name: "Q",
     sound: "Kwuh",
     soundExample: "Queen",
     phoneme: "q",
     soundAlternatives: ["kwa", "kwuh", "queen", "quick", "question"],
   },
   R: {
-    name: "Ar",
+    name: "R",
     sound: "Rrr",
     soundExample: "Rabbit",
     phoneme: "r",
     soundAlternatives: ["ra", "rrr", "rabbit", "run", "red", "rat"],
   },
   S: {
-    name: "Ess",
+    name: "S",
     sound: "Sah",
     soundExample: "Sun",
     phoneme: "s",
     soundAlternatives: ["sa", "sah", "sun", "see", "sit", "sing"],
   },
   T: {
-    name: "Tee",
+    name: "T",
     sound: "Tuh",
     soundExample: "Tiger",
     phoneme: "t",
     soundAlternatives: ["ta", "tuh", "tiger", "to", "ten", "top"],
   },
   U: {
-    name: "You",
+    name: "U",
     sound: "Uh",
     soundExample: "Umbrella",
     phoneme: "u",
     soundAlternatives: ["u", "uh", "umbrella", "up", "us", "under"],
   },
   V: {
-    name: "Vee",
+    name: "V",
     sound: "Vvv",
     soundExample: "Van",
     phoneme: "v",
     soundAlternatives: ["va", "vvv", "van", "very", "voice"],
   },
   W: {
-    name: "Double u",
+    name: "W",
     sound: "Wuh",
     soundExample: "Watch",
     phoneme: "w",
     soundAlternatives: ["wa", "wuh", "watch", "we", "was", "will"],
   },
   X: {
-    name: "Ex",
+    name: "X",
     sound: "Ks",
     soundExample: "Box",
     phoneme: "x",
     soundAlternatives: ["ks", "ex", "box", "six", "fox", "tax"],
   },
   Y: {
-    name: "Wye",
+    name: "Y",
     sound: "Yuh",
     soundExample: "Yo-yo",
     phoneme: "y",
     soundAlternatives: ["ya", "yuh", "yo-yo", "yes", "why", "wye", "you"],
   },
   Z: {
-    name: "Zee",
+    name: "Z",
     sound: "Zzz",
     soundExample: "Zebra",
     phoneme: "z",
@@ -202,31 +201,25 @@ const ALPHABET = Object.keys(ALPHABET_DATA);
 
 export function AlphabetPage() {
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
-  const [showReference, setShowReference] = useState(true);
   const { setPracticeWord } = usePractice();
-
-  const toggleReference = () => {
-    setShowReference(!showReference);
-  };
 
   const { speak } = useSpeech();
 
-const handleLetterClick = (letter: string) => {
-  const data = ALPHABET_DATA[letter];
+  const handleLetterClick = (letter: string) => {
+    const data = ALPHABET_DATA[letter];
 
-  // ✅ 1) الصوت لازم يشتغل فورًا
-  speak(`${data.name}, ${data.sound}`);
+    // ✅ 1) الصوت لازم يشتغل فورًا
+    speak(`${data.name}, ${data.sound}`);
 
-  // ✅ 2) بعد كده أي state أو context
-  setActiveLetter(letter);
+    // ✅ 2) بعد كده أي state أو context
+    setActiveLetter(letter);
 
-  setPracticeWord(letter, {
-    name: data.name,
-    sound: data.sound,
-    soundAlternatives: data.soundAlternatives,
-  });
-};
-
+    setPracticeWord(letter, {
+      name: data.name,
+      sound: data.sound,
+      soundAlternatives: data.soundAlternatives,
+    });
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
@@ -240,29 +233,17 @@ const handleLetterClick = (letter: string) => {
             Master the 26 letters.
           </p>
         </div>
-        {/* Mode Toggle */}
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={toggleReference}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#242424] text-neutral-400 text-sm border border-white/5"
-          >
-            {showReference ? <Eye size={16} /> : <EyeOff size={16} />}
-            {showReference ? "Hide Letters" : "Show Letters"}
-          </button>
-        </div>
       </div>
 
       {/* Grid */}
-      <div
-        className={`grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2 sm:gap-4 transition-all duration-500 ${showReference ? "opacity-100 blur-none" : "opacity-0 blur-xl pointer-events-none absolute inset-0 z-[-1]"}`}
-      >
+      <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2 sm:gap-4 transition-all duration-500 opacity-100 blur-none">
         {ALPHABET.map((letter) => (
           <button
             key={letter}
             onClick={() => handleLetterClick(letter)}
             className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all relative overflow-hidden group border ${
               activeLetter === letter
-                ? "bg-blue-500/10 border-blue-500/50 text-blue-400 scale-110 z-10 shadow-xl shadow-blue-500/10"
+                ? "bg-blue-500/10 border-blue-500/50 text-blue-400 sm:scale-110 sm:z-10 shadow-xl shadow-blue-500/10"
                 : "bg-[#1e1e1e] text-neutral-300 border-white/5 hover:bg-[#2a2a2a]"
             }`}
           >
@@ -272,18 +253,12 @@ const handleLetterClick = (letter: string) => {
             </span>
             {activeLetter === letter && (
               <div className="text-xs mt-1 font-medium opacity-80">
-                {ALPHABET_DATA[letter].name}
+                {ALPHABET_DATA[letter].sound}
               </div>
             )}
           </button>
         ))}
       </div>
-
-      {!showReference && (
-        <div className="h-64 flex items-center justify-center border-2 border-dashed border-white/10 rounded-3xl text-neutral-500">
-          Letters Hidden - Memory Mode
-        </div>
-      )}
 
       {/* Instruction Card */}
       <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
