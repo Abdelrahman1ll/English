@@ -5,6 +5,13 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface ShapeItem {
+  name: string;
+  arabic: string;
+  icon?: any;
+  cssClass?: string;
+}
+
 export function ShapesPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
@@ -20,7 +27,7 @@ export function ShapesPage() {
   // Using a ref to track the last speech request ID, to prevent race conditions
   const lastSpeechId = useRef<number>(0);
 
-  const handleCardClick = (item: any) => {
+  const handleCardClick = (item: ShapeItem) => {
     // Cancel any ongoing speaking state immediately for UI responsiveness
     setSpeakingShape(item.name);
     setPracticeWord(item.name);
@@ -37,7 +44,7 @@ export function ShapesPage() {
     });
   };
 
-  const ShapeCard = ({ item }: { item: any }) => {
+  const ShapeCard = ({ item }: { item: ShapeItem }) => {
     const isActive = activeWord === item.name;
     const isSpeaking = speakingShape === item.name;
 
@@ -96,7 +103,7 @@ export function ShapesPage() {
           2D Shapes
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {SHAPES_DATA["2D"].map((shape) => (
+          {SHAPES_DATA["2D"].map((shape: ShapeItem) => (
             <ShapeCard key={shape.name} item={shape} />
           ))}
         </div>
@@ -107,7 +114,7 @@ export function ShapesPage() {
           3D Shapes
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {SHAPES_DATA["3D"].map((shape) => (
+          {SHAPES_DATA["3D"].map((shape: ShapeItem) => (
             <ShapeCard key={shape.name} item={shape} />
           ))}
         </div>
