@@ -41,7 +41,7 @@ export function JobsPage() {
   const JOBS_DATA = filteredJobsData;
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleItemClick = (item: VocabularyItem) => {
@@ -73,20 +73,20 @@ export function JobsPage() {
     <button
       onClick={() => handleItemClick(item)}
       className={`group flex items-center justify-between p-5 rounded-2xl border transition-all text-left ${
-        playingItem === item.text
+        activeWord === item.text
           ? "bg-blue-500/10 border-blue-500/50 scale-[1.02] shadow-xl shadow-blue-500/10 z-10"
           : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
       }`}
     >
       <div className="flex-1">
         <div
-          className={`font-bold transition-colors ${playingItem === item.text ? "text-blue-400" : "text-neutral-200"}`}
+          className={`font-bold transition-colors ${activeWord === item.text ? "text-blue-400" : "text-neutral-200"}`}
         >
           {item.text}
         </div>
         {item.translation && (
           <div
-            className={`text-sm font-arabic mt-1 ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+            className={`text-sm font-arabic mt-1 ${activeWord === item.text ? "text-white/80" : "text-neutral-500"}`}
           >
             {item.translation}
           </div>
@@ -94,7 +94,7 @@ export function JobsPage() {
       </div>
       <Volume2
         size={16}
-        className={`transition-all ${playingItem === item.text ? "text-blue-400 opacity-100 scale-110" : "text-neutral-400 opacity-0 group-hover:opacity-100"}`}
+        className={`transition-all ${playingItem === item.text ? "text-blue-400 opacity-100 scale-125" : activeWord === item.text ? "text-blue-400/60 opacity-100" : "text-neutral-400 opacity-0 group-hover:opacity-100"}`}
       />
     </button>
   );
@@ -170,25 +170,25 @@ export function JobsPage() {
               key={phrase.text}
               onClick={() => handleItemClick(phrase)}
               className={`p-6 rounded-3xl border text-left transition-all ${
-                playingItem === phrase.text
+                activeWord === phrase.text
                   ? "bg-amber-500/10 border-amber-500/50 scale-105 shadow-xl shadow-amber-500/20 z-10"
                   : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`font-black text-lg mb-2 transition-colors ${playingItem === phrase.text ? "text-amber-400" : "text-white"}`}
+                className={`font-black text-lg mb-2 transition-colors ${activeWord === phrase.text ? "text-amber-400" : "text-white"}`}
               >
                 "{phrase.text}"
               </div>
               {phrase.translation && (
                 <div
-                  className={`font-arabic mb-4 ${playingItem === phrase.text ? "text-white/90" : "text-neutral-500"}`}
+                  className={`font-arabic mb-4 ${activeWord === phrase.text ? "text-white/90" : "text-neutral-500"}`}
                 >
                   {phrase.translation}
                 </div>
               )}
               <div
-                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === phrase.text ? "text-amber-400 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === phrase.text ? "text-amber-400 opacity-100 scale-110" : activeWord === phrase.text ? "text-amber-400/60 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
               >
                 <Volume2 size={12} />
                 Practice

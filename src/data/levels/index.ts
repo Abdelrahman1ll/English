@@ -12,6 +12,7 @@ import * as a1Digraphs from "./A1/digraphs";
 import * as a1Phonics from "./A1/phonics";
 import * as a1Describing from "./A1/describing";
 import * as a1Nationalities from "./A1/nationalities";
+import * as a1Basics from "./A1/basics";
 
 export const LEVEL_DATA: Record<string, any> = {
   A1: {
@@ -26,6 +27,7 @@ export const LEVEL_DATA: Record<string, any> = {
       ...a1Phonics,
       ...a1Describing,
       ...a1Nationalities,
+      ...a1Basics,
     },
     grammar: a1Grammar,
     sentences: a1Sentences,

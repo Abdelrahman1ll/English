@@ -5,7 +5,7 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
-export function SentencesPage() {
+export function GreetingsBasicsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const SENTENCES_DATA = levelData?.sentences?.SENTENCES_DATA || [];
@@ -16,10 +16,18 @@ export function SentencesPage() {
   const { speak } = useSpeech();
 
   const filteredSentences = useMemo(() => {
+    const categories = [
+      "Simple Greetings",
+      "General Inquiries",
+      "Time-Based",
+      "Greeting",
+      "Personal Info",
+    ];
     return SENTENCES_DATA.filter(
       (s: any) =>
-        s.english.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.arabic.includes(searchQuery),
+        categories.includes(s.category) &&
+        (s.english.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.arabic.includes(searchQuery)),
     );
   }, [SENTENCES_DATA, searchQuery]);
 
@@ -47,11 +55,10 @@ export function SentencesPage() {
           <div className="p-3 bg-blue-500/10 rounded-2xl">
             <MessageSquare className="text-blue-400" size={32} />
           </div>
-          Everyday English & Sentences
+          Greetings & Basics
         </h1>
         <p className="text-neutral-400 mt-4 text-lg">
-          Master essential phrases, greetings, and common sentences for everyday
-          life.
+          Essential phrases for meeting people and sharing personal information.
         </p>
       </div>
 
@@ -64,7 +71,7 @@ export function SentencesPage() {
           />
           <input
             type="text"
-            placeholder="Search phrases in English or Arabic..."
+            placeholder="Search greetings in English or Arabic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
@@ -148,25 +155,6 @@ export function SentencesPage() {
           </p>
         </div>
       )}
-
-      <div className="bg-linear-to-br from-[#1a1a1a] to-blue-900/10 border border-white/5 rounded-[3rem] p-10 text-center shadow-2xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <BookOpen size={120} />
-        </div>
-        <h3 className="font-black text-2xl text-white mb-4 tracking-tight">
-          Learning Tip
-        </h3>
-        <p className="text-neutral-400 max-w-xl mx-auto text-lg leading-relaxed">
-          "You need to like the language you are learning to really want to
-          speak it. Imagine yourself as a member of that language group."
-        </p>
-        <p className="text-neutral-500 mt-4 font-arabic text-lg">
-          تخيل نفسك واحد من أهل اللغة دي عشان تحبها وتقدر تتكلمها بجد.
-        </p>
-        <p className="text-blue-400 mt-6 font-bold tracking-widest text-sm uppercase">
-          — Steve Kaufmann
-        </p>
-      </div>
     </div>
   );
 }

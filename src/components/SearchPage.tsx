@@ -1,107 +1,18 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Search, Volume2, Brain, Sparkles, Filter } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-import { LEVEL_DATA } from "../data/levels/index";
-
-type SearchItem = {
-  text: string;
-  translation: string;
-  source: string;
-};
+import { useSearch } from "../hooks/useSearch";
+import type { SearchItem } from "../hooks/useSearch";
+import { SearchOverlay } from "./SearchOverlay";
 
 export function SearchPage() {
   const { levelId } = useParams();
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, setSearchTerm, filteredItems } = useSearch(levelId);
   const { speak } = useSpeech();
-  const { setPracticeWord } = usePractice();
-
-  const allItems = useMemo(() => {
-    const items: SearchItem[] = [];
-    if (!levelId || !LEVEL_DATA[levelId]) return items;
-
-    const currentLevel = LEVEL_DATA[levelId];
-
-    // Helper to extract items from diverse structures
-    const processData = (data: any, source: string) => {
-      if (!data) return;
-
-      if (Array.isArray(data)) {
-        data.forEach((item) => {
-          if (!item) return;
-
-          const text =
-            item.word ||
-            item.text ||
-            item.name ||
-            item.singular ||
-            item.en ||
-            item.english;
-          const translation =
-            item.arabic || item.translation || item.ar || item.plural;
-
-          if (text && translation) {
-            items.push({ text, translation, source });
-          }
-
-          // Handle nested arrays like 'examples' or 'items' within an item
-          if (item.examples && Array.isArray(item.examples)) {
-            processData(item.examples, source);
-          }
-          if (item.items && Array.isArray(item.items)) {
-            processData(item.items, source);
-          }
-          if (item.dialogue && Array.isArray(item.dialogue)) {
-            processData(item.dialogue, `${source} - Dialogue`);
-          }
-        });
-      } else if (typeof data === "object") {
-        Object.keys(data).forEach((key) => {
-          // Skip known non-data keys or recursion-heavy keys if any
-          if (typeof data[key] === "function") return;
-          processData(data[key], `${source}`);
-        });
-      }
-    };
-
-    // Index Vocabulary
-    if (currentLevel.vocabulary) {
-      Object.keys(currentLevel.vocabulary).forEach((key) => {
-        processData(currentLevel.vocabulary[key], key.replace("_DATA", ""));
-      });
-    }
-
-    // Index Sentences
-    if (currentLevel.sentences) {
-      processData(currentLevel.sentences, "Sentences");
-    }
-
-    // Index Grammar
-    if (currentLevel.grammar) {
-      processData(currentLevel.grammar, "Grammar");
-    }
-
-    // Index Conversations
-    if (currentLevel.conversations) {
-      processData(currentLevel.conversations, "Conversations");
-    }
-
-    return items;
-  }, [levelId]);
-
-  const filteredItems = useMemo(() => {
-    const term = searchTerm.toLowerCase().trim();
-    if (!term) return [];
-
-    return allItems
-      .filter(
-        (item: SearchItem) =>
-          item.text?.toLowerCase().includes(term) ||
-          item.translation?.toLowerCase().includes(term),
-      )
-      .slice(0, 50);
-  }, [searchTerm, allItems]);
+  const { setPracticeWord, activeWord } = usePractice();
+  const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null);
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
@@ -140,14 +51,25 @@ export function SearchPage() {
           filteredItems.map((item: SearchItem, idx: number) => (
             <div
               key={`${item.text}-${idx}`}
-              className="bg-[#1e1e1e] border border-white/5 p-6 rounded-3xl flex items-center justify-between group hover:bg-white/5 hover:border-blue-500/30 transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]"
+              onClick={() => setSelectedItem(item)}
+              className={`bg-[#1e1e1e] border p-6 rounded-3xl flex items-center justify-between group transition-all cursor-pointer ${
+                activeWord === item.text
+                  ? "border-blue-500/50 bg-blue-500/10 shadow-xl scale-[1.02] z-10"
+                  : "border-white/5 hover:bg-white/5 hover:border-blue-500/30 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98]"
+              }`}
             >
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 flex-1 overflow-hidden">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">
+                  <h3
+                    className={`text-2xl font-black transition-colors ${
+                      activeWord === item.text
+                        ? "text-blue-400"
+                        : "text-white group-hover:text-blue-400"
+                    } truncate`}
+                  >
                     {item.text}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] font-black text-neutral-500 uppercase tracking-wider">
+                  <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] font-black text-neutral-500 uppercase tracking-wider shrink-0">
                     {item.source}
                   </span>
                 </div>
@@ -157,14 +79,20 @@ export function SearchPage() {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => speak(item.text)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    speak(item.text);
+                  }}
                   className="p-3 bg-white/5 hover:bg-blue-600/20 text-neutral-400 hover:text-blue-400 rounded-2xl transition-all hover:scale-110 active:scale-90"
                   title="Listen"
                 >
                   <Volume2 size={24} />
                 </button>
                 <button
-                  onClick={() => setPracticeWord(item.text)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPracticeWord(item.text);
+                  }}
                   className="p-3 bg-white/5 hover:bg-emerald-600/20 text-neutral-400 hover:text-emerald-400 rounded-2xl transition-all hover:scale-110 active:scale-90"
                   title="Practice"
                 >
@@ -195,6 +123,15 @@ export function SearchPage() {
           </div>
         )}
       </div>
+
+      {selectedItem && (
+        <SearchOverlay
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+          onSpeak={speak}
+          onPractice={setPracticeWord}
+        />
+      )}
     </div>
   );
 }

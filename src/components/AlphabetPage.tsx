@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 
@@ -200,9 +199,7 @@ const ALPHABET_DATA: Record<
 const ALPHABET = Object.keys(ALPHABET_DATA);
 
 export function AlphabetPage() {
-  const [activeLetter, setActiveLetter] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
-
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleLetterClick = (letter: string) => {
@@ -212,8 +209,6 @@ export function AlphabetPage() {
     speak(`${data.name}, ${data.sound}`);
 
     // ✅ 2) بعد كده أي state أو context
-    setActiveLetter(letter);
-
     setPracticeWord(letter, {
       name: data.name,
       sound: data.sound,
@@ -242,7 +237,7 @@ export function AlphabetPage() {
             key={letter}
             onClick={() => handleLetterClick(letter)}
             className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all relative overflow-hidden group border ${
-              activeLetter === letter
+              activeWord === letter
                 ? "bg-blue-500/10 border-blue-500/50 text-blue-400 sm:scale-110 sm:z-10 shadow-xl shadow-blue-500/10"
                 : "bg-[#1e1e1e] text-neutral-300 border-white/5 hover:bg-[#2a2a2a]"
             }`}
@@ -251,7 +246,7 @@ export function AlphabetPage() {
               {letter}
               {letter.toLowerCase()}
             </span>
-            {activeLetter === letter && (
+            {activeWord === letter && (
               <div className="text-xs mt-1 font-medium opacity-80">
                 {ALPHABET_DATA[letter].sound}
               </div>

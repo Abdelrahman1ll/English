@@ -11,7 +11,7 @@ export function GreetingsPage() {
   const GREETINGS_DATA = levelData?.sentences?.GREETINGS_DATA || [];
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleCardClick = (item: any) => {
@@ -51,20 +51,20 @@ export function GreetingsPage() {
                   key={item.text}
                   onClick={() => handleCardClick(item)}
                   className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
-                    playingItem === item.text
+                    activeWord === item.text
                       ? "bg-blue-500/10 border-blue-500/50 scale-[1.02] shadow-xl shadow-blue-500/10 z-10"
                       : "bg-[#141414] border-transparent hover:bg-[#1a1a1a] hover:border-white/5"
                   }`}
                 >
                   <div className="flex-1">
                     <div
-                      className={`font-bold text-lg transition-colors ${playingItem === item.text ? "text-blue-400" : "text-neutral-200"}`}
+                      className={`font-bold text-lg transition-colors ${activeWord === item.text ? "text-blue-400" : "text-neutral-200"}`}
                     >
                       {item.text}
                     </div>
                     {(item.translation || item.note) && (
                       <div
-                        className={`text-sm mt-1 font-arabic ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+                        className={`text-sm mt-1 font-arabic ${activeWord === item.text ? "text-white/80" : "text-neutral-500"}`}
                       >
                         {item.translation}
                         {item.translation && item.note && " • "}
@@ -76,7 +76,7 @@ export function GreetingsPage() {
                   </div>
                   <Volume2
                     size={16}
-                    className={`transition-all ${playingItem === item.text ? "text-blue-400 opacity-100 scale-110" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                    className={`transition-all ${playingItem === item.text ? "text-blue-400 opacity-100 scale-125" : activeWord === item.text ? "text-blue-400/60 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
                   />
                 </button>
               ))}

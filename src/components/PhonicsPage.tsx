@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Ghost, Search } from "lucide-react";
+import { Ghost, Search, Volume2 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
@@ -52,20 +52,19 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
 
   const PHONICS_DATA = filteredPhonicsData;
 
-  const [activeWord, setActiveWord] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const [playingItem, setPlayingItem] = useState<string | null>(null);
+  const { setPracticeWord, activeWord } = usePractice();
 
   const { speak, cancel } = useSpeech();
 
   // Stop synthesis when switching type
   useEffect(() => {
-    setActiveWord(null);
     cancel();
   }, [type, cancel]);
 
   const handleWordClick = (word: string) => {
-    speak(word);
-    setActiveWord(word);
+    speak(word, () => setPlayingItem(null));
+    setPlayingItem(word);
     setPracticeWord(word);
   };
 
@@ -133,6 +132,12 @@ export function PhonicsPage({ type }: { type: "magic-e" | "silent-letters" }) {
                       {pair.longAr}
                     </span>
                     <span className="text-xl font-bold">{pair.long}</span>
+                    {playingItem === pair.long && (
+                      <Volume2
+                        size={12}
+                        className="absolute top-1 right-1 animate-pulse text-amber-400"
+                      />
+                    )}
                   </button>
                 </div>
               ))}

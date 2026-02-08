@@ -101,12 +101,12 @@ export function Layout({ children }: PropsWithChildren) {
     setIsMobileMenuOpen(false); // Close mobile menu on navigation
   }, [location.pathname]);
 
-  // Auto-select Level A1 if nothing is selected
-  useEffect(() => {
-    if (!currentLevel) {
-      setLevel("A1");
-    }
-  }, [currentLevel, setLevel]);
+  // Auto-select Level A1 if nothing is selected (DISABLED for Landing Page)
+  // useEffect(() => {
+  //   if (!currentLevel) {
+  //     setLevel("A1");
+  //   }
+  // }, [currentLevel, setLevel]);
 
   const handleScroll = () => {
     if (mainRef.current) {
@@ -205,7 +205,7 @@ export function Layout({ children }: PropsWithChildren) {
               </h2>
             </div>
             <NavItem
-              to="/"
+              to={currentLevel ? `/${currentLevel.id}/home` : "/"}
               icon={House}
               label="Home"
               isCollapsed={isCollapsed}

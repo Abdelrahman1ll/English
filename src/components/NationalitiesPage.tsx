@@ -46,7 +46,7 @@ export function NationalitiesPage() {
   const NATIONALITIES_DATA = filteredNationalitiesData;
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleItemClick = (text: string) => {
@@ -98,24 +98,24 @@ export function NationalitiesPage() {
               key={lang.text}
               onClick={() => handleItemClick(lang.text)}
               className={`p-6 rounded-3xl border transition-all text-center group relative overflow-hidden ${
-                playingItem === lang.text
+                activeWord === lang.text
                   ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
                   : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
               }`}
             >
               <div
-                className={`text-xl font-black transition-colors ${playingItem === lang.text ? "text-white" : "text-blue-400"}`}
+                className={`text-xl font-black transition-colors ${activeWord === lang.text ? "text-white" : "text-blue-400"}`}
               >
                 {lang.text}
               </div>
               <div
-                className={`text-sm font-arabic mt-2 ${playingItem === lang.text ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"}`}
+                className={`text-sm font-arabic mt-2 ${activeWord === lang.text ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"}`}
               >
                 {lang.translation}
               </div>
 
               <div
-                className={`absolute top-2 right-2 transition-opacity ${playingItem === lang.text ? "opacity-100" : "opacity-0"}`}
+                className={`absolute top-2 right-2 transition-all ${playingItem === lang.text ? "opacity-100 scale-125" : activeWord === lang.text ? "opacity-60" : "opacity-0"}`}
               >
                 <Volume2 size={12} className="text-white" />
               </div>
@@ -149,7 +149,7 @@ export function NationalitiesPage() {
                   </span>
                   <Volume2
                     size={20}
-                    className={`transition-all ${playingItem === phrase.question ? "text-amber-400 scale-125" : "text-neutral-600 group-hover:text-amber-400"}`}
+                    className={`transition-all ${playingItem === phrase.question ? "text-amber-400 scale-125" : activeWord === phrase.question ? "text-amber-400/60" : "text-neutral-600 group-hover:text-amber-400"}`}
                   />
                 </div>
                 <div className="text-lg text-neutral-500 font-arabic italic">
@@ -162,24 +162,24 @@ export function NationalitiesPage() {
                     key={ansIdx}
                     onClick={() => handleItemClick(ans.text)}
                     className={`w-full text-left p-6 rounded-3xl transition-all group border ${
-                      playingItem === ans.text
-                        ? "bg-emerald-500/10 border-emerald-500/50 shadow-xl scale-[1.02]"
+                      activeWord === ans.text
+                        ? "bg-emerald-500/10 border-emerald-500/50 shadow-xl scale-[1.02] z-10"
                         : "bg-black/20 hover:bg-black/40 border-white/5"
                     }`}
                   >
                     <div className={`flex justify-between items-center mb-1`}>
                       <span
-                        className={`text-lg font-bold ${playingItem === ans.text ? "text-emerald-400" : "text-white group-hover:text-emerald-400"}`}
+                        className={`text-lg font-bold ${activeWord === ans.text ? "text-emerald-400" : "text-white group-hover:text-emerald-400"}`}
                       >
                         A: {ans.text}
                       </span>
                       <Volume2
                         size={16}
-                        className={`transition-all ${playingItem === ans.text ? "text-white opacity-100 scale-110" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                        className={`transition-all ${playingItem === ans.text ? "text-emerald-400 opacity-100 scale-125" : activeWord === ans.text ? "text-emerald-400/60 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
                       />
                     </div>
                     <div
-                      className={`text-sm font-arabic mt-1 ${playingItem === ans.text ? "text-white/80" : "text-neutral-500"}`}
+                      className={`text-sm font-arabic mt-1 ${activeWord === ans.text ? "text-white/80" : "text-neutral-500"}`}
                     >
                       {ans.translation}
                     </div>

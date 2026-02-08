@@ -17,6 +17,8 @@ import {
   Moon,
   AlertCircle,
   Globe,
+  Smile,
+  Star,
 } from "lucide-react";
 
 export const GREETINGS_DATA = [
@@ -643,5 +645,169 @@ export const SENTENCES_DATA = [
     arabic: "Enormous تعني شيئاً كبيراً جداً.",
     category: "Common",
     icon: HelpCircle,
+  },
+  {
+    english: "He's the most handsome man I've ever met.",
+    arabic: "إنه أكثر رجل وسيم قابلته على الإطلاق",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "That's a cute little baby.",
+    arabic: "هذا طفل صغير جذاب",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "She was looking pale and thin.",
+    arabic: "كانت تبدو شاحبة ونحيفة",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "He's a tall man.",
+    arabic: "إنه رجل طويل",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "What about your big muscular trainer?",
+    arabic: "ماذا عن مدربك ذو العضلات؟",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "He is a very short man.",
+    arabic: "إنه رجل قصير جداً",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "You see that short-haired boy over there.",
+    arabic: "أتري هذا الفتى ذو الشعر القصير هناك",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "I was talking about the long-haired man.",
+    arabic: "كنت أتحدث عن الرجل ذو الشعر الطويل",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "The bald man is the owner of the house.",
+    arabic: "الرجل الأصلع هو صاحب المنزل",
+    category: "Appearance Phrases",
+    icon: Smile,
+  },
+  {
+    english: "Brave Policeman Arrests Drug Tycoon.",
+    arabic: "شرطي شجاع يعتقل تاجر المخدرات",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "You have a chatty doorman.",
+    arabic: "لديكم بواب ثرثار (كثير الكلام)",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Adnan is a very clever student. He always gets top scores.",
+    arabic: "عدنان طالب ماهر جداً. دائماً يحصل على أعلى الدرجات",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english:
+      "Ahmed is a bit of a coward. He really hates going to the dentist!",
+    arabic: "أحمد جبان نوعاً ما. هو حقاً يكره الذهاب إلى طبيب الأسنان!",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "The people in my office are friendly! I love working there!",
+    arabic: "الناس في مكتبي ودودون! أنا أحب العمل هناك!",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Adnan is a funny person! He always entertains me with jokes!",
+    arabic: "عدنان شخص مضحك! دائماً يمتعني بالنكات!",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "My parents are very generous.",
+    arabic: "والداي كرماء جداً",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "My boss is grumpy.",
+    arabic: "مديري حاد الطبع (نكد)",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Mahmoud is very honest. He always tells me the truth.",
+    arabic: "محمود صادق جداً. دائماً يقول لي الحقيقة",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "My father is a kind man.",
+    arabic: "والدي رجل طيب",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Sara is loud! When she talks.",
+    arabic: "سارة صوتها عالٍ (مزعجة) عندما تتحدث",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Ali is very stingy. He spends a little on his children.",
+    arabic: "علي بخيل جداً. ينفق القليل على أولاده",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english:
+      "Mona is very moody. Now she says hello; yesterday she ignored me!",
+    arabic: "منى مزاجية جداً. الآن تقول مرحباً، وبالأمس تجاهلتني!",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "I don't like nasty people.",
+    arabic: "أنا لا أحب الناس السيئة",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "My daughter is very neat and organized.",
+    arabic: "ابنتي مرتبة ومنظمة جداً",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "My son is a very polite boy.",
+    arabic: "ابني فتى مهذب للغاية",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "She is a quiet girl.",
+    arabic: "إنها فتاة هادئة",
+    category: "Personality Phrases",
+    icon: Star,
+  },
+  {
+    english: "Ayman is a rude boy. He doesn't respect the adults.",
+    arabic: "أيمن فتى غير مهذب. إنه لا يحترم الكبار",
+    category: "Personality Phrases",
+    icon: Star,
   },
 ];

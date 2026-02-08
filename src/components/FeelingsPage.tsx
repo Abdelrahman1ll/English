@@ -27,7 +27,7 @@ export function FeelingsPage() {
   const FEELINGS_DATA = filteredFeelingsData;
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleCardClick = (item: any) => {
@@ -76,32 +76,32 @@ export function FeelingsPage() {
                   key={`${item.word}-${item.type}`}
                   onClick={() => handleCardClick(item)}
                   className={`group flex flex-col p-6 rounded-3xl border transition-all text-left ${
-                    playingItem === item.word
+                    activeWord === item.word
                       ? "bg-pink-500/10 border-pink-500/50 scale-105 shadow-xl shadow-pink-500/20 z-10"
                       : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20 shadow-lg"
                   }`}
                 >
                   <div className="flex justify-between items-start w-full mb-2">
                     <span
-                      className={`text-xl font-black transition-colors ${playingItem === item.word ? "text-pink-400" : "text-white"}`}
+                      className={`text-xl font-black transition-colors ${activeWord === item.word ? "text-pink-400" : "text-white"}`}
                     >
                       {item.word}
                     </span>
                     <Volume2
                       size={18}
-                      className={`transition-opacity ${playingItem === item.word ? "opacity-100 text-white" : "opacity-0 group-hover:opacity-100 text-neutral-400"}`}
+                      className={`transition-all ${playingItem === item.word ? "opacity-100 text-white scale-125" : activeWord === item.word ? "opacity-60 text-white" : "opacity-0 group-hover:opacity-100 text-neutral-400"}`}
                     />
                   </div>
 
                   <div className="flex justify-between items-end w-full">
                     <span
-                      className={`text-sm font-arabic font-medium ${playingItem === item.word ? "text-white/90" : "text-neutral-400"}`}
+                      className={`text-sm font-arabic font-medium ${activeWord === item.word ? "text-white/90" : "text-neutral-400"}`}
                     >
                       {item.arabic}
                     </span>
                     {item.type && (
                       <span
-                        className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${playingItem === item.word ? "bg-white/20 text-white" : "bg-black/40 text-neutral-500"}`}
+                        className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${activeWord === item.word ? "bg-white/20 text-white" : "bg-black/40 text-neutral-500"}`}
                       >
                         {item.type}
                       </span>

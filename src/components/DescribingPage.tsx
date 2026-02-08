@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Volume2, User, Search, Smile, Star } from "lucide-react";
+import { Volume2, User, Search, } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
@@ -39,7 +39,7 @@ export function DescribingPage() {
   const DESCRIBING_DATA = filteredDescribingData;
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleCardClick = (text: string) => {
@@ -76,88 +76,6 @@ export function DescribingPage() {
         </div>
       </div>
 
-      {/* Appearances Section */}
-      <section className="space-y-8">
-        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-          <div className="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-400">
-            <Smile size={24} />
-          </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            Physical Appearances
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {DESCRIBING_DATA.PHYSICAL.map((item: any) => (
-            <button
-              key={item.text}
-              onClick={() => handleCardClick(item.text)}
-              className={`text-left p-5 sm:p-6 rounded-3xl border transition-all group relative overflow-hidden ${
-                playingItem === item.text
-                  ? "bg-pink-500/10 border-pink-500/50 scale-[1.01] shadow-xl z-10"
-                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
-              }`}
-            >
-              <div
-                className={`text-xl font-bold mb-2 transition-colors ${playingItem === item.text ? "text-pink-400" : "text-white"}`}
-              >
-                "{item.text}"
-              </div>
-              <div
-                className={`font-arabic text-lg ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
-              >
-                {item.translation}
-              </div>
-              <div
-                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === item.text ? "text-pink-400 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
-              >
-                <Volume2 size={14} /> Practice
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Character Section */}
-      <section className="space-y-8">
-        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-          <div className="p-2.5 bg-yellow-500/20 rounded-xl text-yellow-400">
-            <Star size={24} />
-          </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            Character & Personality
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {DESCRIBING_DATA.CHARACTER_SENTENCES.map((item: any) => (
-            <button
-              key={item.text}
-              onClick={() => handleCardClick(item.text)}
-              className={`text-left p-5 sm:p-6 rounded-3xl border transition-all group relative overflow-hidden ${
-                playingItem === item.text
-                  ? "bg-yellow-500/10 border-yellow-500/50 scale-[1.01] shadow-xl z-10"
-                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
-              }`}
-            >
-              <div
-                className={`text-xl font-bold mb-2 transition-colors ${playingItem === item.text ? "text-yellow-400" : "text-white"}`}
-              >
-                "{item.text}"
-              </div>
-              <div
-                className={`font-arabic text-lg ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
-              >
-                {item.translation}
-              </div>
-              <div
-                className={`mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all ${playingItem === item.text ? "text-yellow-400 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
-              >
-                <Volume2 size={14} /> Practice
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
       {/* Vocabulary Section */}
       <section className="space-y-10">
         <div className="flex items-center gap-4 border-b border-white/5 pb-4">
@@ -189,7 +107,7 @@ export function DescribingPage() {
                     key={item.text}
                     onClick={() => handleCardClick(item.text)}
                     className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
-                      playingItem === item.text
+                      activeWord === item.text
                         ? "bg-pink-500/10 border-pink-500/50 text-pink-400 scale-[1.02] shadow-lg z-10"
                         : "bg-transparent border-transparent hover:bg-white/5 text-neutral-300 hover:text-white"
                     }`}
@@ -197,14 +115,14 @@ export function DescribingPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-lg">{item.text}</span>
                       <span
-                        className={`text-sm font-arabic ${playingItem === item.text ? "text-white/80" : "text-neutral-500"}`}
+                        className={`text-sm font-arabic ${activeWord === item.text ? "text-white/80" : "text-neutral-500"}`}
                       >
                         {item.translation}
                       </span>
                     </div>
                     <Volume2
                       size={16}
-                      className={`transition-all ${playingItem === item.text ? "text-pink-400 opacity-100 scale-125" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
+                      className={`transition-all ${playingItem === item.text ? "text-pink-400 opacity-100 scale-125" : activeWord === item.text ? "text-pink-400/60 opacity-100" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
                     />
                   </button>
                 ))}

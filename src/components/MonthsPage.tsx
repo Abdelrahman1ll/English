@@ -39,20 +39,17 @@ export function MonthsPage() {
   const CALENDAR_DATA = filteredCalendarData;
 
   const [activeTab, setActiveTab] = useState<"months" | "days">("months");
-  const [activeWord, setActiveWord] = useState<string | null>(null);
   const [playingItem, setPlayingItem] = useState<string | null>(null);
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak, cancel } = useSpeech();
 
   // Stop synthesis when switching tabs
   useEffect(() => {
     cancel();
-    setActiveWord(null);
   }, [activeTab, cancel]);
 
   const handleWordClick = (word: string, sentence?: string) => {
     speak(sentence || word, () => setPlayingItem(null));
-    setActiveWord(word);
     setPlayingItem(sentence || word);
     // For days, we practice the day name, but we can speak the whole sentence
     setPracticeWord(word);
@@ -131,6 +128,12 @@ export function MonthsPage() {
                     <span className="text-[9px] sm:text-[10px] text-neutral-500 block mt-1 font-medium font-arabic line-clamp-1">
                       {month.arabic}
                     </span>
+                    {playingItem === month.name && (
+                      <Volume2
+                        size={14}
+                        className="absolute top-2 right-2 animate-pulse text-blue-400"
+                      />
+                    )}
                   </button>
                 ))}
               </div>
@@ -164,13 +167,19 @@ export function MonthsPage() {
                           {day.arabic}
                         </span>
                       </div>
-                      <div className="text-right max-w-md">
-                        <div className="text-sm opacity-90 italic">
-                          "{day.sentence}"
+                      <div className="text-right max-w-md flex items-center gap-4">
+                        <div className="flex flex-col">
+                          <div className="text-sm opacity-90 italic">
+                            "{day.sentence}"
+                          </div>
+                          <div className="text-[10px] text-purple-300/70 font-arabic mt-1">
+                            {day.sentenceTranslation}
+                          </div>
                         </div>
-                        <div className="text-[10px] text-purple-300/70 font-arabic mt-1">
-                          {day.sentenceTranslation}
-                        </div>
+                        <Volume2
+                          size={18}
+                          className={`transition-all ${playingItem === day.sentence ? "animate-pulse scale-125 text-purple-400" : "opacity-0 group-hover:opacity-40"}`}
+                        />
                       </div>
                     </button>
                   ))}
@@ -202,19 +211,24 @@ export function MonthsPage() {
                             key={item.text}
                             onClick={() => handleVocabClick(item.text)}
                             className={`w-full text-left p-3 rounded-xl transition-all border flex items-center justify-between group ${
-                              playingItem === item.text
+                              activeWord === item.text
                                 ? "bg-amber-500/10 border-amber-500/50 text-amber-400 shadow-lg z-10"
                                 : "bg-transparent border-transparent hover:bg-white/5 text-neutral-300 hover:text-white"
                             }`}
                           >
                             <span className="font-bold flex items-center gap-2">
                               {item.text}
-                              {playingItem === item.text && (
+                              {playingItem === item.text ? (
                                 <Volume2
                                   size={14}
                                   className="animate-pulse text-amber-500"
                                 />
-                              )}
+                              ) : activeWord === item.text ? (
+                                <Volume2
+                                  size={14}
+                                  className="text-amber-500/60"
+                                />
+                              ) : null}
                             </span>
                             <span className="text-sm text-neutral-500 font-arabic group-hover:text-neutral-400">
                               {item.translation}

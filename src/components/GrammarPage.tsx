@@ -115,7 +115,7 @@ export function GrammarPage() {
   const [toBeQuizAnswers, setToBeQuizAnswers] = useState<{
     [key: number]: string;
   }>({});
-  const { setPracticeWord } = usePractice();
+  const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
   const handleItemClick = (text: string) => {
@@ -171,18 +171,18 @@ export function GrammarPage() {
         key={item.word}
         onClick={() => handleItemClick(displayText)}
         className={`p-6 rounded-3xl border transition-all text-left group relative overflow-hidden ${
-          playingItem === displayText
+          activeWord === displayText
             ? `${config.active} shadow-2xl scale-[1.02] z-10`
             : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
         }`}
       >
         <div className="flex justify-between items-start mb-2">
           <span
-            className={`text-2xl font-black ${playingItem === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : config.icon}`}
+            className={`text-2xl font-black ${activeWord === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : config.icon}`}
           >
             {item.article !== "none" && (
               <span
-                className={`mr-2 transition-colors ${playingItem === displayText ? "text-white/60" : "text-white/40"}`}
+                className={`mr-2 transition-colors ${activeWord === displayText ? "text-white/60" : "text-white/40"}`}
               >
                 {item.article}
               </span>
@@ -191,11 +191,11 @@ export function GrammarPage() {
           </span>
           <Volume2
             size={20}
-            className={`transition-all ${playingItem === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : "opacity-0 group-hover:opacity-100 text-neutral-600"}`}
+            className={`transition-all ${playingItem === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : activeWord === displayText ? "opacity-100" : "opacity-0 group-hover:opacity-100 text-neutral-600"}`}
           />
         </div>
         <div
-          className={`text-lg font-arabic ${playingItem === displayText ? "text-white/80" : "text-neutral-500"}`}
+          className={`text-lg font-arabic ${activeWord === displayText ? "text-white/80" : "text-neutral-500"}`}
         >
           {item.arabic}
         </div>
@@ -350,37 +350,37 @@ export function GrammarPage() {
                   handleItemClick(`${item.singular}... ${item.plural}`)
                 }
                 className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 rounded-3xl transition-all border group relative overflow-hidden ${
-                  playingItem === `${item.singular}... ${item.plural}`
+                  activeWord === `${item.singular}... ${item.plural}`
                     ? "bg-blue-500/10 border-blue-500/50 shadow-xl scale-[1.01] z-10"
                     : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525]"
                 }`}
               >
                 <div className="flex items-center gap-4 sm:gap-6">
                   <div
-                    className={`text-xl sm:text-2xl font-bold transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/60" : "text-neutral-600"}`}
+                    className={`text-xl sm:text-2xl font-bold transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/60" : "text-neutral-600"}`}
                   >
                     {item.singular}
                   </div>
                   <div
-                    className={`transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/40" : "text-neutral-800"}`}
+                    className={`transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/40" : "text-neutral-800"}`}
                   >
                     →
                   </div>
                   <div
-                    className={`text-2xl sm:text-3xl font-black transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white" : "text-blue-400"}`}
+                    className={`text-2xl sm:text-3xl font-black transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white" : "text-blue-400"}`}
                   >
                     {item.plural}
                   </div>
                 </div>
                 <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-0">
                   <div
-                    className={`text-lg sm:text-xl font-arabic transition-colors ${playingItem === `${item.singular}... ${item.plural}` ? "text-white/80" : "text-neutral-500"}`}
+                    className={`text-lg sm:text-xl font-arabic transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/80" : "text-neutral-500"}`}
                   >
                     {item.arabic}
                   </div>
                   <Volume2
                     size={16}
-                    className={`transition-all ${playingItem === `${item.singular}... ${item.plural}` ? "text-white opacity-100" : "opacity-0 group-hover:opacity-40 text-neutral-400"}`}
+                    className={`transition-all ${playingItem === `${item.singular}... ${item.plural}` ? "text-white opacity-100 scale-125" : activeWord === `${item.singular}... ${item.plural}` ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40 text-neutral-400"}`}
                   />
                 </div>
               </button>
@@ -476,12 +476,12 @@ export function GrammarPage() {
                       }`}
                     >
                       <span
-                        className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                        className={`text-xl font-bold transition-colors ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
                       >
                         {item.en}
                       </span>
                       <span
-                        className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
+                        className={`text-sm font-arabic transition-colors ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
                       >
                         {item.ar}
                       </span>
@@ -507,12 +507,12 @@ export function GrammarPage() {
                       }`}
                     >
                       <span
-                        className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                        className={`text-xl font-bold transition-colors ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
                       >
                         {item.en}
                       </span>
                       <span
-                        className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
+                        className={`text-sm font-arabic transition-colors ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
                       >
                         {item.ar}
                       </span>
@@ -604,25 +604,25 @@ export function GrammarPage() {
                         )
                       }
                       className={`p-6 sm:p-8 rounded-3xl sm:rounded-4xl border transition-all text-center group flex flex-col items-center justify-center relative overflow-hidden ${
-                        playingItem ===
+                        activeWord ===
                         `${item.text}... means ${item.translation}`
                           ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
                           : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-[1.02]"
                       }`}
                     >
                       <span
-                        className={`text-2xl sm:text-3xl font-black ${playingItem === `${item.text}... means ${item.translation}` ? "text-blue-400" : "text-white group-hover:text-blue-400"}`}
+                        className={`text-2xl sm:text-3xl font-black ${activeWord === `${item.text}... means ${item.translation}` ? "text-blue-400" : "text-white group-hover:text-blue-400"}`}
                       >
                         {item.text}
                       </span>
                       <span
-                        className={`text-xs sm:text-sm font-arabic mt-2 ${playingItem === `${item.text}... means ${item.translation}` ? "text-white/70" : "text-neutral-500"}`}
+                        className={`text-xs sm:text-sm font-arabic mt-2 ${activeWord === `${item.text}... means ${item.translation}` ? "text-white/70" : "text-neutral-500"}`}
                       >
                         {item.translation}
                       </span>
                       <div className="flex gap-2 mt-4">
                         <span
-                          className={`text-[9px] sm:text-[10px] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-black uppercase tracking-tighter ${playingItem === `${item.text}... means ${item.translation}` ? "bg-white/20 text-white" : "bg-blue-500/10 text-blue-400"}`}
+                          className={`text-[9px] sm:text-[10px] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-black uppercase tracking-tighter ${activeWord === `${item.text}... means ${item.translation}` ? "bg-white/20 text-white" : "bg-blue-500/10 text-blue-400"}`}
                         >
                           {item.rule}
                         </span>
@@ -637,26 +637,26 @@ export function GrammarPage() {
                       key={ex.text}
                       onClick={() => handleItemClick(ex.text)}
                       className={`w-full text-left flex items-center justify-between group p-4 rounded-2xl transition-all border ${
-                        playingItem === ex.text
+                        activeWord === ex.text
                           ? "bg-blue-500/10 border-blue-500/50 shadow-lg"
                           : "hover:bg-white/5 border-transparent"
                       }`}
                     >
                       <div>
                         <div
-                          className={`text-lg font-bold group-hover:text-blue-400 transition-colors ${playingItem === ex.text ? "text-blue-400" : "text-white"}`}
+                          className={`text-lg font-bold group-hover:text-blue-400 transition-colors ${activeWord === ex.text ? "text-blue-400" : "text-white"}`}
                         >
                           {ex.text}
                         </div>
                         <div
-                          className={`text-sm font-arabic mt-1 ${playingItem === ex.text ? "text-white/70" : "text-neutral-500"}`}
+                          className={`text-sm font-arabic mt-1 ${activeWord === ex.text ? "text-white/70" : "text-neutral-500"}`}
                         >
                           {ex.translation}
                         </div>
                       </div>
                       <Volume2
                         size={18}
-                        className={`transition-all ${playingItem === ex.text ? "text-white opacity-100 scale-110" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
+                        className={`transition-all ${playingItem === ex.text ? "text-white opacity-100 scale-125" : activeWord === ex.text ? "text-white/60 opacity-100" : "text-neutral-700 opacity-0 group-hover:opacity-100"}`}
                       />
                     </button>
                   ))}
@@ -688,18 +688,18 @@ export function GrammarPage() {
                 key={prep.text}
                 onClick={() => handleItemClick(prep.text)}
                 className={`p-4 sm:p-6 rounded-2xl border transition-all text-center group relative overflow-hidden ${
-                  playingItem === prep.text
+                  activeWord === prep.text
                     ? "bg-purple-500/10 border-purple-500/50 shadow-2xl scale-110 z-10"
                     : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-105 hover:border-white/10 shadow-lg"
                 }`}
               >
                 <div
-                  className={`text-xl sm:text-2xl font-black transition-colors ${playingItem === prep.text ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+                  className={`text-xl sm:text-2xl font-black transition-colors ${activeWord === prep.text ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
                 >
                   {prep.text}
                 </div>
                 <div
-                  className={`text-xs sm:text-sm font-arabic mt-2 ${playingItem === prep.text ? "text-white/70" : "text-neutral-500"}`}
+                  className={`text-xs sm:text-sm font-arabic mt-2 ${activeWord === prep.text ? "text-white/70" : "text-neutral-500"}`}
                 >
                   {prep.translation}
                 </div>
@@ -719,24 +719,24 @@ export function GrammarPage() {
                     key={ex.en}
                     onClick={() => handleItemClick(ex.en)}
                     className={`p-5 sm:p-6 rounded-3xl transition-all border text-left group relative overflow-hidden ${
-                      playingItem === ex.en
+                      activeWord === ex.en
                         ? "bg-purple-500/10 border-purple-500/50 shadow-2xl scale-[1.02] z-10"
                         : "bg-black/20 border-white/5 hover:bg-black/30 hover:border-purple-500/30 shadow-lg"
                     }`}
                   >
                     <div
-                      className={`text-lg sm:text-xl font-bold leading-relaxed ${playingItem === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+                      className={`text-lg sm:text-xl font-bold leading-relaxed ${activeWord === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
                     >
                       {ex.en}
                     </div>
                     <div
-                      className={`text-base sm:text-lg font-arabic mt-3 ${playingItem === ex.en ? "text-white/70" : "text-neutral-500 group-hover:text-neutral-400"}`}
+                      className={`text-base sm:text-lg font-arabic mt-3 ${activeWord === ex.en ? "text-white/70" : "text-neutral-500 group-hover:text-neutral-400"}`}
                     >
                       {ex.ar}
                     </div>
                     <Volume2
                       size={18}
-                      className={`absolute top-4 right-4 transition-all ${playingItem === ex.en ? "text-white opacity-100 scale-110" : "text-neutral-800 opacity-0 group-hover:opacity-100"}`}
+                      className={`absolute top-4 right-4 transition-all ${playingItem === ex.en ? "text-white opacity-100 scale-125" : activeWord === ex.en ? "text-white/60 opacity-100" : "text-neutral-800 opacity-0 group-hover:opacity-100"}`}
                     />
                   </button>
                 ),
