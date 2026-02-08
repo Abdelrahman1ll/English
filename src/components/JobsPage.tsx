@@ -1,60 +1,50 @@
-import { useState } from "react";
-import { Briefcase, Building2, MessageCircle, Volume2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import {
+  Briefcase,
+  Building2,
+  MessageCircle,
+  Volume2,
+  Search,
+} from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
+import { LEVEL_DATA } from "../data/levels/index";
 
-type JobItem = {
+interface VocabularyItem {
   text: string;
   translation?: string;
-};
-
-const JOBS: JobItem[] = [
-  { text: "Teacher", translation: "مدرس" },
-  { text: "Doctor", translation: "طبيب" },
-  { text: "Nurse", translation: "ممرضة" },
-  { text: "Salesperson", translation: "بائع" },
-  { text: "Waiter", translation: "نادل" },
-  { text: "Waitress", translation: "نادلة" },
-  { text: "Assistant", translation: "مساعد" },
-  { text: "Lawyer", translation: "محامي" },
-  { text: "Policeman", translation: "شرطي" },
-  { text: "Policewoman", translation: "شرطية" },
-  { text: "Factory Worker", translation: "عامل مصنع" },
-  { text: "Student", translation: "طالب" },
-];
-
-const PLACES: JobItem[] = [
-  { text: "In a hospital", translation: "في مستشفى" },
-  { text: "In a store", translation: "في متجر" },
-  { text: "In a restaurant", translation: "في مطعم" },
-  { text: "In an office", translation: "في مكتب" },
-  { text: "In a school", translation: "في مدرسة" },
-  { text: "In a factory", translation: "في مصنع" },
-  { text: "At home", translation: "في المنزل" },
-  { text: "On the street", translation: "في الشارع" },
-];
-
-const PHRASES: JobItem[] = [
-  { text: "What does she do?", translation: "ماذا تعمل؟" },
-  { text: "She's a teacher.", translation: "هي مدرسة." },
-  { text: "What does he do?", translation: "ماذا يعمل؟" },
-  { text: "He works for Google.", translation: "هو يعمل في جوجل." },
-  { text: "He's in school.", translation: "هو في المدرسة." },
-  { text: "She's in college.", translation: "هي في الكلية." },
-  { text: "She's at university.", translation: "هي في الجامعة." },
-  { text: "She studies economics.", translation: "هي تدرس الاقتصاد." },
-  { text: "He doesn't have a job.", translation: "هو ليس لديه وظيفة." },
-  { text: "She's retired.", translation: "هي متقاعدة." },
-  { text: "Where does a doctor work?", translation: "أين يعمل الطبيب؟" },
-  { text: "Where do you work?", translation: "أين تعمل أنت؟" },
-];
+}
 
 export function JobsPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawJobsData = levelData?.vocabulary?.JOBS_DATA || {};
+
+  const filteredJobsData = useMemo(() => {
+    const filter = (items: VocabularyItem[]) =>
+      items.filter(
+        (item) =>
+          item.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.translation?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+
+    return {
+      PROFESSIONS: filter(rawJobsData.PROFESSIONS || []),
+      PLACES: filter(rawJobsData.PLACES || []),
+      PHRASES: filter(rawJobsData.PHRASES || []),
+    };
+  }, [rawJobsData, searchQuery]);
+
+  const JOBS_DATA = filteredJobsData;
+
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleItemClick = (item: JobItem) => {
+  const handleItemClick = (item: VocabularyItem) => {
     speak(item.text, () => setPlayingItem(null));
     setPlayingItem(item.text);
     setPracticeWord(item.text);
@@ -79,7 +69,7 @@ export function JobsPage() {
     </div>
   );
 
-  const ItemCard = ({ item }: { item: JobItem }) => (
+  const ItemCard = ({ item }: { item: VocabularyItem }) => (
     <button
       onClick={() => handleItemClick(item)}
       className={`group flex items-center justify-between p-5 rounded-2xl border transition-all text-left ${
@@ -120,6 +110,23 @@ export function JobsPage() {
         </p>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search jobs, places or phrases..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Jobs Section */}
         <div>
@@ -129,7 +136,7 @@ export function JobsPage() {
             color="text-blue-400"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {JOBS.map((job) => (
+            {JOBS_DATA.PROFESSIONS.map((job) => (
               <ItemCard key={job.text} item={job} />
             ))}
           </div>
@@ -143,7 +150,7 @@ export function JobsPage() {
             color="text-emerald-400"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {PLACES.map((place) => (
+            {JOBS_DATA.PLACES.map((place) => (
               <ItemCard key={place.text} item={place} />
             ))}
           </div>
@@ -158,7 +165,7 @@ export function JobsPage() {
           color="text-amber-400"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PHRASES.map((phrase) => (
+          {JOBS_DATA.PHRASES.map((phrase) => (
             <button
               key={phrase.text}
               onClick={() => handleItemClick(phrase)}

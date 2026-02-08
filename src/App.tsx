@@ -5,7 +5,6 @@ import { AlphabetPage } from "./components/AlphabetPage";
 import { PhonicsPage } from "./components/PhonicsPage";
 import { MonthsPage } from "./components/MonthsPage";
 import { DigraphsPage } from "./components/DigraphsPage";
-import { GreetingsPage } from "./components/GreetingsPage";
 import { NumbersPage } from "./components/NumbersPage";
 import { ColorsPage } from "./components/ColorsPage";
 import { JobsPage } from "./components/JobsPage";
@@ -14,6 +13,10 @@ import { GrammarPage } from "./components/GrammarPage";
 import { FeelingsPage } from "./components/FeelingsPage";
 import { DescribingPage } from "./components/DescribingPage";
 import { NationalitiesPage } from "./components/NationalitiesPage";
+import { SentencesPage } from "./components/SentencesPage";
+import { ExercisesPage } from "./components/ExercisesPage";
+import { ConversationsPage } from "./components/ConversationsPage";
+import { SearchPage } from "./components/SearchPage";
 
 import { LevelProvider } from "./context/LevelContext";
 
@@ -29,7 +32,7 @@ function App() {
             element={<PhonicsPage type="magic-e" />}
           />
           <Route path="/:levelId/digraphs" element={<DigraphsPage />} />
-          <Route path="/:levelId/greetings" element={<GreetingsPage />} />
+          <Route path="/:levelId/search" element={<SearchPage />} />
           <Route path="/:levelId/numbers" element={<NumbersPage />} />
           <Route path="/:levelId/colors" element={<ColorsPage />} />
           <Route path="/:levelId/jobs" element={<JobsPage />} />
@@ -45,6 +48,12 @@ function App() {
           <Route
             path="/:levelId/nationalities"
             element={<NationalitiesPage />}
+          />
+          <Route path="/:levelId/sentences" element={<SentencesPage />} />
+          <Route path="/:levelId/exercises" element={<ExercisesPage />} />
+          <Route
+            path="/:levelId/conversations"
+            element={<ConversationsPage />}
           />
         </Routes>
       </Layout>

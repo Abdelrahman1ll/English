@@ -1,182 +1,42 @@
-import { useState } from "react";
-import { Volume2, Split } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Volume2, Split, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-type DigraphData = {
-  digraph: string;
-  examples: { text: string; translation: string }[];
-};
-
-const CONSONANT_DIGRAPHS: DigraphData[] = [
-  {
-    digraph: "ch",
-    examples: [
-      { text: "chair", translation: "كرسي" },
-      { text: "chore", translation: "عمل روتيني" },
-      { text: "each", translation: "كل" },
-      { text: "much", translation: "كثير" },
-    ],
-  },
-  {
-    digraph: "ck",
-    examples: [
-      { text: "back", translation: "ظهر" },
-      { text: "duck", translation: "بطة" },
-      { text: "neck", translation: "رقبة" },
-      { text: "rock", translation: "صخرة" },
-    ],
-  },
-  {
-    digraph: "gh",
-    examples: [
-      { text: "cough", translation: "سعال" },
-      { text: "laugh", translation: "ضحك" },
-      { text: "rough", translation: "خشن" },
-      { text: "tough", translation: "صعب/قوي" },
-    ],
-  },
-  {
-    digraph: "kn",
-    examples: [
-      { text: "knee", translation: "ركبة" },
-      { text: "knife", translation: "سكين" },
-      { text: "knot", translation: "عقدة" },
-      { text: "know", translation: "يعرف" },
-    ],
-  },
-  {
-    digraph: "ll",
-    examples: [
-      { text: "all", translation: "الكل" },
-      { text: "ball", translation: "كرة" },
-      { text: "fall", translation: "يسقط/خريف" },
-      { text: "wall", translation: "جدار" },
-    ],
-  },
-  {
-    digraph: "ng",
-    examples: [
-      { text: "king", translation: "ملك" },
-      { text: "ring", translation: "خاتم" },
-      { text: "sing", translation: "يغني" },
-      { text: "wing", translation: "جناح" },
-    ],
-  },
-  {
-    digraph: "ph",
-    examples: [
-      { text: "phone", translation: "هاتف" },
-      { text: "photo", translation: "صورة" },
-      { text: "graph", translation: "رسم بياني" },
-      { text: "gopher", translation: "سنجاب الأرض" },
-    ],
-  },
-  {
-    digraph: "qu",
-    examples: [
-      { text: "quack", translation: "بطبطة" },
-      { text: "queen", translation: "ملكة" },
-      { text: "quiet", translation: "هادئ" },
-      { text: "quiz", translation: "اختبار قصير" },
-    ],
-  },
-  {
-    digraph: "sh",
-    examples: [
-      { text: "dish", translation: "طبق" },
-      { text: "fish", translation: "سمكة" },
-      { text: "ship", translation: "سفينة" },
-      { text: "shoe", translation: "حذاء" },
-    ],
-  },
-  {
-    digraph: "th",
-    examples: [
-      { text: "bath", translation: "حمّام" },
-      { text: "both", translation: "كلاهما" },
-      { text: "than", translation: "مِن" },
-      { text: "thing", translation: "شيء" },
-    ],
-  },
-  {
-    digraph: "wh",
-    examples: [
-      { text: "whale", translation: "حوت" },
-      { text: "what", translation: "ماذا" },
-      { text: "when", translation: "متى" },
-      { text: "white", translation: "أبيض" },
-    ],
-  },
-  {
-    digraph: "wr",
-    examples: [
-      { text: "wrap", translation: "يلف" },
-      { text: "wrist", translation: "معصم" },
-      { text: "write", translation: "يكتب" },
-      { text: "wreath", translation: "إكليل" },
-    ],
-  },
-];
-
-const VOWEL_DIGRAPHS: DigraphData[] = [
-  {
-    digraph: "ai",
-    examples: [
-      { text: "main", translation: "رئيسي" },
-      { text: "paint", translation: "طلاء" },
-      { text: "rain", translation: "مطر" },
-      { text: "train", translation: "قطار" },
-    ],
-  },
-  {
-    digraph: "ay",
-    examples: [
-      { text: "day", translation: "يوم" },
-      { text: "play", translation: "يلعب" },
-      { text: "stay", translation: "يبقى" },
-      { text: "today", translation: "اليوم" },
-    ],
-  },
-  {
-    digraph: "ea",
-    examples: [
-      { text: "eat", translation: "يأكل" },
-      { text: "read", translation: "يقرأ" },
-      { text: "seat", translation: "مقعد" },
-      { text: "team", translation: "فريق" },
-    ],
-  },
-  {
-    digraph: "ee",
-    examples: [
-      { text: "bee", translation: "نحلة" },
-      { text: "free", translation: "حر" },
-      { text: "see", translation: "يرى" },
-      { text: "tree", translation: "شجرة" },
-    ],
-  },
-  {
-    digraph: "oa",
-    examples: [
-      { text: "boat", translation: "قارب" },
-      { text: "coat", translation: "معطف" },
-      { text: "road", translation: "طريق" },
-      { text: "soap", translation: "صابون" },
-    ],
-  },
-  {
-    digraph: "ue",
-    examples: [
-      { text: "blue", translation: "أزرق" },
-      { text: "clue", translation: "دليل" },
-      { text: "glue", translation: "غراء" },
-      { text: "true", translation: "حقيقي" },
-    ],
-  },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function DigraphsPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawDigraphsData = levelData?.vocabulary?.DIGRAPHS_DATA || {
+    CONSONANTS: [],
+    VOWELS: [],
+  };
+
+  const filteredDigraphsData = useMemo(() => {
+    const term = searchQuery.toLowerCase();
+
+    const filter = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.digraph.toLowerCase().includes(term) ||
+          item.examples.some(
+            (ex: any) =>
+              ex.text.toLowerCase().includes(term) ||
+              ex.translation.includes(searchQuery),
+          ),
+      );
+
+    return {
+      CONSONANTS: filter(rawDigraphsData.CONSONANTS || []),
+      VOWELS: filter(rawDigraphsData.VOWELS || []),
+    };
+  }, [rawDigraphsData, searchQuery]);
+
+  const DIGRAPHS_DATA = filteredDigraphsData;
+
   const [activeTab, setActiveTab] = useState<"consonants" | "vowels">(
     "consonants",
   );
@@ -184,7 +44,7 @@ export function DigraphsPage() {
   const { setPracticeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleDigraphClick = (item: DigraphData) => {
+  const handleDigraphClick = (item: any) => {
     speak(item.digraph, () => setPlayingItem(null));
     setPlayingItem(item.digraph);
     setPracticeWord(item.digraph);
@@ -198,7 +58,9 @@ export function DigraphsPage() {
   };
 
   const currentData =
-    activeTab === "consonants" ? CONSONANT_DIGRAPHS : VOWEL_DIGRAPHS;
+    activeTab === "consonants"
+      ? DIGRAPHS_DATA.CONSONANTS
+      : DIGRAPHS_DATA.VOWELS;
 
   const { activeWord } = usePractice();
 
@@ -214,32 +76,51 @@ export function DigraphsPage() {
           </p>
         </div>
 
-        <div className="flex bg-[#1e1e1e] p-1.5 rounded-2xl border border-white/5 shadow-inner">
-          <button
-            onClick={() => setActiveTab("consonants")}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === "consonants"
-                ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/5"
-                : "text-neutral-500 hover:text-white"
-            }`}
-          >
-            Consonants
-          </button>
-          <button
-            onClick={() => setActiveTab("vowels")}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
-              activeTab === "vowels"
-                ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/5"
-                : "border-transparent text-neutral-500 hover:text-white"
-            }`}
-          >
-            Vowels
-          </button>
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="relative group w-full sm:w-80">
+            <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2xl blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+            <div className="relative">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500"
+                size={18}
+              />
+              <input
+                type="text"
+                placeholder="Search digraphs or examples..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white text-sm placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-xl"
+              />
+            </div>
+          </div>
+
+          <div className="flex bg-[#1e1e1e] p-1.5 rounded-2xl border border-white/5 shadow-inner shrink-0">
+            <button
+              onClick={() => setActiveTab("consonants")}
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                activeTab === "consonants"
+                  ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/5"
+                  : "text-neutral-500 hover:text-white"
+              }`}
+            >
+              Consonants
+            </button>
+            <button
+              onClick={() => setActiveTab("vowels")}
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                activeTab === "vowels"
+                  ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/5"
+                  : "border-transparent text-neutral-500 hover:text-white"
+              }`}
+            >
+              Vowels
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentData.map((item) => (
+        {currentData.map((item: any) => (
           <div
             key={item.digraph}
             onClick={() => handleDigraphClick(item)}
@@ -262,7 +143,7 @@ export function DigraphsPage() {
             </div>
 
             <div className="w-full space-y-2.5 relative z-10">
-              {item.examples.map((ex) => (
+              {item.examples.map((ex: any) => (
                 <button
                   key={ex.text}
                   onClick={(e) => handleExampleClick(e, ex.text)}

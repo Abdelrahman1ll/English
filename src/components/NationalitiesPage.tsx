@@ -1,66 +1,50 @@
-import { useState } from "react";
-import { Globe, Languages, MessageSquare, Volume2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Globe, Languages, MessageSquare, Volume2, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-const LANGUAGES_DATA = [
-  { text: "Arabic", translation: "العربية" },
-  { text: "English", translation: "الإنجليزية" },
-  { text: "French", translation: "الفرنسية" },
-  { text: "Italian", translation: "الإيطالية" },
-  { text: "Spanish", translation: "الأسبانية" },
-  { text: "Portuguese", translation: "البرتغالية" },
-  { text: "German", translation: "الألمانية" },
-  { text: "Chinese", translation: "الصينية" },
-  { text: "Russian", translation: "الروسية" },
-  { text: "Japanese", translation: "اليابانية" },
-  { text: "Greek", translation: "اليونانية" },
-  { text: "Swahili", translation: "السواحيلي" },
-  { text: "Bengali", translation: "البنغالية" },
-  { text: "Czech", translation: "التشيكية" },
-  { text: "Danish", translation: "الدنماركية" },
-  { text: "Dutch", translation: "الهولندية" },
-  { text: "Hindi", translation: "الهندية" },
-  { text: "Scottish", translation: "الإسكتلندية" },
-  { text: "Filipino", translation: "الفلبينية" },
-  { text: "Swedish", translation: "السويدية" },
-];
-
-const PHRASES_DATA = [
-  {
-    question: "What is your country?",
-    translation: "ما هو بلدك؟",
-    answers: [
-      { text: "My country is Egypt.", translation: "بلدي هو مصر." },
-      { text: "I am from Egypt.", translation: "أنا من مصر." },
-    ],
-  },
-  {
-    question: "What is your language?",
-    translation: "ما هي لغتك؟",
-    answers: [
-      { text: "My language is Arabic.", translation: "لغتي هي العربية." },
-      { text: "I speak Arabic.", translation: "أنا أتحدث العربية." },
-    ],
-  },
-  {
-    question: "What is your nationality?",
-    translation: "ما هي جنسيتك؟",
-    answers: [{ text: "I am Egyptian.", translation: "أنا مصري." }],
-  },
-  {
-    question: "What does enormous mean?",
-    translation: "ماذا تعني كلمة enormous؟",
-    answers: [
-      {
-        text: "Enormous means something is very big.",
-        translation: "Enormous تعني شيئاً كبيراً جداً.",
-      },
-    ],
-  },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function NationalitiesPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawNationalitiesData = levelData?.vocabulary?.NATIONALITIES_DATA || {
+    LANGUAGES: [],
+    PHRASES: [],
+  };
+
+  const filteredNationalitiesData = useMemo(() => {
+    const filterTerm = searchQuery.toLowerCase();
+
+    const filterLanguages = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.text.toLowerCase().includes(filterTerm) ||
+          item.translation.includes(searchQuery),
+      );
+
+    const filterPhrases = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.question.toLowerCase().includes(filterTerm) ||
+          item.translation.includes(searchQuery) ||
+          item.answers?.some(
+            (ans: any) =>
+              ans.text.toLowerCase().includes(filterTerm) ||
+              ans.translation.includes(searchQuery),
+          ),
+      );
+
+    return {
+      LANGUAGES: filterLanguages(rawNationalitiesData.LANGUAGES || []),
+      PHRASES: filterPhrases(rawNationalitiesData.PHRASES || []),
+    };
+  }, [rawNationalitiesData, searchQuery]);
+
+  const NATIONALITIES_DATA = filteredNationalitiesData;
+
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
   const { speak } = useSpeech();
@@ -82,6 +66,23 @@ export function NationalitiesPage() {
         </p>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search countries, languages or phrases..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       <section className="space-y-8">
         <div className="flex items-center gap-4 border-b border-white/5 pb-4">
           <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400">
@@ -92,7 +93,7 @@ export function NationalitiesPage() {
           </h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {LANGUAGES_DATA.map((lang) => (
+          {NATIONALITIES_DATA.LANGUAGES?.map((lang: any) => (
             <button
               key={lang.text}
               onClick={() => handleItemClick(lang.text)}
@@ -133,7 +134,7 @@ export function NationalitiesPage() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {PHRASES_DATA.map((phrase, idx) => (
+          {NATIONALITIES_DATA.PHRASES?.map((phrase: any, idx: number) => (
             <div
               key={idx}
               className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl"
@@ -156,7 +157,7 @@ export function NationalitiesPage() {
                 </div>
               </button>
               <div className="p-6 space-y-4">
-                {phrase.answers.map((ans, ansIdx) => (
+                {phrase.answers?.map((ans: any, ansIdx: number) => (
                   <button
                     key={ansIdx}
                     onClick={() => handleItemClick(ans.text)}

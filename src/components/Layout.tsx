@@ -212,34 +212,55 @@ export function Layout({ children }: PropsWithChildren) {
             />
 
             {levelModules.length > 0 && (
-              <>
-                <div className="mt-6 mb-3 px-3">
-                  <div
-                    className={`transition-all duration-300 ${isCollapsed ? "h-px bg-white/5 w-full" : "flex flex-col gap-2"}`}
-                  >
-                    {!isCollapsed && (
-                      <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                        Curriculum
-                        <span
-                          className={`px-1.5 py-0.5 rounded bg-linear-to-r ${currentLevel?.color} text-[8px] text-white`}
-                        >
-                          {currentLevel?.id}
-                        </span>
-                      </h2>
-                    )}
-                  </div>
-                </div>
+              <div className="flex flex-col gap-6">
+                {(
+                  [
+                    { key: "words", label: "Words & Letters" },
+                    { key: "sentences", label: "Sentences" },
+                    { key: "grammar", label: "Grammar" },
+                    { key: "tests", label: "Tests" },
+                  ] as const
+                ).map((category) => {
+                  const items = levelModules.filter(
+                    (m) => m.category === category.key,
+                  );
+                  if (items.length === 0) return null;
 
-                {levelModules.map((module) => (
-                  <NavItem
-                    key={module.to}
-                    to={module.to}
-                    icon={module.icon}
-                    label={module.title}
-                    isCollapsed={isCollapsed}
-                  />
-                ))}
-              </>
+                  return (
+                    <div key={category.key} className="flex flex-col gap-1.5">
+                      <div
+                        className={`px-3 mb-1.5 transition-all duration-300 ${
+                          isCollapsed
+                            ? "h-px bg-white/5 w-full"
+                            : "flex items-center gap-2"
+                        }`}
+                      >
+                        {!isCollapsed && (
+                          <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                            {category.label}
+                            {category.key === "words" && (
+                              <span
+                                className={`px-1.5 py-0.5 rounded bg-linear-to-r ${currentLevel?.color} text-[8px] text-white`}
+                              >
+                                {currentLevel?.id}
+                              </span>
+                            )}
+                          </h2>
+                        )}
+                      </div>
+                      {items.map((module) => (
+                        <NavItem
+                          key={module.to}
+                          to={module.to}
+                          icon={module.icon}
+                          label={module.title}
+                          isCollapsed={isCollapsed}
+                        />
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
             )}
 
             {levelModules.length === 0 && (

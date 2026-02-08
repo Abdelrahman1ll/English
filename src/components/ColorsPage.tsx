@@ -1,35 +1,31 @@
-import { useState } from "react";
-import { Volume2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Volume2, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-type ColorItem = {
-  name: string;
-  arabic: string;
-  hex: string;
-  textClass?: string;
-};
-
-const COLORS: ColorItem[] = [
-  { name: "Red", arabic: "أحمر", hex: "#ef4444" },
-  { name: "Blue", arabic: "أزرق", hex: "#3b82f6" },
-  { name: "Green", arabic: "أخضر", hex: "#22c55e" },
-  { name: "Yellow", arabic: "أصفر", hex: "#eab308" },
-  { name: "Orange", arabic: "برتقالي", hex: "#f97316" },
-  { name: "Purple", arabic: "بنفسجي", hex: "#a855f7" },
-  { name: "Pink", arabic: "وردي", hex: "#ec4899" },
-  { name: "Brown", arabic: "بني", hex: "#78350f" },
-  { name: "Black", arabic: "أسود", hex: "#000000" },
-  { name: "White", arabic: "أبيض", hex: "#ffffff", textClass: "text-black" },
-  { name: "Gray", arabic: "رمادي", hex: "#6b7280" },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function ColorsPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const rawColors = levelData?.vocabulary?.COLORS || [];
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredColors = useMemo(() => {
+    return rawColors.filter(
+      (color: any) =>
+        color.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        color.arabic.includes(searchQuery),
+    );
+  }, [rawColors, searchQuery]);
+
+  const COLORS = filteredColors;
+
   const [activeColor, setActiveColor] = useState<string | null>(null);
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleColorClick = (color: ColorItem) => {
+  const handleColorClick = (color: any) => {
     speak(color.name, () => setActiveColor(null));
     setActiveColor(color.name);
     setPracticeWord(color.name);
@@ -44,8 +40,25 @@ export function ColorsPage() {
         </p>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search colors in English or Arabic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {COLORS.map((color) => {
+        {COLORS.map((color: any) => {
           const isActive = activeWord === color.name;
           return (
             <button

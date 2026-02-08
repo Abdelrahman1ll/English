@@ -3,7 +3,6 @@ import {
   Calendar,
   Sparkles,
   Split,
-  Hand,
   Hash,
   Palette,
   Briefcase,
@@ -13,6 +12,10 @@ import {
   Shapes,
   Globe,
   Ghost,
+  MessageSquare,
+  Brain,
+  MessageCircle,
+  Search,
   type LucideIcon,
 } from "lucide-react";
 
@@ -20,6 +23,7 @@ export type Module = {
   title: string;
   to: string;
   icon: LucideIcon;
+  category: "words" | "sentences" | "grammar" | "tests";
   description?: string;
 };
 
@@ -32,6 +36,13 @@ export type LevelConfig = {
   fallback: string;
 };
 
+const SEARCH_MODULE = (levelId: string): Module => ({
+  to: `/${levelId}/search`,
+  icon: Search,
+  title: "Search & Practice",
+  category: "words",
+});
+
 export const LEVELS: LevelConfig[] = [
   {
     id: "A1",
@@ -41,20 +52,68 @@ export const LEVELS: LevelConfig[] = [
     color: "from-blue-400 to-indigo-400",
     fallback: "bg-blue-500",
     modules: [
-      { to: "/A1/alphabet", icon: CaseUpper, title: "Alphabet" },
-      { to: "/A1/digraphs", icon: Split, title: "Digraphs" },
-      { to: "/A1/magic-e", icon: Sparkles, title: "Magic E" },
-      { to: "/A1/silent-letters", icon: Ghost, title: "Silent Letters" },
-      { to: "/A1/numbers", icon: Hash, title: "Numbers" },
-      { to: "/A1/colors", icon: Palette, title: "Colors" },
-      { to: "/A1/shapes", icon: Shapes, title: "Shapes" },
-      { to: "/A1/greetings", icon: Hand, title: "Greetings" },
-      { to: "/A1/months", icon: Calendar, title: "Calendar" },
-      { to: "/A1/feelings", icon: Smile, title: "Feelings" },
-      { to: "/A1/jobs", icon: Briefcase, title: "Jobs" },
-      { to: "/A1/nationalities", icon: Globe, title: "Languages" },
-      { to: "/A1/describing", icon: User, title: "Describing People" },
-      { to: "/A1/grammar", icon: Book, title: "Grammar" },
+      {
+        to: "/A1/alphabet",
+        icon: CaseUpper,
+        title: "Alphabet",
+        category: "words",
+      },
+      SEARCH_MODULE("A1"),
+      { to: "/A1/digraphs", icon: Split, title: "Digraphs", category: "words" },
+      {
+        to: "/A1/magic-e",
+        icon: Sparkles,
+        title: "Magic E",
+        category: "words",
+      },
+      {
+        to: "/A1/silent-letters",
+        icon: Ghost,
+        title: "Silent Letters",
+        category: "words",
+      },
+      { to: "/A1/numbers", icon: Hash, title: "Numbers", category: "words" },
+      { to: "/A1/colors", icon: Palette, title: "Colors", category: "words" },
+      { to: "/A1/shapes", icon: Shapes, title: "Shapes", category: "words" },
+      {
+        to: "/A1/months",
+        icon: Calendar,
+        title: "Calendar",
+        category: "words",
+      },
+      { to: "/A1/feelings", icon: Smile, title: "Feelings", category: "words" },
+      { to: "/A1/jobs", icon: Briefcase, title: "Jobs", category: "words" },
+      {
+        to: "/A1/nationalities",
+        icon: Globe,
+        title: "Languages",
+        category: "words",
+      },
+      {
+        to: "/A1/describing",
+        icon: User,
+        title: "Describing People",
+        category: "words",
+      },
+      { to: "/A1/grammar", icon: Book, title: "Grammar", category: "grammar" },
+      {
+        to: "/A1/sentences",
+        icon: MessageSquare,
+        title: "Sentences",
+        category: "sentences",
+      },
+      {
+        to: "/A1/exercises",
+        icon: Brain,
+        title: "Exercises",
+        category: "tests",
+      },
+      {
+        to: "/A1/conversations",
+        icon: MessageCircle,
+        title: "Conversations",
+        category: "tests",
+      },
     ],
   },
   {

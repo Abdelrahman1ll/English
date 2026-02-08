@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Book, Volume2, AlertCircle, Quote } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Book, Volume2, AlertCircle, Quote, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
+import { LEVEL_DATA } from "../data/levels/index";
 
 type GrammarItem = {
   word: string;
@@ -10,181 +12,104 @@ type GrammarItem = {
   article: "a" | "an" | "none";
 };
 
-const EXAMPLES_A: GrammarItem[] = [
-  { word: "Car", arabic: "سيارة", article: "a" },
-  { word: "Book", arabic: "كتاب", article: "a" },
-  { word: "Girl", arabic: "بنت", article: "a" },
-  { word: "Computer", arabic: "كمبيوتر", article: "a" },
-];
+type QuizQuestion = {
+  question: string;
+  answer: string;
+  options: string[];
+};
 
-const EXAMPLES_AN: GrammarItem[] = [
-  { word: "Apple", arabic: "تفاحة", article: "an" },
-  { word: "Orange", arabic: "برتقالة", article: "an" },
-];
+type PluralExample = {
+  singular: string;
+  plural: string;
+  arabic: string;
+};
 
-const EXAMPLES_UNCOUNTABLE: GrammarItem[] = [
-  { word: "Oil", arabic: "زيت", article: "none" },
-  { word: "Tea", arabic: "شاي", article: "none" },
-  { word: "Sugar", arabic: "سكر", article: "none" },
-];
+type DemonstrativeGroup = {
+  title: string;
+  items: Array<{
+    text: string;
+    translation: string;
+    rule: string;
+  }>;
+  examples: Array<{
+    text: string;
+    translation: string;
+  }>;
+};
 
-const EXAMPLES_PLURAL: { singular: string; plural: string; arabic: string }[] =
-  [
-    { singular: "Book", plural: "Books", arabic: "كتب" },
-    { singular: "Car", plural: "Cars", arabic: "سيارات" },
-    { singular: "Rabbit", plural: "Rabbits", arabic: "أرانب" },
-    { singular: "Cat", plural: "Cats", arabic: "قطط" },
-    { singular: "Dog", plural: "Dogs", arabic: "كلاب" },
-  ];
+type PrepositionItem = {
+  text: string;
+  translation: string;
+};
 
-const PRONOUNS_QUIZ = [
-  {
-    question: "The train has stopped.",
-    answer: "It",
-    options: ["He", "It", "We", "They"],
-  },
-  {
-    question: "The dog ran behind the car.",
-    answer: "It",
-    options: ["He", "She", "It", "They"],
-  },
-  {
-    question: "Sita, Renu and Priya are friends.",
-    answer: "They",
-    options: ["He", "It", "We", "They"],
-  },
-  {
-    question: "Nitin And I had breakfast.",
-    answer: "We",
-    options: ["It", "He", "They", "We"],
-  },
-  {
-    question: "My dad is a doctor.",
-    answer: "He",
-    options: ["They", "It", "He", "She"],
-  },
-  {
-    question: "The man is reading a book.",
-    answer: "He",
-    options: ["It", "She", "They", "He"],
-  },
-  {
-    question: "Rosy is a bright student.",
-    answer: "She",
-    options: ["He", "She", "It", "They"],
-  },
-  {
-    question: "Mom, dad and me went to a party.",
-    answer: "We",
-    options: ["They", "We", "She", "It"],
-  },
-];
-
-const TO_BE_QUIZ = [
-  {
-    question: "My cat ___ black and white.",
-    answer: "is",
-    options: ["am", "is", "are"],
-  },
-  {
-    question: "Mum and Dad ___ away.",
-    answer: "are",
-    options: ["am", "is", "are"],
-  },
-  { question: "I ___ hungry.", answer: "am", options: ["am", "is", "are"] },
-  {
-    question: "The sun ___ yellow.",
-    answer: "is",
-    options: ["am", "is", "are"],
-  },
-  {
-    question: "We ___ from Denmark.",
-    answer: "are",
-    options: ["am", "is", "are"],
-  },
-  {
-    question: "You ___ in love with Bob.",
-    answer: "are",
-    options: ["am", "is", "are"],
-  },
-  {
-    question: "It ___ hot today.",
-    answer: "is",
-    options: ["am", "is", "are"],
-  },
-  {
-    question: "The people ___ noisy.",
-    answer: "are",
-    options: ["am", "is", "are"],
-  },
-];
-
-const DEMONSTRATIVES_DATA = [
-  {
-    title: "Near & Far (Singular)",
-    items: [
-      {
-        text: "This",
-        translation: "هذا / هذه (للقريب)",
-        category: "Near",
-        rule: "Singular",
-      },
-      {
-        text: "That",
-        translation: "ذلك / تلك (للبعيد)",
-        category: "Far",
-        rule: "Singular",
-      },
-    ],
-    examples: [
-      { text: "This is a piano.", translation: "هذا بيانو." },
-      { text: "That is a bird.", translation: "ذلك عصفور." },
-      { text: "This is a table.", translation: "هذه طاولة." },
-      { text: "That is a butterfly.", translation: "تلك فراشة." },
-    ],
-  },
-  {
-    title: "Near & Far (Plural)",
-    items: [
-      {
-        text: "These",
-        translation: "هؤلاء / هذه (للقريب)",
-        category: "Near",
-        rule: "Plural",
-      },
-      {
-        text: "Those",
-        translation: "أولئك / تلك (للبعيد)",
-        category: "Far",
-        rule: "Plural",
-      },
-    ],
-    examples: [
-      { text: "These are books.", translation: "هذه كتب." },
-      { text: "Those are trees.", translation: "تلك أشجار." },
-      { text: "These are candles.", translation: "هذه شموع." },
-      { text: "Those are carrots.", translation: "تلك جزر." },
-    ],
-  },
-];
-
-const PREPOSITIONS_DATA = [
-  { text: "In", translation: "في" },
-  { text: "Of", translation: "من / لـ" },
-  { text: "Onto", translation: "إلى / على" },
-  { text: "Behind", translation: "خلف" },
-  { text: "At", translation: "في / عند" },
-  { text: "For", translation: "لـ / لأجل" },
-  { text: "Above", translation: "فوق" },
-  { text: "Under", translation: "تحت" },
-  { text: "Into", translation: "إلى داخل" },
-  { text: "Over", translation: "فوق / عبر" },
-  { text: "From", translation: "من" },
-  { text: "Next to", translation: "بجانب" },
-  { text: "Across", translation: "عبر / في المقابل" },
-];
+type PrepositionExample = {
+  en: string;
+  ar: string;
+};
 
 export function GrammarPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawGrammarData = levelData?.grammar || {};
+
+  const filteredGrammarData = useMemo(() => {
+    const term = searchQuery.toLowerCase();
+
+    const filterArray = (items: any[], fields: string[]) =>
+      items.filter(
+        (item) =>
+          fields.some((field) =>
+            (item[field] || "").toLowerCase().includes(term),
+          ) ||
+          (item.arabic || item.ar || item.translation || "").includes(
+            searchQuery,
+          ),
+      );
+
+    return {
+      ARTICLES_DATA: {
+        A: filterArray(rawGrammarData.ARTICLES_DATA?.A || [], ["word"]),
+        AN: filterArray(rawGrammarData.ARTICLES_DATA?.AN || [], ["word"]),
+        UNCOUNTABLE: filterArray(
+          rawGrammarData.ARTICLES_DATA?.UNCOUNTABLE || [],
+          ["word"],
+        ),
+      },
+      PLURAL_EXAMPLES: filterArray(rawGrammarData.PLURAL_EXAMPLES || [], [
+        "singular",
+        "plural",
+      ]),
+      PREPOSITIONS_DATA: {
+        LIST: filterArray(rawGrammarData.PREPOSITIONS_DATA?.LIST || [], [
+          "text",
+        ]),
+        EXPLANATION_EXAMPLES: filterArray(
+          rawGrammarData.PREPOSITIONS_DATA?.EXPLANATION_EXAMPLES || [],
+          ["en"],
+        ),
+      },
+      // Keep other data as is as they are less suitable for simple keyword search in this context
+      PRONOUNS_QUIZ: rawGrammarData.PRONOUNS_QUIZ || [],
+      VERB_TO_BE_DATA: rawGrammarData.VERB_TO_BE_DATA || {
+        SINGULAR: [],
+        PLURAL: [],
+        QUIZ: [],
+      },
+      DEMONSTRATIVES_DATA: rawGrammarData.DEMONSTRATIVES_DATA || [],
+    };
+  }, [rawGrammarData, searchQuery]);
+
+  const {
+    ARTICLES_DATA,
+    PLURAL_EXAMPLES,
+    PRONOUNS_QUIZ,
+    VERB_TO_BE_DATA,
+    DEMONSTRATIVES_DATA,
+    PREPOSITIONS_DATA,
+  } = filteredGrammarData;
+
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: string }>({});
   const [toBeQuizAnswers, setToBeQuizAnswers] = useState<{
@@ -209,7 +134,7 @@ export function GrammarPage() {
   };
 
   const handleToBeQuizOptionClick = (questionIndex: number, option: string) => {
-    if (option === TO_BE_QUIZ[questionIndex].answer) {
+    if (option === VERB_TO_BE_DATA.QUIZ[questionIndex].answer) {
       speak("Correct!");
     } else {
       speak("Try again.");
@@ -289,6 +214,23 @@ export function GrammarPage() {
         </p>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search grammar rules, words or examples..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       {/* Section 1: The Rule (A) */}
       <section className="space-y-8">
         <div className="bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-4xl shadow-xl">
@@ -313,7 +255,9 @@ export function GrammarPage() {
             </span>
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {EXAMPLES_A.map((item) => renderCard(item, "emerald"))}
+            {ARTICLES_DATA.A.map((item: GrammarItem) =>
+              renderCard(item, "emerald"),
+            )}
           </div>
         </div>
       </section>
@@ -347,7 +291,9 @@ export function GrammarPage() {
             instead of "A".
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {EXAMPLES_AN.map((item) => renderCard(item, "amber"))}
+            {ARTICLES_DATA.AN.map((item: GrammarItem) =>
+              renderCard(item, "amber"),
+            )}
           </div>
         </div>
       </section>
@@ -371,7 +317,9 @@ export function GrammarPage() {
             use "a" or "an" with them.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {EXAMPLES_UNCOUNTABLE.map((item) => renderCard(item, "rose"))}
+            {ARTICLES_DATA.UNCOUNTABLE.map((item: GrammarItem) =>
+              renderCard(item, "rose"),
+            )}
           </div>
         </div>
       </section>
@@ -395,7 +343,7 @@ export function GrammarPage() {
             at the end.
           </p>
           <div className="grid grid-cols-1 gap-4">
-            {EXAMPLES_PLURAL.map((item) => (
+            {PLURAL_EXAMPLES.map((item: PluralExample) => (
               <button
                 key={item.singular}
                 onClick={() =>
@@ -459,7 +407,7 @@ export function GrammarPage() {
             </span>
           </p>
           <div className="space-y-4">
-            {PRONOUNS_QUIZ.map((q, idx) => {
+            {PRONOUNS_QUIZ.map((q: QuizQuestion, idx: number) => {
               const isAnswered = quizAnswers[idx] !== undefined;
               const isCorrect = quizAnswers[idx] === q.answer;
 
@@ -516,33 +464,30 @@ export function GrammarPage() {
                 Singular (واحد)
               </h4>
               <div className="space-y-3">
-                {[
-                  { en: "I am", ar: "أنا أكون" },
-                  { en: "He is", ar: "هو يكون" },
-                  { en: "She is", ar: "هي تكون" },
-                  { en: "It is", ar: "هو/هي (لغير العاقل) يكون" },
-                ].map((item) => (
-                  <button
-                    key={item.en}
-                    onClick={() => handleItemClick(item.en)}
-                    className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
-                      playingItem === item.en
-                        ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
-                        : "bg-white/2 border-transparent hover:bg-white/5"
-                    }`}
-                  >
-                    <span
-                      className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                {VERB_TO_BE_DATA.SINGULAR.map(
+                  (item: { en: string; ar: string }) => (
+                    <button
+                      key={item.en}
+                      onClick={() => handleItemClick(item.en)}
+                      className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
+                        playingItem === item.en
+                          ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
+                          : "bg-white/2 border-transparent hover:bg-white/5"
+                      }`}
                     >
-                      {item.en}
-                    </span>
-                    <span
-                      className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
-                    >
-                      {item.ar}
-                    </span>
-                  </button>
-                ))}
+                      <span
+                        className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                      >
+                        {item.en}
+                      </span>
+                      <span
+                        className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
+                      >
+                        {item.ar}
+                      </span>
+                    </button>
+                  ),
+                )}
               </div>
             </div>
             <div className="bg-black/20 p-5 sm:p-6 rounded-3xl border border-white/5">
@@ -550,32 +495,30 @@ export function GrammarPage() {
                 Plural (جمع)
               </h4>
               <div className="space-y-3">
-                {[
-                  { en: "We are", ar: "نحن نكون" },
-                  { en: "You are", ar: "أنت/أنتم تكونوا" },
-                  { en: "They are", ar: "هم يكونوا" },
-                ].map((item) => (
-                  <button
-                    key={item.en}
-                    onClick={() => handleItemClick(item.en)}
-                    className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
-                      playingItem === item.en
-                        ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
-                        : "bg-white/2 border-transparent hover:bg-white/5"
-                    }`}
-                  >
-                    <span
-                      className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                {VERB_TO_BE_DATA.PLURAL.map(
+                  (item: { en: string; ar: string }) => (
+                    <button
+                      key={item.en}
+                      onClick={() => handleItemClick(item.en)}
+                      className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
+                        playingItem === item.en
+                          ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
+                          : "bg-white/2 border-transparent hover:bg-white/5"
+                      }`}
                     >
-                      {item.en}
-                    </span>
-                    <span
-                      className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
-                    >
-                      {item.ar}
-                    </span>
-                  </button>
-                ))}
+                      <span
+                        className={`text-xl font-bold transition-colors ${playingItem === item.en ? "text-orange-400" : "text-white"}`}
+                      >
+                        {item.en}
+                      </span>
+                      <span
+                        className={`text-sm font-arabic transition-colors ${playingItem === item.en ? "text-white/70" : "text-neutral-500"}`}
+                      >
+                        {item.ar}
+                      </span>
+                    </button>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -585,7 +528,7 @@ export function GrammarPage() {
             Are?
           </h3>
           <div className="space-y-4">
-            {TO_BE_QUIZ.map((q, idx) => {
+            {VERB_TO_BE_DATA.QUIZ.map((q: QuizQuestion, idx: number) => {
               const isAnswered = toBeQuizAnswers[idx] !== undefined;
               const isCorrect = toBeQuizAnswers[idx] === q.answer;
 
@@ -644,7 +587,7 @@ export function GrammarPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {DEMONSTRATIVES_DATA.map((group) => (
+            {DEMONSTRATIVES_DATA.map((group: DemonstrativeGroup) => (
               <div key={group.title} className="space-y-8">
                 <h3 className="text-[10px] sm:text-xs font-black text-blue-400/50 uppercase tracking-[0.15em] sm:tracking-[0.3em] px-2 flex items-center gap-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />{" "}
@@ -740,7 +683,7 @@ export function GrammarPage() {
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-            {PREPOSITIONS_DATA.map((prep) => (
+            {PREPOSITIONS_DATA.LIST.map((prep: PrepositionItem) => (
               <button
                 key={prep.text}
                 onClick={() => handleItemClick(prep.text)}
@@ -770,45 +713,34 @@ export function GrammarPage() {
               world"
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                {
-                  en: "Barcelona is the best football team in the world.",
-                  ar: "برشلونة هو أفضل فريق كرة قدم في العالم.",
-                },
-                {
-                  en: "You are the best person in the world.",
-                  ar: "أنت أفضل شخص في العالم.",
-                },
-                {
-                  en: "You are the worst person in the world.",
-                  ar: "أنت أسوأ شخص في العالم.",
-                },
-              ].map((ex) => (
-                <button
-                  key={ex.en}
-                  onClick={() => handleItemClick(ex.en)}
-                  className={`p-5 sm:p-6 rounded-3xl transition-all border text-left group relative overflow-hidden ${
-                    playingItem === ex.en
-                      ? "bg-purple-500/10 border-purple-500/50 shadow-2xl scale-[1.02] z-10"
-                      : "bg-black/20 border-white/5 hover:bg-black/30 hover:border-purple-500/30 shadow-lg"
-                  }`}
-                >
-                  <div
-                    className={`text-lg sm:text-xl font-bold leading-relaxed ${playingItem === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+              {PREPOSITIONS_DATA.EXPLANATION_EXAMPLES.map(
+                (ex: PrepositionExample) => (
+                  <button
+                    key={ex.en}
+                    onClick={() => handleItemClick(ex.en)}
+                    className={`p-5 sm:p-6 rounded-3xl transition-all border text-left group relative overflow-hidden ${
+                      playingItem === ex.en
+                        ? "bg-purple-500/10 border-purple-500/50 shadow-2xl scale-[1.02] z-10"
+                        : "bg-black/20 border-white/5 hover:bg-black/30 hover:border-purple-500/30 shadow-lg"
+                    }`}
                   >
-                    {ex.en}
-                  </div>
-                  <div
-                    className={`text-base sm:text-lg font-arabic mt-3 ${playingItem === ex.en ? "text-white/70" : "text-neutral-500 group-hover:text-neutral-400"}`}
-                  >
-                    {ex.ar}
-                  </div>
-                  <Volume2
-                    size={18}
-                    className={`absolute top-4 right-4 transition-all ${playingItem === ex.en ? "text-white opacity-100 scale-110" : "text-neutral-800 opacity-0 group-hover:opacity-100"}`}
-                  />
-                </button>
-              ))}
+                    <div
+                      className={`text-lg sm:text-xl font-bold leading-relaxed ${playingItem === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+                    >
+                      {ex.en}
+                    </div>
+                    <div
+                      className={`text-base sm:text-lg font-arabic mt-3 ${playingItem === ex.en ? "text-white/70" : "text-neutral-500 group-hover:text-neutral-400"}`}
+                    >
+                      {ex.ar}
+                    </div>
+                    <Volume2
+                      size={18}
+                      className={`absolute top-4 right-4 transition-all ${playingItem === ex.en ? "text-white opacity-100 scale-110" : "text-neutral-800 opacity-0 group-hover:opacity-100"}`}
+                    />
+                  </button>
+                ),
+              )}
             </div>
           </div>
         </div>

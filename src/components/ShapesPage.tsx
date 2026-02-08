@@ -1,52 +1,18 @@
 import { useState, useRef } from "react";
-import {
-  Volume2,
-  Shapes,
-  Circle,
-  Square,
-  Triangle,
-  Octagon,
-  Box,
-  Cylinder,
-  Cone,
-  Pyramid,
-  Star,
-  Heart,
-  Diamond,
-  Gem,
-} from "lucide-react";
+import { useParams } from "react-router-dom";
+import { Volume2, Shapes } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-type ShapeItem = {
-  name: string;
-  arabic: string;
-  icon?: any;
-  cssClass?: string;
-};
-
-const SHAPES_2D: ShapeItem[] = [
-  { name: "Circle", arabic: "دائرة", icon: Circle },
-  { name: "Oval", arabic: "بيضاوي", cssClass: "rounded-[50%] w-12 h-8" }, // No generic Oval icon, using CSS
-  { name: "Square", arabic: "مربع", icon: Square },
-  { name: "Triangle", arabic: "مثلث", icon: Triangle },
-  { name: "Rectangle", arabic: "مستطيل", cssClass: "w-12 h-8 bg-current" }, // Using CSS for Rectangle to distinguish from Square
-  { name: "Star", arabic: "نجمة", icon: Star },
-  { name: "Heart", arabic: "قلب", icon: Heart },
-  { name: "Diamond", arabic: "دايموند", icon: Diamond },
-  { name: "Pentagon", arabic: "خماسي", icon: Gem }, // Placeholder or use CSS. Gem is close-ish or just generic
-  { name: "Octagon", arabic: "مثمن", icon: Octagon },
-];
-
-const SHAPES_3D: ShapeItem[] = [
-  { name: "Cube", arabic: "مكعب", icon: Box },
-  { name: "Sphere", arabic: "كروي", icon: Circle }, // Sphere looks like Circle 2D, but we can style it or use Circle
-  { name: "Cylinder", arabic: "أسطواني", icon: Cylinder },
-  { name: "Cone", arabic: "قرطاس", icon: Cone },
-  { name: "Pyramid", arabic: "هرم", icon: Pyramid },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function ShapesPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const SHAPES_DATA = levelData?.vocabulary?.SHAPES_DATA || {
+    "2D": [],
+    "3D": [],
+  };
+
   const { setPracticeWord, activeWord } = usePractice();
   // Using a local state for the "speaking" animation only, similar to ColorsPage
   const [speakingShape, setSpeakingShape] = useState<string | null>(null);
@@ -54,7 +20,7 @@ export function ShapesPage() {
   // Using a ref to track the last speech request ID, to prevent race conditions
   const lastSpeechId = useRef<number>(0);
 
-  const handleCardClick = (item: ShapeItem) => {
+  const handleCardClick = (item: any) => {
     // Cancel any ongoing speaking state immediately for UI responsiveness
     setSpeakingShape(item.name);
     setPracticeWord(item.name);
@@ -71,7 +37,7 @@ export function ShapesPage() {
     });
   };
 
-  const ShapeCard = ({ item }: { item: ShapeItem }) => {
+  const ShapeCard = ({ item }: { item: any }) => {
     const isActive = activeWord === item.name;
     const isSpeaking = speakingShape === item.name;
 
@@ -130,7 +96,7 @@ export function ShapesPage() {
           2D Shapes
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {SHAPES_2D.map((shape) => (
+          {SHAPES_DATA["2D"].map((shape) => (
             <ShapeCard key={shape.name} item={shape} />
           ))}
         </div>
@@ -141,7 +107,7 @@ export function ShapesPage() {
           3D Shapes
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {SHAPES_3D.map((shape) => (
+          {SHAPES_DATA["3D"].map((shape) => (
             <ShapeCard key={shape.name} item={shape} />
           ))}
         </div>

@@ -1,98 +1,54 @@
-import { Volume2, Hash } from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Volume2, Hash, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-type NumberItem = {
-  digit: string;
-  word: string;
-};
-
-const BASICS: NumberItem[] = [
-  { digit: "0", word: "Zero" },
-  { digit: "1", word: "One" },
-  { digit: "2", word: "Two" },
-  { digit: "3", word: "Three" },
-  { digit: "4", word: "Four" },
-  { digit: "5", word: "Five" },
-  { digit: "6", word: "Six" },
-  { digit: "7", word: "Seven" },
-  { digit: "8", word: "Eight" },
-  { digit: "9", word: "Nine" },
-  { digit: "10", word: "Ten" },
-];
-
-const TEENS: NumberItem[] = [
-  { digit: "11", word: "Eleven" },
-  { digit: "12", word: "Twelve" },
-  { digit: "13", word: "Thirteen" },
-  { digit: "14", word: "Fourteen" },
-  { digit: "15", word: "Fifteen" },
-  { digit: "16", word: "Sixteen" },
-  { digit: "17", word: "Seventeen" },
-  { digit: "18", word: "Eighteen" },
-  { digit: "19", word: "Nineteen" },
-];
-
-const TENS: NumberItem[] = [
-  { digit: "20", word: "Twenty" },
-  { digit: "30", word: "Thirty" },
-  { digit: "40", word: "Forty" },
-  { digit: "50", word: "Fifty" },
-  { digit: "60", word: "Sixty" },
-  { digit: "70", word: "Seventy" },
-  { digit: "80", word: "Eighty" },
-  { digit: "90", word: "Ninety" },
-];
-
-const BIG: NumberItem[] = [
-  { digit: "100", word: "Hundred" },
-  { digit: "1,000", word: "Thousand" },
-  { digit: "1m", word: "Million" },
-];
-
-const ORDINALS: (NumberItem & { arabic: string })[] = [
-  { digit: "1st", word: "First", arabic: "الأول" },
-  { digit: "2nd", word: "Second", arabic: "الثاني" },
-  { digit: "3rd", word: "Third", arabic: "الثالث" },
-  { digit: "4th", word: "Fourth", arabic: "الرابع" },
-  { digit: "5th", word: "Fifth", arabic: "خامس" },
-  { digit: "6th", word: "Sixth", arabic: "سادس" },
-  { digit: "7th", word: "Seventh", arabic: "سابع" },
-  { digit: "8th", word: "Eighth", arabic: "ثامن" },
-  { digit: "9th", word: "Ninth", arabic: "تاسع" },
-  { digit: "10th", word: "Tenth", arabic: "عاشر" },
-  { digit: "11th", word: "Eleventh", arabic: "الحادي عشر" },
-  { digit: "12th", word: "Twelfth", arabic: "الثاني عشر" },
-  { digit: "13th", word: "Thirteenth", arabic: "الثالث عشر" },
-  { digit: "14th", word: "Fourteenth", arabic: "الرابع عشر" },
-  { digit: "15th", word: "Fifteenth", arabic: "الخامس عشر" },
-  { digit: "16th", word: "Sixteenth", arabic: "السادس عشر" },
-  { digit: "17th", word: "Seventeenth", arabic: "السابع عشر" },
-  { digit: "18th", word: "Eighteenth", arabic: "الثامن عشر" },
-  { digit: "19th", word: "Nineteenth", arabic: "التاسع عشر" },
-  { digit: "20th", word: "Twentieth", arabic: "العشرون" },
-  { digit: "21st", word: "Twenty-first", arabic: "الحادي والعشرون" },
-  { digit: "22nd", word: "Twenty-second", arabic: "الثاني والعشرون" },
-  { digit: "23rd", word: "Twenty-third", arabic: "الثالث والعشرون" },
-  { digit: "24th", word: "Twenty-fourth", arabic: "الرابع والعشرون" },
-  { digit: "25th", word: "Twenty-fifth", arabic: "الخامس والعشرون" },
-  { digit: "26th", word: "Twenty-sixth", arabic: "السادس والعشرون" },
-  { digit: "27th", word: "Twenty-seventh", arabic: "السابع والعشرون" },
-  { digit: "28th", word: "Twenty-eighth", arabic: "الثامن والعشرون" },
-  { digit: "29th", word: "Twenty-ninth", arabic: "التاسع والعشرون" },
-  { digit: "30th", word: "Thirtieth", arabic: "الثلاثون" },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function NumbersPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawNumbersData = levelData?.vocabulary?.NUMBERS_DATA || {
+    BASICS: [],
+    TEENS: [],
+    TENS: [],
+    ORDINALS: [],
+    BIG: [],
+  };
+
+  const filteredNumbersData = useMemo(() => {
+    const term = searchQuery.toLowerCase();
+
+    const filter = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.word.toLowerCase().includes(term) ||
+          (item.arabic && item.arabic.includes(searchQuery)) ||
+          item.digit.toString().includes(term),
+      );
+
+    return {
+      BASICS: filter(rawNumbersData.BASICS || []),
+      TEENS: filter(rawNumbersData.TEENS || []),
+      TENS: filter(rawNumbersData.TENS || []),
+      ORDINALS: filter(rawNumbersData.ORDINALS || []),
+      BIG: filter(rawNumbersData.BIG || []),
+    };
+  }, [rawNumbersData, searchQuery]);
+
+  const NUMBERS_DATA = filteredNumbersData;
+
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleCardClick = (item: NumberItem) => {
+  const handleCardClick = (item: any) => {
     speak(item.word);
     setPracticeWord(item.word);
   };
 
-  const NumberCard = ({ item }: { item: NumberItem & { arabic?: string } }) => {
+  const NumberCard = ({ item }: { item: any }) => {
     const isActive = activeWord === item.word;
 
     return (
@@ -131,13 +87,32 @@ export function NumbersPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-500 pb-20">
-      <div className="border-b border-white/5 pb-6">
-        <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-          <Hash className="text-blue-400" /> Numbers
-        </h1>
-        <p className="text-neutral-400 mt-2">
-          Count from zero to a million and master ordinals.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5">
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+            <Hash className="text-blue-400" /> Numbers
+          </h1>
+          <p className="text-neutral-400 mt-2">
+            Count from zero to a million and master ordinals.
+          </p>
+        </div>
+
+        <div className="relative group w-full md:w-80 shrink-0">
+          <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+          <div className="relative">
+            <Search
+              className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Search numbers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-4 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -145,7 +120,7 @@ export function NumbersPage() {
           Basics (0-10)
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-          {BASICS.map((item) => (
+          {NUMBERS_DATA.BASICS.map((item: any) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -156,7 +131,7 @@ export function NumbersPage() {
           The Teens (11-19)
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {TEENS.map((item) => (
+          {NUMBERS_DATA.TEENS.map((item: any) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -167,7 +142,7 @@ export function NumbersPage() {
           The Tens
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
-          {TENS.map((item) => (
+          {NUMBERS_DATA.TENS.map((item: any) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -178,7 +153,7 @@ export function NumbersPage() {
           Ordinal Numbers
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
-          {ORDINALS.map((item) => (
+          {NUMBERS_DATA.ORDINALS.map((item: any) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -189,7 +164,7 @@ export function NumbersPage() {
           Big Numbers
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {BIG.map((item) => (
+          {NUMBERS_DATA.BIG.map((item: any) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>

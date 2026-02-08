@@ -1,199 +1,43 @@
-import { useState } from "react";
-import {
-  Volume2,
-  User,
-  Ruler,
-  Calendar,
-  Star,
-  Smile,
-  Dumbbell,
-  Scissors,
-  Search,
-} from "lucide-react";
+import { useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Volume2, User, Search, Smile, Star } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-type DescribingItem = {
-  text: string;
-  translation?: string;
-  note?: string;
-};
-
-type DescribingCategory = {
-  title: string;
-  icon: any;
-  items: DescribingItem[];
-};
-
-const DESCRIBING_SENTENCES: DescribingItem[] = [
-  {
-    text: "He's the most handsome man I've ever met.",
-    translation: "إنه أكثر رجل وسيم قابلته على الإطلاق",
-  },
-  {
-    text: "That's a cute little baby.",
-    translation: "هذا طفل صغير جذاب",
-  },
-  {
-    text: "She was looking pale and thin.",
-    translation: "كانت تبدو شاحبة ونحيفة",
-  },
-  {
-    text: "He's a tall man.",
-    translation: "إنه رجل طويل",
-  },
-  {
-    text: "What about your big muscular trainer?",
-    translation: "ماذا عن مدربك ذو العضلات؟",
-  },
-  {
-    text: "He is a very short man.",
-    translation: "إنه رجل قصير جداً",
-  },
-  {
-    text: "You see that short-haired boy over there.",
-    translation: "أتري هذا الفتى ذو الشعر القصير هناك",
-  },
-  {
-    text: "I was talking about the long-haired man.",
-    translation: "كنت أتحدث عن الرجل ذو الشعر الطويل",
-  },
-  {
-    text: "The bald man is the owner of the house.",
-    translation: "الرجل الأصلع هو صاحب المنزل",
-  },
-];
-
-const VOCABULARY_DATA: DescribingCategory[] = [
-  {
-    title: "General Looks",
-    icon: Smile,
-    items: [
-      { text: "Good-looking", translation: "حسن المظهر" },
-      { text: "Handsome", translation: "وسيم" },
-      { text: "Ugly", translation: "قبيح" },
-      { text: "Cute", translation: "جذاب" },
-      { text: "Attractive", translation: "جذاب" },
-      { text: "Pretty", translation: "جميل" },
-      { text: "Well-dressed", translation: "أنيق" },
-    ],
-  },
-  {
-    title: "Body Build",
-    icon: Dumbbell,
-    items: [
-      { text: "Obese", translation: "بدين (وزن زائد)" },
-      { text: "Overweight", translation: "سمين" },
-      { text: "Well-built", translation: "قوي الجسم" },
-      { text: "Fat", translation: "بدين" },
-    ],
-  },
-  {
-    title: "Height",
-    icon: Ruler,
-    items: [
-      { text: "Tall", translation: "طويل" },
-      { text: "Short", translation: "قصير" },
-      { text: "Medium height", translation: "متوسط القامة" },
-    ],
-  },
-  {
-    title: "Age",
-    icon: Calendar,
-    items: [
-      { text: "Old", translation: "كبير السن" },
-      { text: "Young", translation: "صغير السن / يافع" },
-      { text: "Middle-aged", translation: "في منتصف العمر" },
-    ],
-  },
-  {
-    title: "Hair & Face",
-    icon: Scissors,
-    items: [
-      { text: "Bald-headed", translation: "أصلع الرأس" },
-      { text: "Beard", translation: "لحية" },
-      { text: "Moustache", translation: "شارب" },
-      { text: "Long hair", translation: "شعر طويل" },
-    ],
-  },
-];
-
-const CHARACTER_SENTENCES: DescribingItem[] = [
-  {
-    text: "Brave Policeman Arrests Drug Tycoon.",
-    translation: "شرطي شجاع يعتقل تاجر المخدرات",
-  },
-  {
-    text: "You have a chatty doorman.",
-    translation: "لديكم بواب ثرثار (كثير الكلام)",
-  },
-  {
-    text: "Adnan is a very clever student. He always gets top scores.",
-    translation: "عدنان طالب ماهر جداً. دائماً يحصل على أعلى الدرجات",
-  },
-  {
-    text: "Ahmed is a bit of a coward. He really hates going to the dentist!",
-    translation: "أحمد جبان نوعاً ما. هو حقاً يكره الذهاب إلى طبيب الأسنان!",
-  },
-  {
-    text: "The people in my office are friendly! I love working there!",
-    translation: "الناس في مكتبي ودودون! أنا أحب العمل هناك!",
-  },
-  {
-    text: "Adnan is a funny person! He always entertains me with jokes!",
-    translation: "عدنان شخص مضحك! دائماً يمتعني بالنكات!",
-  },
-  {
-    text: "My parents are very generous.",
-    translation: "والداي كرماء جداً",
-  },
-  {
-    text: "My boss is grumpy.",
-    translation: "مديري حاد الطبع (نكد)",
-  },
-  {
-    text: "Mahmoud is very honest. He always tells me the truth.",
-    translation: "محمود صادق جداً. دائماً يقول لي الحقيقة",
-  },
-  {
-    text: "My father is a kind man.",
-    translation: "والدي رجل طيب",
-  },
-  {
-    text: "Sara is loud! When she talks.",
-    translation: "سارة صوتها عالٍ (مزعجة) عندما تتحدث",
-  },
-  {
-    text: "Ali is very stingy. He spends a little on his children.",
-    translation: "علي بخيل جداً. ينفق القليل على أولاده",
-  },
-  {
-    text: "Mona is very moody. Now she says hello; yesterday she ignored me!",
-    translation: "منى مزاجية جداً. الآن تقول مرحباً، وبالأمس تجاهلتني!",
-  },
-  {
-    text: "I don't like nasty people.",
-    translation: "أنا لا أحب الناس السيئة",
-  },
-  {
-    text: "My daughter is very neat and organized.",
-    translation: "ابنتي مرتبة ومنظمة جداً",
-  },
-  {
-    text: "My son is a very polite boy.",
-    translation: "ابني فتى مهذب للغاية",
-  },
-  {
-    text: "She is a quiet girl.",
-    translation: "إنها فتاة هادئة",
-  },
-  {
-    text: "Ayman is a rude boy. He doesn't respect the adults.",
-    translation: "أيمن فتى غير مهذب. إنه لا يحترم الكبار",
-  },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function DescribingPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawDescribingData = levelData?.vocabulary?.DESCRIBING_DATA || {
+    PHYSICAL: [],
+    CHARACTER_SENTENCES: [],
+    VOCABULARY: [],
+  };
+
+  const filteredDescribingData = useMemo(() => {
+    const term = searchQuery.toLowerCase();
+
+    const filter = (items: any[]) =>
+      items.filter(
+        (item) =>
+          item.text.toLowerCase().includes(term) ||
+          item.translation.includes(searchQuery),
+      );
+
+    return {
+      PHYSICAL: filter(rawDescribingData.PHYSICAL),
+      CHARACTER_SENTENCES: filter(rawDescribingData.CHARACTER_SENTENCES),
+      VOCABULARY: rawDescribingData.VOCABULARY.map((cat: any) => ({
+        ...cat,
+        items: filter(cat.items),
+      })).filter((cat: any) => cat.items.length > 0),
+    };
+  }, [rawDescribingData, searchQuery]);
+
+  const DESCRIBING_DATA = filteredDescribingData;
+
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord } = usePractice();
   const { speak } = useSpeech();
@@ -215,6 +59,23 @@ export function DescribingPage() {
         </p>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search descriptions, traits or words..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       {/* Appearances Section */}
       <section className="space-y-8">
         <div className="flex items-center gap-4 border-b border-white/5 pb-4">
@@ -226,7 +87,7 @@ export function DescribingPage() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {DESCRIBING_SENTENCES.map((item) => (
+          {DESCRIBING_DATA.PHYSICAL.map((item: any) => (
             <button
               key={item.text}
               onClick={() => handleCardClick(item.text)}
@@ -267,7 +128,7 @@ export function DescribingPage() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {CHARACTER_SENTENCES.map((item) => (
+          {DESCRIBING_DATA.CHARACTER_SENTENCES.map((item: any) => (
             <button
               key={item.text}
               onClick={() => handleCardClick(item.text)}
@@ -309,7 +170,7 @@ export function DescribingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {VOCABULARY_DATA.map((category) => (
+          {DESCRIBING_DATA.VOCABULARY.map((category: any) => (
             <div
               key={category.title}
               className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-xl"
@@ -323,7 +184,7 @@ export function DescribingPage() {
                 </h3>
               </div>
               <div className="p-4 flex flex-col gap-2">
-                {category.items.map((item) => (
+                {category.items.map((item: any) => (
                   <button
                     key={item.text}
                     onClick={() => handleCardClick(item.text)}

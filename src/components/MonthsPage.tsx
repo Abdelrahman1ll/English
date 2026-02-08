@@ -1,119 +1,43 @@
-import { useState, useEffect } from "react";
-import { Calendar, Clock, Volume2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { Calendar, Clock, Volume2, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-
-// Data structures
-const MONTHS_DATA = [
-  { name: "January", arabic: "يناير" },
-  { name: "February", arabic: "فبراير" },
-  { name: "March", arabic: "مارس" },
-  { name: "April", arabic: "أبريل" },
-  { name: "May", arabic: "مايو" },
-  { name: "June", arabic: "يونيو" },
-  { name: "July", arabic: "يوليو" },
-  { name: "August", arabic: "أغسطس" },
-  { name: "September", arabic: "سبتمبر" },
-  { name: "October", arabic: "أكتوبر" },
-  { name: "November", arabic: "نوفمبر" },
-  { name: "December", arabic: "ديسمبر" },
-];
-
-const DAYS_DATA = [
-  {
-    name: "Monday",
-    arabic: "الاثنين",
-    sentence: "Monday is the first day of the week.",
-    sentenceTranslation: "الاثنين هو اليوم الأول من الأسبوع.",
-  },
-  {
-    name: "Tuesday",
-    arabic: "الثلاثاء",
-    sentence: "Tuesday is the second day of the week.",
-    sentenceTranslation: "الثلاثاء هو اليوم الثاني من الأسبوع.",
-  },
-  {
-    name: "Wednesday",
-    arabic: "الأربعاء",
-    sentence: "Wednesday is the third day of the week.",
-    sentenceTranslation: "الأربعاء هو اليوم الثالث من الأسبوع.",
-  },
-  {
-    name: "Thursday",
-    arabic: "الخميس",
-    sentence: "Thursday is the fourth day of the week.",
-    sentenceTranslation: "الخميس هو اليوم الرابع من الأسبوع.",
-  },
-  {
-    name: "Friday",
-    arabic: "الجمعة",
-    sentence: "Friday is the fifth day of the week.",
-    sentenceTranslation: "الجمعة هو اليوم الخامس من الأسبوع.",
-  },
-  {
-    name: "Saturday",
-    arabic: "السبت",
-    sentence: "Saturday is the sixth day of the week.",
-    sentenceTranslation: "السبت هو اليوم السادس من الأسبوع.",
-  },
-  {
-    name: "Sunday",
-    arabic: "الأحد",
-    sentence: "Sunday is the seventh day of the week.",
-    sentenceTranslation: "الأحد هو اليوم السابع من الأسبوع.",
-  },
-];
-
-const TIME_VOCABULARY = [
-  {
-    category: "Periods of Time",
-    items: [
-      { text: "Morning", translation: "الصباح" },
-      { text: "Noon", translation: "الظهر" },
-      { text: "Afternoon", translation: "بعد الظهر" },
-      { text: "Evening", translation: "المساء" },
-      { text: "Night", translation: "الليل" },
-      { text: "Midnight", translation: "منتصف الليل" },
-      { text: "Midday", translation: "منتصف النهار" },
-      { text: "Daylight", translation: "ضوء النهار" },
-      { text: "Daytime", translation: "النهار" },
-    ],
-  },
-  {
-    category: "Duration & Frequency",
-    items: [
-      { text: "Hour", translation: "ساعة" },
-      { text: "Half an hour", translation: "نصف ساعة" },
-      { text: "Day-to-day", translation: "من يوم إلى آخر" },
-      { text: "Fortnight", translation: "أسبوعين" },
-      { text: "Decade", translation: "عقد (10 سنوات)" },
-      { text: "Annual", translation: "سنوي" },
-      { text: "Annually", translation: "سنوياً" },
-      { text: "Daily", translation: "يومياً" },
-      { text: "Hourly", translation: "كل ساعة" },
-      { text: "Frequent", translation: "متكرر" },
-      { text: "Continuously", translation: "باستمرار" },
-    ],
-  },
-  {
-    category: "Relative Time",
-    items: [
-      { text: "Ago", translation: "منذ / في الماضي" },
-      { text: "Ahead of", translation: "سابق لـ" },
-      { text: "Behind time", translation: "متأخر" },
-      { text: "Early", translation: "في وقت مبكر" },
-      { text: "Late", translation: "متأخر" },
-      { text: "Future", translation: "المستقبل" },
-      { text: "Recent", translation: "حديث / جديد" },
-      { text: "Just", translation: "فقط / تماماً" },
-      { text: "At the same time", translation: "في نفس الوقت" },
-      { text: "In the end", translation: "في النهاية / أخيراً" },
-      { text: "For the moment", translation: "في الوقت الحالي" },
-    ],
-  },
-];
+import { LEVEL_DATA } from "../data/levels/index";
 
 export function MonthsPage() {
+  const { levelId } = useParams();
+  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const rawCalendarData = levelData?.vocabulary?.CALENDAR_DATA || {
+    MONTHS: [],
+    DAYS: [],
+    TIME_VOCABULARY: [],
+  };
+
+  const filteredCalendarData = useMemo(() => {
+    const term = searchQuery.toLowerCase();
+
+    const filterItems = (items: any[]) =>
+      items.filter(
+        (item) =>
+          (item.name || item.text || "").toLowerCase().includes(term) ||
+          (item.arabic || item.translation || "").includes(searchQuery),
+      );
+
+    return {
+      MONTHS: filterItems(rawCalendarData.MONTHS),
+      DAYS: filterItems(rawCalendarData.DAYS),
+      TIME_VOCABULARY: rawCalendarData.TIME_VOCABULARY.map((cat: any) => ({
+        ...cat,
+        items: filterItems(cat.items),
+      })).filter((cat: any) => cat.items.length > 0),
+    };
+  }, [rawCalendarData, searchQuery]);
+
+  const CALENDAR_DATA = filteredCalendarData;
+
   const [activeTab, setActiveTab] = useState<"months" | "days">("months");
   const [activeWord, setActiveWord] = useState<string | null>(null);
   const [playingItem, setPlayingItem] = useState<string | null>(null);
@@ -153,6 +77,23 @@ export function MonthsPage() {
         </div>
       </div>
 
+      <div className="relative group max-w-2xl">
+        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+        <div className="relative">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+            size={24}
+          />
+          <input
+            type="text"
+            placeholder="Search months, days or time..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+          />
+        </div>
+      </div>
+
       <div className="flex gap-4 border-b border-white/5 pb-1">
         <button
           onClick={() => setActiveTab("months")}
@@ -174,7 +115,7 @@ export function MonthsPage() {
           {activeTab === "months" && (
             <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {MONTHS_DATA.map((month) => (
+                {CALENDAR_DATA.MONTHS.map((month: any) => (
                   <button
                     key={month.name}
                     onClick={() => handleWordClick(month.name)}
@@ -205,7 +146,7 @@ export function MonthsPage() {
                   Week
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {DAYS_DATA.map((day) => (
+                  {CALENDAR_DATA.DAYS.map((day: any) => (
                     <button
                       key={day.name}
                       onClick={() => handleWordClick(day.name, day.sentence)}
@@ -245,7 +186,7 @@ export function MonthsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {TIME_VOCABULARY.map((category) => (
+                  {CALENDAR_DATA.TIME_VOCABULARY.map((category: any) => (
                     <div
                       key={category.category}
                       className="bg-[#1e1e1e] border border-white/5 rounded-3xl overflow-hidden flex flex-col shadow-xl"
@@ -256,7 +197,7 @@ export function MonthsPage() {
                         </h3>
                       </div>
                       <div className="p-4 flex flex-col gap-2">
-                        {category.items.map((item) => (
+                        {category.items.map((item: any) => (
                           <button
                             key={item.text}
                             onClick={() => handleVocabClick(item.text)}
