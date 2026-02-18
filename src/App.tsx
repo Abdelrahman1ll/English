@@ -25,10 +25,10 @@ import { LandingPage } from "./components/LandingPage";
 
 import { LevelProvider } from "./context/LevelContext";
 import { PracticeProvider } from "./context/PracticeContext";
-// import { useDeviceTracking } from "./hooks/useDeviceTracking";
+import { useDeviceTracking } from "./hooks/useDeviceTracking";
 
 function App() {
-  // useDeviceTracking();
+  useDeviceTracking();
   return (
     <LevelProvider>
       <PracticeProvider>
