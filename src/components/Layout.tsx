@@ -10,6 +10,7 @@ import {
   PanelLeftOpen,
   Menu,
   X,
+  Bot,
 } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
@@ -209,6 +210,12 @@ export function Layout({ children }: PropsWithChildren) {
               to={currentLevel ? `/${currentLevel.id}/home` : "/"}
               icon={House}
               label="Home"
+              isCollapsed={isCollapsed}
+            />
+            <NavItem
+              to={currentLevel ? `/${currentLevel.id}/ai-assistant` : "/"}
+              icon={Bot}
+              label="AI Mentor"
               isCollapsed={isCollapsed}
             />
 

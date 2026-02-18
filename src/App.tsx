@@ -22,6 +22,7 @@ import { ExercisesPage } from "./components/ExercisesPage";
 import { ConversationsPage } from "./components/ConversationsPage";
 import { SearchPage } from "./components/SearchPage";
 import { LandingPage } from "./components/LandingPage";
+import { AIAssistantPage } from "./components/AIAssistantPage";
 
 import { LevelProvider } from "./context/LevelContext";
 import { PracticeProvider } from "./context/PracticeContext";
@@ -80,6 +81,10 @@ function App() {
           <Route
             path="/:levelId/conversations"
             element={<ConversationsPage />}
+          />
+          <Route
+            path="/:levelId/ai-assistant"
+            element={<AIAssistantPage />}
           />
         </Routes>
       </Layout>

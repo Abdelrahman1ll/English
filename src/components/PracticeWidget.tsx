@@ -234,30 +234,38 @@ export function PracticeWidget() {
       const currentText = (final || interim).trim().toLowerCase();
       const target = activeWord.toLowerCase();
 
+      // Advanced Normalization: Remove punctuation, extra spaces, and handle common auditory confusions
       const normalize = (s: string) =>
-        s.toLowerCase().replace(/[^a-z0-9]/g, "");
+        s.toLowerCase()
+          .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+
       const normResult = normalize(currentText);
+      const normTarget = normalize(target);
 
-      // 1. Exact/Close Match?
-      let isCorrect = isFuzzyMatch(normResult, normalize(target));
+      // 1. Exact or Fuzzy Text Match
+      let isCorrect = isFuzzyMatch(normResult, normTarget);
 
-      // 2. Phonetic Match?
-      if (activePhonetics) {
-        const foundName =
-          isFuzzyMatch(normResult, normalize(activePhonetics.name)) ||
-          isFuzzyMatch(normResult, normalize(activeWord));
+      // 2. Phonetic / Sound Validation
+      if (!isCorrect && activePhonetics) {
+        const normName = normalize(activePhonetics.name);
+        const normSound = normalize(activePhonetics.sound);
+        
+        // Match against word name OR sound
+        const foundName = isFuzzyMatch(normResult, normName) || isFuzzyMatch(normResult, normTarget);
+        const foundSound = isFuzzyMatch(normResult, normSound) || 
+                          activePhonetics.soundAlternatives?.some(alt => isFuzzyMatch(normResult, normalize(alt)));
 
-        const foundSound =
-          isFuzzyMatch(normResult, normalize(activePhonetics.sound)) ||
-          activePhonetics.soundAlternatives?.some((alt) =>
-            isFuzzyMatch(normResult, normalize(alt)),
-          );
+        // For digraphs/phonics, if they say the sound OR the name, it's often counted as "learning"
+        // but for strict validation we can require both or just one.
+        // Rule: If result matches sound or name closely, it's correct.
+        if (foundName || foundSound) isCorrect = true;
+      }
 
-        if (foundName && foundSound) isCorrect = true;
-        // If partial match
-        else if (foundName || foundSound) {
-          // partial logic
-        }
+      // 3. Fallback: If the target is contained in the result (common for voice engines prefixing/suffixing)
+      if (!isCorrect && normResult.includes(normTarget) && normTarget.length > 2) {
+        isCorrect = true;
       }
 
       if (isCorrect) {
