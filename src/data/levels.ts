@@ -18,6 +18,128 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+export interface VocabularyItem {
+  word?: string;
+  en?: string;
+  singular?: string;
+  text?: string;
+  name?: string;
+  english?: string;
+  arabic?: string;
+  ar?: string;
+  translation?: string;
+  plural?: string;
+  article?: string;
+  note?: string;
+  image?: string;
+  [key: string]: unknown;
+}
+
+export interface Category {
+  title: string;
+  icon: LucideIcon;
+  items: VocabularyItem[];
+}
+
+export interface SentenceItem {
+  english: string;
+  arabic: string;
+  category: string;
+  icon: LucideIcon;
+  note?: string;
+}
+
+export interface Question {
+  question: string;
+  options: string[];
+  answer: string;
+}
+
+export interface Test {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  questions: Question[];
+}
+
+export interface DialogueLine {
+  speaker: string;
+  text: string;
+  arabic: string;
+}
+
+export interface Conversation {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  dialogue: DialogueLine[];
+}
+
+export interface GrammarData {
+  readonly ARTICLES_DATA?: {
+    readonly A: readonly VocabularyItem[];
+    readonly AN: readonly VocabularyItem[];
+    readonly UNCOUNTABLE: readonly VocabularyItem[];
+  };
+  readonly PLURAL_EXAMPLES?: ReadonlyArray<{
+    readonly singular: string;
+    readonly plural: string;
+    readonly arabic: string;
+  }>;
+  readonly PRONOUNS_QUIZ?: ReadonlyArray<{
+    readonly question: string;
+    readonly answer: string;
+    readonly options: readonly string[];
+  }>;
+  readonly VERB_TO_BE_DATA?: {
+    readonly SINGULAR: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
+    readonly PLURAL: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
+    readonly QUIZ: ReadonlyArray<{
+      readonly question: string;
+      readonly answer: string;
+      readonly options: readonly string[];
+    }>;
+  };
+  readonly DEMONSTRATIVES_DATA?: ReadonlyArray<{
+    readonly title: string;
+    readonly items: ReadonlyArray<{
+      readonly text: string;
+      readonly translation: string;
+      readonly category: string;
+      readonly rule: string;
+    }>;
+    readonly examples: ReadonlyArray<{
+      readonly text: string;
+      readonly translation: string;
+    }>;
+  }>;
+  readonly PREPOSITIONS_DATA?: {
+    readonly LIST: ReadonlyArray<{ readonly text: string; readonly translation: string }>;
+    readonly EXPLANATION_EXAMPLES: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
+  };
+}
+
+export interface ExercisesData {
+  GRAMMAR_TESTS: Test[];
+  VOCAB_TESTS: Test[];
+  [key: string]: unknown;
+}
+
+export interface ConversationsData {
+  CONVERSATIONS_DATA: Conversation[];
+  [key: string]: unknown;
+}
+
+export interface LevelData {
+  vocabulary: Record<string, VocabularyItem[] | unknown>;
+  grammar: GrammarData;
+  sentences: Record<string, SentenceItem[] | unknown>;
+  exercises: ExercisesData;
+  conversations: ConversationsData;
+}
+
 export type Module = {
   title: string;
   to: string;

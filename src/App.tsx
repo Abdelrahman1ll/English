@@ -24,13 +24,15 @@ import { SearchPage } from "./components/SearchPage";
 import { LandingPage } from "./components/LandingPage";
 
 import { LevelProvider } from "./context/LevelContext";
-import { useDeviceTracking } from "./hooks/useDeviceTracking";
+import { PracticeProvider } from "./context/PracticeContext";
+// import { useDeviceTracking } from "./hooks/useDeviceTracking";
 
 function App() {
-  useDeviceTracking();
+  // useDeviceTracking();
   return (
     <LevelProvider>
-      <Layout>
+      <PracticeProvider>
+        <Layout>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/:levelId/home" element={<HomePage />} />
@@ -81,6 +83,7 @@ function App() {
           />
         </Routes>
       </Layout>
+    </PracticeProvider>
     </LevelProvider>
   );
 }

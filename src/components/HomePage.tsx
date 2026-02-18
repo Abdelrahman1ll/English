@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
-  ChevronRight,
   Search,
   Volume2,
-  Brain,
-  Sparkles,
   Filter,
-  BookOpen,
-  MessageSquare,
-  LayoutGrid,
-  Files,
-  MessageCircle,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
 import { useLevel } from "../context/LevelContext";
 import { useSearch } from "../hooks/useSearch";
@@ -21,7 +15,6 @@ import { usePractice } from "../context/PracticeContext";
 import { SearchOverlay } from "./SearchOverlay";
 
 export function HomePage() {
-  const { levelId } = useParams();
   const { currentLevel } = useLevel();
   const { searchTerm, setSearchTerm, filteredItems } = useSearch(
     currentLevel?.id,
@@ -30,50 +23,31 @@ export function HomePage() {
   const { setPracticeWord, activeWord } = usePractice();
   const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null);
 
-  const quickLinks = [
-    {
-      title: "Alphabet",
-      icon: BookOpen,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      to: `/${levelId}/alphabet`,
-    },
-    {
-      title: "Word Bank",
-      icon: Files,
-      color: "text-emerald-400",
-      bg: "bg-emerald-400/10",
-      to: `/${levelId}/word-bank`,
-    },
-    {
-      title: "Phrases",
-      icon: MessageCircle,
-      color: "text-pink-400",
-      bg: "bg-pink-400/10",
-      to: `/${levelId}/common-social`,
-    },
-    {
-      title: "Grammar",
-      icon: Brain,
-      color: "text-purple-400",
-      bg: "bg-purple-400/10",
-      to: `/${levelId}/grammar`,
-    },
-    {
-      title: "Exercises",
-      icon: LayoutGrid,
-      color: "text-indigo-400",
-      bg: "bg-indigo-400/10",
-      to: `/${levelId}/exercises/grammar`,
-    },
-    {
-      title: "Dialogues",
-      icon: MessageSquare,
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
-      to: `/${levelId}/conversations`,
-    },
-  ];
+  const categories = [
+    { key: "words", label: "Words & Letters" },
+    { key: "sentences", label: "Sentences" },
+    { key: "grammar", label: "Grammar" },
+    { key: "tests", label: "Tests" },
+  ] as const;
+
+  const getModuleStyle = (title: string) => {
+    const styles: Record<string, { color: string; bg: string }> = {
+      Alphabet: { color: "text-blue-400", bg: "bg-blue-400/10" },
+      Basics: { color: "text-cyan-400", bg: "bg-cyan-400/10" },
+      Numbers: { color: "text-orange-400", bg: "bg-orange-400/10" },
+      Colors: { color: "text-rose-400", bg: "bg-rose-400/10" },
+      Shapes: { color: "text-pink-400", bg: "bg-pink-400/10" },
+      Calendar: { color: "text-lime-400", bg: "bg-lime-400/10" },
+      Feelings: { color: "text-red-400", bg: "bg-red-400/10" },
+      Jobs: { color: "text-yellow-400", bg: "bg-yellow-400/10" },
+      Grammar: { color: "text-purple-400", bg: "bg-purple-400/10" },
+      Exercises: { color: "text-indigo-400", bg: "bg-indigo-400/10" },
+      Dialogues: { color: "text-amber-400", bg: "bg-amber-400/10" },
+      "Word Bank": { color: "text-emerald-400", bg: "bg-emerald-400/10" },
+      Phrases: { color: "text-pink-400", bg: "bg-pink-400/10" },
+    };
+    return styles[title] || { color: "text-blue-400", bg: "bg-blue-400/10" };
+  };
 
   return (
     <div className="space-y-16 py-8 animate-in fade-in duration-700">
@@ -203,35 +177,52 @@ export function HomePage() {
             )}
           </section>
 
-          {/* Quick Access Grid */}
+          {/* Categorized Lesson Grid */}
           {!searchTerm && (
-            <section className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-center gap-4">
-                <h3 className="text-sm font-black text-neutral-600 uppercase tracking-[0.2em]">
-                  Quick Access
-                </h3>
-                <div className="h-px flex-1 bg-white/5" />
-              </div>
+            <div className="space-y-20">
+              {categories.map((category) => {
+                const modules = currentLevel.modules.filter(
+                  (m) => m.category === category.key,
+                );
+                if (modules.length === 0) return null;
 
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.title}
-                    to={link.to}
-                    className="group bg-[#1a1a1a] border border-white/5 p-8 rounded-[2.5rem] flex flex-col items-center text-center gap-4 hover:border-blue-500/30 hover:scale-[1.05] transition-all duration-300 shadow-xl"
+                return (
+                  <section
+                    key={category.key}
+                    className="space-y-10 animate-in slide-in-from-bottom-4 duration-500"
                   >
-                    <div
-                      className={`w-14 h-14 ${link.bg} ${link.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}
-                    >
-                      <link.icon size={28} />
+                    <div className="flex items-center gap-6">
+                      <h3 className="text-lg font-black text-neutral-500 uppercase tracking-[0.3em]">
+                        {category.label}
+                      </h3>
+                      <div className="h-px flex-1 bg-white/5" />
                     </div>
-                    <span className="text-white font-bold tracking-tight text-sm">
-                      {link.title}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </section>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+                      {modules.map((module) => {
+                        const style = getModuleStyle(module.title);
+                        return (
+                          <Link
+                            key={module.to}
+                            to={module.to}
+                            className="group bg-[#1a1a1a] border border-white/5 p-8 rounded-[2.5rem] flex flex-col items-center text-center gap-5 hover:border-blue-500/30 hover:scale-[1.05] transition-all duration-300 shadow-xl"
+                          >
+                            <div
+                              className={`w-16 h-16 ${style.bg} ${style.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner`}
+                            >
+                              <module.icon size={32} />
+                            </div>
+                            <span className="text-white font-black tracking-tight text-sm px-2">
+                              {module.title}
+                            </span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
           )}
         </>
       ) : (

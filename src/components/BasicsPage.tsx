@@ -4,6 +4,7 @@ import { Sparkles, Volume2, Quote } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import type { Question } from "../data/levels";
 
 interface BasicItem {
   word: string;
@@ -12,10 +13,17 @@ interface BasicItem {
   exampleArabic: string;
 }
 
+interface BasicsData {
+  ARTICLES: BasicItem[];
+  PRONOUNS: BasicItem[];
+  POSSESSIVES: BasicItem[];
+  QUIZ: Question[];
+}
+
 export function BasicsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const BASICS_DATA = levelData?.vocabulary?.BASICS_DATA || {
+  const BASICS_DATA = (levelData?.vocabulary?.BASICS_DATA as BasicsData) || {
     ARTICLES: [],
     PRONOUNS: [],
     POSSESSIVES: [],
@@ -156,7 +164,7 @@ export function BasicsPage() {
           <Sparkles size={24} className="text-amber-400" /> Quick Basics Quiz
         </h2>
         <div className="grid grid-cols-1 gap-6">
-          {BASICS_DATA.QUIZ.map((q: any, idx: number) => {
+          {BASICS_DATA.QUIZ.map((q: Question, idx: number) => {
             const isAnswered = quizAnswers[idx] !== undefined;
             const isCorrect =
               quizAnswers[idx]?.toLowerCase() === q.answer.toLowerCase();

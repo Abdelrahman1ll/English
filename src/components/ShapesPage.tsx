@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Volume2, Shapes } from "lucide-react";
+import { Volume2, Shapes, type LucideIcon } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
@@ -8,14 +8,19 @@ import { LEVEL_DATA } from "../data/levels/index";
 interface ShapeItem {
   name: string;
   arabic: string;
-  icon?: any;
+  icon?: LucideIcon;
   cssClass?: string;
 }
 
 export function ShapesPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const SHAPES_DATA = levelData?.vocabulary?.SHAPES_DATA || {
+  interface ShapesData {
+    "2D": ShapeItem[];
+    "3D": ShapeItem[];
+  }
+
+  const SHAPES_DATA = (levelData?.vocabulary?.SHAPES_DATA as ShapesData) || {
     "2D": [],
     "3D": [],
   };

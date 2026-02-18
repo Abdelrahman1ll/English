@@ -5,36 +5,66 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface MonthItem {
+  name: string;
+  arabic: string;
+}
+
+interface DayItem {
+  name: string;
+  arabic: string;
+  sentence?: string;
+  sentenceTranslation?: string;
+}
+
+interface TimeVocabItem {
+  text: string;
+  translation: string;
+}
+
+interface TimeCategory {
+  category: string;
+  items: TimeVocabItem[];
+}
+
+interface CalendarDataStructure {
+  MONTHS: MonthItem[];
+  DAYS: DayItem[];
+  TIME_VOCABULARY: TimeCategory[];
+}
+
 export function MonthsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawCalendarData = levelData?.vocabulary?.CALENDAR_DATA || {
-    MONTHS: [],
-    DAYS: [],
-    TIME_VOCABULARY: [],
-  };
-
   const filteredCalendarData = useMemo(() => {
+    const rawCalendarData = (levelData?.vocabulary?.CALENDAR_DATA as CalendarDataStructure) || {
+      MONTHS: [],
+      DAYS: [],
+      TIME_VOCABULARY: [],
+    };
     const term = searchQuery.toLowerCase();
 
-    const filterItems = (items: any[]) =>
-      items.filter(
-        (item) =>
-          (item.name || item.text || "").toLowerCase().includes(term) ||
-          (item.arabic || item.translation || "").includes(searchQuery),
-      );
+    const filterItems = <T extends MonthItem | DayItem | TimeVocabItem>(items: T[]) =>
+      items.filter((item) => {
+        const primaryText = "name" in item ? item.name : "text" in item ? item.text : "";
+        const secondaryText = "arabic" in item ? item.arabic : "translation" in item ? item.translation : "";
+        return (
+          primaryText.toLowerCase().includes(term) ||
+          secondaryText.includes(searchQuery)
+        );
+      });
 
     return {
       MONTHS: filterItems(rawCalendarData.MONTHS),
       DAYS: filterItems(rawCalendarData.DAYS),
-      TIME_VOCABULARY: rawCalendarData.TIME_VOCABULARY.map((cat: any) => ({
+      TIME_VOCABULARY: (rawCalendarData.TIME_VOCABULARY || []).map((cat: TimeCategory) => ({
         ...cat,
         items: filterItems(cat.items),
-      })).filter((cat: any) => cat.items.length > 0),
+      })).filter((cat: TimeCategory) => cat.items.length > 0),
     };
-  }, [rawCalendarData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const CALENDAR_DATA = filteredCalendarData;
 
@@ -112,7 +142,7 @@ export function MonthsPage() {
           {activeTab === "months" && (
             <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {CALENDAR_DATA.MONTHS.map((month: any) => (
+                {CALENDAR_DATA.MONTHS.map((month: MonthItem) => (
                   <button
                     key={month.name}
                     onClick={() => handleWordClick(month.name)}
@@ -149,7 +179,7 @@ export function MonthsPage() {
                   Week
                 </h2>
                 <div className="flex flex-col gap-3">
-                  {CALENDAR_DATA.DAYS.map((day: any) => (
+                  {CALENDAR_DATA.DAYS.map((day: DayItem) => (
                     <button
                       key={day.name}
                       onClick={() => handleWordClick(day.name, day.sentence)}
@@ -195,7 +225,7 @@ export function MonthsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {CALENDAR_DATA.TIME_VOCABULARY.map((category: any) => (
+                  {CALENDAR_DATA.TIME_VOCABULARY.map((category: TimeCategory) => (
                     <div
                       key={category.category}
                       className="bg-[#1e1e1e] border border-white/5 rounded-3xl overflow-hidden flex flex-col shadow-xl"
@@ -206,7 +236,7 @@ export function MonthsPage() {
                         </h3>
                       </div>
                       <div className="p-4 flex flex-col gap-2">
-                        {category.items.map((item: any) => (
+                        {category.items.map((item: TimeVocabItem) => (
                           <button
                             key={item.text}
                             onClick={() => handleVocabClick(item.text)}

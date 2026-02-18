@@ -14,7 +14,9 @@ import * as a1Describing from "./A1/describing";
 import * as a1Nationalities from "./A1/nationalities";
 import * as a1Basics from "./A1/basics";
 
-export const LEVEL_DATA: Record<string, unknown> = {
+import type { LevelData } from "../levels";
+
+export const LEVEL_DATA: Record<string, LevelData> = {
   A1: {
     vocabulary: {
       ...a1Colors,

@@ -4,20 +4,28 @@ import { Volume2, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import type { LevelData } from "../data/levels";
+
+interface Color {
+  name: string;
+  arabic: string;
+  hex: string;
+  textClass?: string;
+}
 
 export function ColorsPage() {
   const { levelId } = useParams();
-  const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const rawColors = levelData?.vocabulary?.COLORS || [];
+  const levelData = levelId ? (LEVEL_DATA[levelId] as LevelData) : null;
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredColors = useMemo(() => {
+    const rawColors = (levelData?.vocabulary?.COLORS as Color[]) || [];
     return rawColors.filter(
-      (color: any) =>
+      (color: Color) =>
         color.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         color.arabic.includes(searchQuery),
     );
-  }, [rawColors, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const COLORS = filteredColors;
 
@@ -25,7 +33,7 @@ export function ColorsPage() {
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleColorClick = (color: any) => {
+  const handleColorClick = (color: Color) => {
     speak(color.name, () => setActiveColor(null));
     setActiveColor(color.name);
     setPracticeWord(color.name);
@@ -58,7 +66,7 @@ export function ColorsPage() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {COLORS.map((color: any) => {
+        {COLORS.map((color: Color) => {
           const isActive = activeWord === color.name;
           return (
             <button

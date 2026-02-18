@@ -113,7 +113,9 @@ export function useSpeech() {
         audioRef.current.pause();
         audioRef.current = null;
       }
-    } catch {}
+    } catch {
+      // Ignore errors during cancellation
+    }
   }, []);
 
   // Cleanup

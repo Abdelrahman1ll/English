@@ -4,68 +4,74 @@ import { Book, Volume2, AlertCircle, Quote, Search } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import type { VocabularyItem, GrammarData } from "../data/levels";
 
-type GrammarItem = {
-  word: string;
-  arabic: string;
-  image?: string;
-  article: "a" | "an" | "none";
-};
+export interface GrammarItem extends VocabularyItem {
+  readonly article: "a" | "an" | "none";
+}
 
-type QuizQuestion = {
-  question: string;
-  answer: string;
-  options: string[];
-};
+export interface QuizQuestion {
+  readonly question: string;
+  readonly answer: string;
+  readonly options: readonly string[];
+}
 
-type PluralExample = {
-  singular: string;
-  plural: string;
-  arabic: string;
-};
+export interface PluralExample {
+  readonly singular: string;
+  readonly plural: string;
+  readonly arabic: string;
+}
 
-type DemonstrativeGroup = {
-  title: string;
-  items: Array<{
-    text: string;
-    translation: string;
-    rule: string;
+export interface DemonstrativeGroup {
+  readonly title: string;
+  readonly items: ReadonlyArray<{
+    readonly text: string;
+    readonly translation: string;
+    readonly rule: string;
   }>;
-  examples: Array<{
-    text: string;
-    translation: string;
+  readonly examples: ReadonlyArray<{
+    readonly text: string;
+    readonly translation: string;
   }>;
-};
+}
 
-type PrepositionItem = {
-  text: string;
-  translation: string;
-};
+export interface PrepositionItem {
+  readonly text: string;
+  readonly translation: string;
+}
 
-type PrepositionExample = {
-  en: string;
-  ar: string;
-};
+export interface PrepositionExample {
+  readonly en: string;
+  readonly ar: string;
+}
 
 export function GrammarPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawGrammarData = levelData?.grammar || {};
-
   const filteredGrammarData = useMemo(() => {
+    const rawGrammarData: GrammarData = levelData?.grammar || {};
     const term = searchQuery.toLowerCase();
 
-    const filterArray = (items: any[], fields: string[]) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filterArray = <T extends Record<string, any>>(
+      items: ReadonlyArray<T>,
+      fields: (keyof T & string)[],
+    ) =>
       items.filter(
         (item) =>
           fields.some((field) =>
-            (item[field] || "").toLowerCase().includes(term),
+            ((item[field] as unknown as string) || "")
+              .toLowerCase()
+              .includes(term),
           ) ||
-          (item.arabic || item.ar || item.translation || "").includes(
-            searchQuery,
-          ),
+          ((item.arabic as string) ||
+            (item.ar as string) ||
+            (item.translation as string) ||
+            "")
+            .toLowerCase()
+            .includes(term),
       );
 
     return {
@@ -99,7 +105,7 @@ export function GrammarPage() {
       },
       DEMONSTRATIVES_DATA: rawGrammarData.DEMONSTRATIVES_DATA || [],
     };
-  }, [rawGrammarData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const {
     ARTICLES_DATA,
@@ -143,11 +149,13 @@ export function GrammarPage() {
   };
 
   const renderCard = (
-    item: GrammarItem,
+    item: VocabularyItem,
     color: "emerald" | "amber" | "rose",
   ) => {
+    const word = item.word || item.text || "";
+    const article = item.article || "none";
     const displayText =
-      item.article === "none" ? item.word : `${item.article} ${item.word}`;
+      article === "none" ? word : `${article} ${word}`;
 
     const colorConfigs = {
       emerald: {
@@ -168,7 +176,7 @@ export function GrammarPage() {
 
     return (
       <button
-        key={item.word}
+        key={word}
         onClick={() => handleItemClick(displayText)}
         className={`p-6 rounded-3xl border transition-all text-left group relative overflow-hidden ${
           activeWord === displayText
@@ -180,14 +188,14 @@ export function GrammarPage() {
           <span
             className={`text-2xl font-black ${activeWord === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : config.icon}`}
           >
-            {item.article !== "none" && (
+            {article !== "none" && (
               <span
                 className={`mr-2 transition-colors ${activeWord === displayText ? "text-white/60" : "text-white/40"}`}
               >
-                {item.article}
+                {article}
               </span>
             )}
-            {item.word}
+            {word}
           </span>
           <Volume2
             size={20}
@@ -197,7 +205,7 @@ export function GrammarPage() {
         <div
           className={`text-lg font-arabic ${activeWord === displayText ? "text-white/80" : "text-neutral-500"}`}
         >
-          {item.arabic}
+          {item.arabic || item.ar || item.translation}
         </div>
       </button>
     );
@@ -255,7 +263,7 @@ export function GrammarPage() {
             </span>
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {ARTICLES_DATA.A.map((item: GrammarItem) =>
+            {ARTICLES_DATA.A.map((item: VocabularyItem) =>
               renderCard(item, "emerald"),
             )}
           </div>
@@ -291,7 +299,7 @@ export function GrammarPage() {
             instead of "A".
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {ARTICLES_DATA.AN.map((item: GrammarItem) =>
+            {ARTICLES_DATA.AN.map((item: VocabularyItem) =>
               renderCard(item, "amber"),
             )}
           </div>
@@ -317,7 +325,7 @@ export function GrammarPage() {
             use "a" or "an" with them.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {ARTICLES_DATA.UNCOUNTABLE.map((item: GrammarItem) =>
+            {ARTICLES_DATA.UNCOUNTABLE.map((item: VocabularyItem) =>
               renderCard(item, "rose"),
             )}
           </div>

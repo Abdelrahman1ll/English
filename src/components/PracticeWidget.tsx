@@ -11,6 +11,42 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { isFuzzyMatch } from "../utils/textUtils";
 
+// --- Speech Recognition Types ---
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: () => void;
+  onend: () => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+// --------------------------------
+
 export function PracticeWidget() {
   const {
     activeWord,
@@ -26,7 +62,7 @@ export function PracticeWidget() {
   } | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const validationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,15 +75,15 @@ export function PracticeWidget() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [clearPractice]);
 
-  // Reset state on word/mode change
+  // Ensure SpeechRecognition is stopped when component unmounts
   useEffect(() => {
-    setUserText("");
-    setFeedback(null);
-    setTranscript("");
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-  }, [activeWord, practiceMode]);
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
 
   const { speak } = useSpeech();
 
@@ -94,8 +130,7 @@ export function PracticeWidget() {
     }
 
     const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       alert("Speech recognition is not supported in this browser.");
@@ -163,7 +198,7 @@ export function PracticeWidget() {
       }
     };
 
-    recognition.onerror = (e: any) => {
+    recognition.onerror = (e: SpeechRecognitionErrorEvent) => {
       if (recognitionRef.current === recognition) {
         setIsListening(false);
         if (e.error !== "no-speech") {
@@ -172,7 +207,7 @@ export function PracticeWidget() {
       }
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       resetTimer();
       resetValidationTimer();
 

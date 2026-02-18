@@ -4,21 +4,22 @@ import { Hand, Volume2 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import type { Category, VocabularyItem } from "../data/levels";
 
 export function GreetingsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const GREETINGS_DATA = levelData?.sentences?.GREETINGS_DATA || [];
+  const GREETINGS_DATA = (levelData?.sentences?.GREETINGS_DATA as unknown as Category[]) || [];
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleCardClick = (item: any) => {
-    speak(item.text, () => setPlayingItem(null));
-    setPlayingItem(item.text);
+  const handleCardClick = (item: VocabularyItem) => {
+    speak(item.text || "", () => setPlayingItem(null));
+    setPlayingItem(item.text || "");
     // Clean up punctuation for practice if needed, though PracticeWidget handles it
-    setPracticeWord(item.text);
+    setPracticeWord(item.text || "");
   };
 
   return (
@@ -33,7 +34,7 @@ export function GreetingsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {GREETINGS_DATA.map((category: any) => (
+        {GREETINGS_DATA.map((category: Category) => (
           <div
             key={category.title}
             className="flex flex-col bg-[#1e1e1e] border border-white/5 rounded-3xl overflow-hidden shadow-xl"
@@ -46,7 +47,7 @@ export function GreetingsPage() {
             </div>
 
             <div className="p-4 flex flex-col gap-2">
-              {category.items.map((item: any) => (
+              {category.items.map((item: VocabularyItem) => (
                 <button
                   key={item.text}
                   onClick={() => handleCardClick(item)}

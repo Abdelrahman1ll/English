@@ -12,6 +12,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { LEVEL_DATA } from "../data/levels/index";
+import { type Test } from "../data/levels";
+
 
 export function ExercisesPage() {
   const { levelId, category, testId } = useParams();
@@ -29,8 +31,9 @@ export function ExercisesPage() {
   }, [levelData, category]);
 
   const currentTest = useMemo(() => {
-    return categoryTests.find((t: any) => t.id === testId);
+    return categoryTests.find((t: Test) => t.id === testId);
   }, [categoryTests, testId]);
+
 
   const questions = currentTest?.questions || [];
 
@@ -43,7 +46,7 @@ export function ExercisesPage() {
   const currentQuestion = questions[currentStep] || {};
 
   const handleOptionClick = (option: string) => {
-    if (selectedOption !== null) return;
+    if (selectedOption !== null || !currentQuestion?.answer) return;
 
     setSelectedOption(option);
     const correct =
@@ -122,8 +125,9 @@ export function ExercisesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoryTests.map((test: any) => (
+          {categoryTests.map((test: Test) => (
             <button
+
               key={test.id}
               onClick={() =>
                 navigate(`/${levelId}/exercises/${category}/${test.id}`)
@@ -157,6 +161,21 @@ export function ExercisesPage() {
   }
 
   // 3. Test Taking Mode
+  if (!currentTest) {
+    return (
+      <div className="max-w-2xl mx-auto py-20 text-center space-y-4">
+        <ArrowLeft className="mx-auto text-neutral-600 mb-4" size={48} />
+        <h2 className="text-2xl font-bold text-white">Test Not Found</h2>
+        <button
+          onClick={() => navigate(`/${levelId}/exercises/${category}`)}
+          className="text-blue-400 font-bold hover:underline"
+        >
+          Back to Tests
+        </button>
+      </div>
+    );
+  }
+
   const options =
     currentQuestion.options ||
     (currentTest.type === "true-false" ? ["True", "False"] : []);
@@ -203,8 +222,9 @@ export function ExercisesPage() {
           </h2>
 
           <div className="grid grid-cols-1 gap-4">
-            {options.map((option: any) => {
+            {options.map((option: string) => {
               const isSelected = selectedOption === option;
+
               const isCorrectOption =
                 option.toLowerCase() === currentQuestion.answer.toLowerCase();
 

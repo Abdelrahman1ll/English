@@ -5,36 +5,52 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface MagicEPair {
+  short: string;
+  long: string;
+  shortAr: string;
+  longAr: string;
+}
+
+interface SilentLetterItem {
+  word: string;
+  arabic: string;
+}
+
+interface PhonicsDataStructure {
+  MAGIC_E: MagicEPair[];
+  SILENT_LETTERS: Record<string, SilentLetterItem[]>;
+}
+
 export function PhonicsWordsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
-
-  const rawPhonicsData = levelData?.vocabulary?.PHONICS_DATA || {
-    MAGIC_E: [],
-    SILENT_LETTERS: {},
-  };
 
   const { activeWord, setPracticeWord } = usePractice();
   const { speak } = useSpeech();
   const [playingWord, setPlayingWord] = useState<string | null>(null);
 
   const filteredData = useMemo(() => {
+    const rawPhonicsData = (levelData?.vocabulary?.PHONICS_DATA as PhonicsDataStructure) || {
+      MAGIC_E: [],
+      SILENT_LETTERS: {},
+    };
     const term = searchQuery.toLowerCase();
 
-    const filteredMagicE = rawPhonicsData.MAGIC_E.filter(
-      (pair: any) =>
+    const filteredMagicE = (rawPhonicsData.MAGIC_E || []).filter(
+      (pair) =>
         pair.short.toLowerCase().includes(term) ||
         pair.long.toLowerCase().includes(term) ||
         pair.shortAr.includes(searchQuery) ||
         pair.longAr.includes(searchQuery),
     );
 
-    const filteredSilent: any = {};
-    Object.entries(rawPhonicsData.SILENT_LETTERS).forEach(
-      ([letter, words]: [string, any]) => {
+    const filteredSilent: Record<string, SilentLetterItem[]> = {};
+    Object.entries(rawPhonicsData.SILENT_LETTERS || {}).forEach(
+      ([letter, words]) => {
         const matchingWords = words.filter(
-          (item: any) =>
+          (item) =>
             item.word.toLowerCase().includes(term) ||
             item.arabic.includes(searchQuery),
         );
@@ -48,7 +64,7 @@ export function PhonicsWordsPage() {
       MAGIC_E: filteredMagicE,
       SILENT_LETTERS: filteredSilent,
     };
-  }, [rawPhonicsData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const handleWordClick = (word: string) => {
     speak(word, () => setPlayingWord(null));
@@ -93,7 +109,7 @@ export function PhonicsWordsPage() {
             <Sparkles size={20} /> Magic E (Silent E)
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {filteredData.MAGIC_E.map((pair: any, idx: number) => (
+            {filteredData.MAGIC_E.map((pair, idx: number) => (
               <div key={idx} className="flex flex-col gap-2">
                 <button
                   onClick={() => handleWordClick(pair.short)}
@@ -143,13 +159,13 @@ export function PhonicsWordsPage() {
           </h2>
           <div className="space-y-12">
             {Object.entries(filteredData.SILENT_LETTERS).map(
-              ([letter, words]: [string, any]) => (
+              ([letter, words]) => (
                 <div key={letter} className="space-y-4">
                   <h3 className="text-lg font-bold text-white/40 flex items-center gap-2">
                     Silent {letter}
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    {words.map((item: any) => (
+                    {words.map((item) => (
                       <button
                         key={item.word}
                         onClick={() => handleWordClick(item.word)}

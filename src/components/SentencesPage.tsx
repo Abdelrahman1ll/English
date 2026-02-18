@@ -1,14 +1,26 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { MessageSquare, Volume2, Search, BookOpen } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface SentenceItem {
+  english: string;
+  arabic: string;
+  category: string;
+  icon?: LucideIcon;
+  note?: string;
+}
+
 export function SentencesPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const SENTENCES_DATA = levelData?.sentences?.SENTENCES_DATA || [];
+  const SENTENCES_DATA = useMemo(
+    () => (levelData?.sentences?.SENTENCES_DATA as SentenceItem[]) || [],
+    [levelData],
+  );
 
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,15 +29,15 @@ export function SentencesPage() {
 
   const filteredSentences = useMemo(() => {
     return SENTENCES_DATA.filter(
-      (s: any) =>
+      (s: SentenceItem) =>
         s.english.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.arabic.includes(searchQuery),
     );
   }, [SENTENCES_DATA, searchQuery]);
 
   const groupedSentences = useMemo(() => {
-    const groups: Record<string, { icon: any; items: any[] }> = {};
-    filteredSentences.forEach((s: any) => {
+    const groups: Record<string, { icon?: LucideIcon; items: SentenceItem[] }> = {};
+    filteredSentences.forEach((s: SentenceItem) => {
       if (!groups[s.category]) {
         groups[s.category] = { icon: s.icon, items: [] };
       }
@@ -86,7 +98,7 @@ export function SentencesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {items.map((sentence: any, index: number) => (
+                  {items.map((sentence: SentenceItem, index: number) => (
                     <button
                       key={`${category}-${index}`}
                       onClick={() => handleSpeak(sentence.english)}

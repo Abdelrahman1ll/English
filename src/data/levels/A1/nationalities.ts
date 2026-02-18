@@ -32,12 +32,19 @@ export const NATIONALITIES_DATA = {
       ],
     },
     {
-      question: "What is your nationality?",
-      translation: "ما هي جنسيتك؟",
+      question: "What is your country?",
+      translation: "ما هو بلدك؟",
       answers: [
-        { text: "I am Egyptian.", translation: "أنا مصري." },
-        { text: "I am British.", translation: "أنا بريطاني." },
-        { text: "I am French.", translation: "أنا فرنسي." },
+        { text: "My country is Egypt.", translation: "بلدي هو مصر." },
+        { text: "I am from Egypt.", translation: "أنا من مصر." },
+      ],
+    },
+    {
+      question: "What is your language?",
+      translation: "ما هي لغتك؟",
+      answers: [
+        { text: "My language is Arabic.", translation: "لغتي هي العربية." },
+        { text: "I speak Arabic.", translation: "أنا أتحدث العربية." },
       ],
     },
     {
@@ -47,6 +54,25 @@ export const NATIONALITIES_DATA = {
         { text: "I speak Arabic.", translation: "أنا أتحدث العربية." },
         { text: "I speak English.", translation: "أنا أتحدث الإنجليزية." },
         { text: "I speak French.", translation: "أنا أتحدث الفرنسية." },
+      ],
+    },
+    {
+      question: "What is your nationality?",
+      translation: "ما هي جنسيتك؟",
+      answers: [
+        { text: "I am Egyptian.", translation: "أنا مصري." },
+        { text: "I am British.", translation: "أنا بريطاني." },
+        { text: "I am French.", translation: "أنا فرنسي." },
+      ],
+    },
+    {
+      question: "What does enormous mean?",
+      translation: "ماذا تعني كلمة enormous؟",
+      answers: [
+        {
+          text: "Enormous means something is very big.",
+          translation: "Enormous تعني شيئاً كبيراً جداً.",
+        },
       ],
     },
   ],

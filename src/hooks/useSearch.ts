@@ -16,11 +16,12 @@ export function useSearch(levelId: string | undefined) {
 
     const currentLevel = LEVEL_DATA[levelId];
 
-    const processData = (data: any, source: string) => {
+    const processData = (data: unknown, source: string) => {
       if (!data) return;
 
       if (Array.isArray(data)) {
-        data.forEach((item) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (data as Record<string, any>[]).forEach((item) => {
           if (!item) return;
 
           const text =
@@ -47,22 +48,25 @@ export function useSearch(levelId: string | undefined) {
             processData(item.dialogue, `${source} - Dialogue`);
           }
         });
-      } else if (typeof data === "object") {
-        Object.keys(data).forEach((key) => {
-          if (typeof data[key] === "function") return;
-          processData(data[key], `${source}`);
+      } else if (data && typeof data === "object") {
+        const obj = data as Record<string, unknown>;
+        Object.keys(obj).forEach((key) => {
+          const value = obj[key];
+          if (typeof value === "function") return;
+          processData(value, `${source}`);
         });
       }
     };
 
     if (currentLevel.vocabulary) {
-      Object.keys(currentLevel.vocabulary).forEach((key) => {
-        processData(currentLevel.vocabulary[key], key.replace("_DATA", ""));
+      const vocab = currentLevel.vocabulary as Record<string, unknown>;
+      Object.keys(vocab).forEach((key) => {
+        processData(vocab[key], key.replace("_DATA", ""));
       });
     }
 
-    if (currentLevel.sentences) {
-      processData(currentLevel.sentences, "Sentences");
+    if (currentLevel.sentences?.SENTENCES_DATA) {
+      processData(currentLevel.sentences.SENTENCES_DATA, "Sentences");
     }
 
     if (currentLevel.grammar) {
@@ -73,7 +77,24 @@ export function useSearch(levelId: string | undefined) {
       processData(currentLevel.conversations, "Conversations");
     }
 
-    return items;
+    // Deduplicate items based on text and translation to avoid double-counting
+    // (e.g. when data is exported in multiple constants or overlapping categories)
+    const uniqueItemsMap = new Map<string, SearchItem>();
+    
+    // Normalization helper to treat "My cat." and "My cat" as the same
+    const normalize = (str: string) => 
+      str.toLowerCase()
+         .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "") // Strip common punctuation
+         .trim();
+
+    items.forEach((item) => {
+      const key = `${normalize(item.text)}|${normalize(item.translation)}`;
+      if (!uniqueItemsMap.has(key)) {
+        uniqueItemsMap.set(key, item);
+      }
+    });
+
+    return Array.from(uniqueItemsMap.values());
   }, [levelId]);
 
   const filteredItems = useMemo(() => {

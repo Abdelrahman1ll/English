@@ -5,24 +5,35 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface FeelingItem {
+  word: string;
+  arabic: string;
+  type?: string;
+}
+
+interface FeelingCategory {
+  category: string;
+  items: FeelingItem[];
+}
+
 export function FeelingsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
-  const rawFeelingsData = levelData?.vocabulary?.FEELINGS_DATA || [];
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredFeelingsData = useMemo(() => {
-    return rawFeelingsData
-      .map((category: { category: string; items: any[] }) => ({
+    const rawData = (levelData?.vocabulary?.FEELINGS_DATA as FeelingCategory[]) || [];
+    return rawData
+      .map((category: FeelingCategory) => ({
         ...category,
         items: category.items.filter(
-          (item: any) =>
+          (item: FeelingItem) =>
             item.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.arabic.includes(searchQuery),
         ),
       }))
-      .filter((category: { items: any[] }) => category.items.length > 0);
-  }, [rawFeelingsData, searchQuery]);
+      .filter((category: FeelingCategory) => category.items.length > 0);
+  }, [levelData, searchQuery]);
 
   const FEELINGS_DATA = filteredFeelingsData;
 
@@ -30,7 +41,7 @@ export function FeelingsPage() {
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleCardClick = (item: any) => {
+  const handleCardClick = (item: FeelingItem) => {
     speak(item.word, () => setPlayingItem(null));
     setPlayingItem(item.word);
     setPracticeWord(item.word);
@@ -65,7 +76,7 @@ export function FeelingsPage() {
       </div>
 
       <div className="space-y-16">
-        {FEELINGS_DATA.map((category: { category: string; items: any[] }) => (
+        {FEELINGS_DATA.map((category: FeelingCategory) => (
           <div key={category.category} className="space-y-6">
             <h2 className="font-bold text-white/40 uppercase tracking-widest text-xs border-l-2 border-pink-500/50 pl-4 ml-2">
               {category.category}

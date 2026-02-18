@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
-import { PracticeProvider } from "../context/PracticeContext";
+// import { PracticeProvider } from "../context/PracticeContext";
 import { PracticeWidget } from "./PracticeWidget";
 import { useSpeech } from "../hooks/useSpeech";
+import { usePractice } from "../context/PracticeContext";
 
 const NavItem = ({
   to,
@@ -66,9 +67,17 @@ export function Layout({ children }: PropsWithChildren) {
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
   const { currentLevel, setLevel } = useLevel();
-  const [, setShowScrollTop] = useState(false);
+  // const [, setShowScrollTop] = useState(false);
+  const [prevPath, setPrevPath] = useState(location.pathname);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { activeWord, practiceMode } = usePractice();
+
+  // Sync mobile menu/prevPath state during render when location changes
+  if (location.pathname !== prevPath) {
+    setPrevPath(location.pathname);
+    setIsMobileMenuOpen(false);
+  }
   const { speak } = useSpeech();
 
   // One-time audio unlock for mobile
@@ -96,9 +105,7 @@ export function Layout({ children }: PropsWithChildren) {
   useEffect(() => {
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
-      setShowScrollTop(false);
     }
-    setIsMobileMenuOpen(false); // Close mobile menu on navigation
   }, [location.pathname]);
 
   // Auto-select Level A1 if nothing is selected (DISABLED for Landing Page)
@@ -108,11 +115,6 @@ export function Layout({ children }: PropsWithChildren) {
   //   }
   // }, [currentLevel, setLevel]);
 
-  const handleScroll = () => {
-    if (mainRef.current) {
-      setShowScrollTop(mainRef.current.scrollTop > 300);
-    }
-  };
 
   const scrollToTop = () => {
     if (mainRef.current) {
@@ -126,8 +128,7 @@ export function Layout({ children }: PropsWithChildren) {
   const levelModules = currentLevel?.modules || [];
 
   return (
-    <PracticeProvider>
-      <div className="h-screen bg-neutral-950 text-white flex flex-col lg:flex-row font-sans selection:bg-blue-500/30 overflow-hidden relative">
+    <div className="h-screen bg-neutral-950 text-white flex flex-col lg:flex-row font-sans selection:bg-blue-500/30 overflow-hidden relative">
         {/* Mobile Top Header */}
         <div className="lg:hidden h-16 border-b border-white/10 bg-[#1a1a1a] flex items-center justify-between px-6 z-40 shrink-0">
           <Link
@@ -283,7 +284,6 @@ export function Layout({ children }: PropsWithChildren) {
         {/* Main Content */}
         <main
           ref={mainRef}
-          onScroll={handleScroll}
           className="flex-1 overflow-y-auto relative scroll-smooth bg-neutral-950/50"
         >
           <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12">
@@ -323,8 +323,7 @@ export function Layout({ children }: PropsWithChildren) {
             </button>
           </div>
         </main>
-        <PracticeWidget />
+        <PracticeWidget key={`${activeWord}-${practiceMode}`} />
       </div>
-    </PracticeProvider>
   );
 }

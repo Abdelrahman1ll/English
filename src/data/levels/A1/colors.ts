@@ -2,7 +2,7 @@ export const COLORS = [
   { name: "Red", arabic: "أحمر", hex: "#ef4444" },
   { name: "Blue", arabic: "أزرق", hex: "#3b82f6" },
   { name: "Green", arabic: "أخضر", hex: "#22c55e" },
-  { name: "Yellow", arabic: "أصفر", hex: "#eab308" },
+  { name: "Yellow", arabic: "أصفر", hex: "#facc15" },
   { name: "Orange", arabic: "برتقالي", hex: "#f97316" },
   { name: "Purple", arabic: "بنفسجي", hex: "#a855f7" },
   { name: "Pink", arabic: "وردي", hex: "#ec4899" },
@@ -10,4 +10,6 @@ export const COLORS = [
   { name: "Black", arabic: "أسود", hex: "#000000" },
   { name: "White", arabic: "أبيض", hex: "#ffffff", textClass: "text-black" },
   { name: "Gray", arabic: "رمادي", hex: "#6b7280" },
+  { name: "Gold", arabic: "ذهبي", hex: "#d4af37" },
+  { name: "Silver", arabic: "فضي", hex: "#C0C0C0" },
 ];

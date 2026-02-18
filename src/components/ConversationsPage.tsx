@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
+import { type Conversation, type DialogueLine } from "../data/levels";
+
 import { LEVEL_DATA } from "../data/levels/index";
 
 export function ConversationsPage() {
@@ -22,8 +24,10 @@ export function ConversationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const rawConversationsData =
-    levelData?.conversations?.CONVERSATIONS_DATA || [];
+  const rawConversationsData = useMemo(
+    () => levelData?.conversations?.CONVERSATIONS_DATA || [],
+    [levelData],
+  );
 
   const categories = [
     {
@@ -49,19 +53,19 @@ export function ConversationsPage() {
   const filteredConversations = useMemo(() => {
     const term = searchQuery.toLowerCase();
     return rawConversationsData.filter(
-      (conv: any) =>
+      (conv: Conversation) =>
         (!selectedCategory || conv.category === selectedCategory) &&
         (conv.title.toLowerCase().includes(term) ||
           conv.description.toLowerCase().includes(term) ||
           conv.dialogue.some(
-            (line: any) =>
+            (line: DialogueLine) =>
               line.text.toLowerCase().includes(term) ||
               line.arabic.includes(searchQuery),
           )),
     );
   }, [rawConversationsData, searchQuery, selectedCategory]);
 
-  const [selectedConv, setSelectedConv] = useState<any | null>(null);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
@@ -112,7 +116,7 @@ export function ConversationsPage() {
           </div>
 
           <div className="space-y-6">
-            {selectedConv.dialogue.map((line: any, index: number) => (
+            {selectedConv.dialogue.map((line: DialogueLine, index: number) => (
               <div
                 key={index}
                 className={`flex gap-4 ${line.speaker === "A" ? "flex-row" : "flex-row-reverse"}`}
@@ -248,7 +252,7 @@ export function ConversationsPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredConversations.map((conv: any) => (
+            {filteredConversations.map((conv: Conversation) => (
               <button
                 key={conv.id}
                 onClick={() => setSelectedConv(conv)}

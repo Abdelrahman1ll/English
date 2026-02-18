@@ -5,25 +5,49 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface ExampleWord {
+  text: string;
+  translation: string;
+}
+
+interface DigraphItem {
+  digraph: string;
+  sound?: string;
+  pronunciation?: string;
+  note?: string;
+  examples: ExampleWord[];
+}
+
+interface DigraphData {
+  CONSONANTS: DigraphItem[];
+  VOWELS: DigraphItem[];
+}
+
+interface LevelDataShape {
+  vocabulary?: {
+    DIGRAPHS_DATA?: DigraphData;
+  };
+}
+
 export function DigraphsPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawDigraphsData = levelData?.vocabulary?.DIGRAPHS_DATA || {
-    CONSONANTS: [],
-    VOWELS: [],
-  };
-
   const filteredDigraphsData = useMemo(() => {
+    const rawDigraphsData = ((levelData as unknown as LevelDataShape)?.vocabulary?.DIGRAPHS_DATA as DigraphData) || {
+      CONSONANTS: [],
+      VOWELS: [],
+    };
+
     const term = searchQuery.toLowerCase();
 
-    const filter = (items: any[]) =>
+    const filter = (items: DigraphItem[]) =>
       items.filter(
         (item) =>
           item.digraph.toLowerCase().includes(term) ||
           item.examples.some(
-            (ex: any) =>
+            (ex) =>
               ex.text.toLowerCase().includes(term) ||
               ex.translation.includes(searchQuery),
           ),
@@ -33,7 +57,7 @@ export function DigraphsPage() {
       CONSONANTS: filter(rawDigraphsData.CONSONANTS || []),
       VOWELS: filter(rawDigraphsData.VOWELS || []),
     };
-  }, [rawDigraphsData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const DIGRAPHS_DATA = filteredDigraphsData;
 
@@ -44,8 +68,10 @@ export function DigraphsPage() {
   const { setPracticeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleDigraphClick = (item: any) => {
-    speak(item.digraph, () => setPlayingItem(null));
+  const handleDigraphClick = (item: DigraphItem) => {
+    // Speak the sound, then the first example word for context
+    const textToSpeak = `${item.sound || item.digraph}, ${item.examples[0]?.text || ""}`;
+    speak(textToSpeak, () => setPlayingItem(null));
     setPlayingItem(item.digraph);
     setPracticeWord(item.digraph);
   };
@@ -120,7 +146,7 @@ export function DigraphsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentData.map((item: any) => (
+        {currentData.map((item: DigraphItem) => (
           <div
             key={item.digraph}
             onClick={() => handleDigraphClick(item)}
@@ -142,8 +168,21 @@ export function DigraphsPage() {
               </div>
             </div>
 
+            <div className="mb-6 px-1 space-y-2">
+              {item.pronunciation && (
+                <div className="text-xl text-amber-400 font-arabic font-bold">
+                  {item.pronunciation}
+                </div>
+              )}
+              {item.note && (
+                <div className="text-sm text-neutral-400 italic font-medium">
+                  {item.note}
+                </div>
+              )}
+            </div>
+
             <div className="w-full space-y-2.5 relative z-10">
-              {item.examples.map((ex: any) => (
+              {item.examples.map((ex: ExampleWord) => (
                 <button
                   key={ex.text}
                   onClick={(e) => handleExampleClick(e, ex.text)}

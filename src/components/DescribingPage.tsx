@@ -4,37 +4,42 @@ import { Volume2, User, Search, } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import type { LevelData, Category, VocabularyItem } from "../data/levels";
 
 export function DescribingPage() {
   const { levelId } = useParams();
-  const levelData = levelId ? LEVEL_DATA[levelId] : null;
+  const levelData = levelId ? (LEVEL_DATA[levelId] as LevelData) : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawDescribingData = levelData?.vocabulary?.DESCRIBING_DATA || {
-    PHYSICAL: [],
-    CHARACTER_SENTENCES: [],
-    VOCABULARY: [],
-  };
-
   const filteredDescribingData = useMemo(() => {
+    const rawData = (levelData?.vocabulary?.DESCRIBING_DATA as {
+      PHYSICAL: VocabularyItem[];
+      CHARACTER_SENTENCES: VocabularyItem[];
+      VOCABULARY: Category[];
+    }) || {
+      PHYSICAL: [],
+      CHARACTER_SENTENCES: [],
+      VOCABULARY: [],
+    };
+
     const term = searchQuery.toLowerCase();
 
-    const filter = (items: any[]) =>
+    const filter = (items: VocabularyItem[]) =>
       items.filter(
-        (item) =>
-          item.text.toLowerCase().includes(term) ||
-          item.translation.includes(searchQuery),
+        (item: VocabularyItem) =>
+          item.text?.toLowerCase().includes(term) ||
+          item.translation?.includes(searchQuery),
       );
 
     return {
-      PHYSICAL: filter(rawDescribingData.PHYSICAL),
-      CHARACTER_SENTENCES: filter(rawDescribingData.CHARACTER_SENTENCES),
-      VOCABULARY: rawDescribingData.VOCABULARY.map((cat: any) => ({
+      PHYSICAL: filter(rawData.PHYSICAL),
+      CHARACTER_SENTENCES: filter(rawData.CHARACTER_SENTENCES),
+      VOCABULARY: rawData.VOCABULARY.map((cat: Category) => ({
         ...cat,
         items: filter(cat.items),
-      })).filter((cat: any) => cat.items.length > 0),
+      })).filter((cat: Category) => cat.items.length > 0),
     };
-  }, [rawDescribingData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const DESCRIBING_DATA = filteredDescribingData;
 
@@ -88,7 +93,7 @@ export function DescribingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {DESCRIBING_DATA.VOCABULARY.map((category: any) => (
+          {DESCRIBING_DATA.VOCABULARY.map((category: Category) => (
             <div
               key={category.title}
               className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-xl"
@@ -102,10 +107,10 @@ export function DescribingPage() {
                 </h3>
               </div>
               <div className="p-4 flex flex-col gap-2">
-                {category.items.map((item: any) => (
+                {category.items.map((item: VocabularyItem) => (
                   <button
                     key={item.text}
-                    onClick={() => handleCardClick(item.text)}
+                    onClick={() => handleCardClick(item.text || "")}
                     className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
                       activeWord === item.text
                         ? "bg-pink-500/10 border-pink-500/50 text-pink-400 scale-[1.02] shadow-lg z-10"

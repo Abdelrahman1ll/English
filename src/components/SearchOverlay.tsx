@@ -51,18 +51,18 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/5">
           <button
             onClick={() => onSpeak(item.text)}
-            className="flex-1 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black text-xl transition-all hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white py-4 sm:py-5 rounded-2xl font-black text-lg sm:text-xl transition-all hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
           >
-            <Volume2 size={28} /> Listen
+            <Volume2 className="w-5.5 h-5.5 sm:w-7 sm:h-7" /> Listen
           </button>
           <button
             onClick={() => {
               onPractice(item.text);
               onClose();
             }}
-            className="flex-1 flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white py-5 rounded-2xl font-black text-xl transition-all hover:shadow-lg hover:shadow-emerald-500/20 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white py-4 sm:py-5 rounded-2xl font-black text-lg sm:text-xl transition-all hover:shadow-lg hover:shadow-emerald-500/20 active:scale-95"
           >
-            <Brain size={28} /> Practice
+            <Brain className="w-5.5 h-5.5 sm:w-7 sm:h-7" /> Practice
           </button>
         </div>
 

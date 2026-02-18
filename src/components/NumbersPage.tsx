@@ -5,23 +5,36 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 
+interface NumberItem {
+  digit: string | number;
+  word: string;
+  arabic?: string;
+}
+
+interface NumbersDataStructure {
+  BASICS: NumberItem[];
+  TEENS: NumberItem[];
+  TENS: NumberItem[];
+  ORDINALS: NumberItem[];
+  BIG: NumberItem[];
+}
+
 export function NumbersPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawNumbersData = levelData?.vocabulary?.NUMBERS_DATA || {
-    BASICS: [],
-    TEENS: [],
-    TENS: [],
-    ORDINALS: [],
-    BIG: [],
-  };
-
   const filteredNumbersData = useMemo(() => {
+    const rawNumbersData = (levelData?.vocabulary?.NUMBERS_DATA as NumbersDataStructure) || {
+      BASICS: [],
+      TEENS: [],
+      TENS: [],
+      ORDINALS: [],
+      BIG: [],
+    };
     const term = searchQuery.toLowerCase();
 
-    const filter = (items: any[]) =>
+    const filter = (items: NumberItem[]) =>
       items.filter(
         (item) =>
           item.word.toLowerCase().includes(term) ||
@@ -36,19 +49,19 @@ export function NumbersPage() {
       ORDINALS: filter(rawNumbersData.ORDINALS || []),
       BIG: filter(rawNumbersData.BIG || []),
     };
-  }, [rawNumbersData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const NUMBERS_DATA = filteredNumbersData;
 
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
 
-  const handleCardClick = (item: any) => {
+  const handleCardClick = (item: NumberItem) => {
     speak(item.word);
     setPracticeWord(item.word);
   };
 
-  const NumberCard = ({ item }: { item: any }) => {
+  const NumberCard = ({ item }: { item: NumberItem }) => {
     const isActive = activeWord === item.word;
 
     return (
@@ -120,7 +133,7 @@ export function NumbersPage() {
           Basics (0-10)
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-          {NUMBERS_DATA.BASICS.map((item: any) => (
+          {NUMBERS_DATA.BASICS.map((item: NumberItem) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -131,7 +144,7 @@ export function NumbersPage() {
           The Teens (11-19)
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {NUMBERS_DATA.TEENS.map((item: any) => (
+          {NUMBERS_DATA.TEENS.map((item: NumberItem) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -142,7 +155,7 @@ export function NumbersPage() {
           The Tens
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
-          {NUMBERS_DATA.TENS.map((item: any) => (
+          {NUMBERS_DATA.TENS.map((item: NumberItem) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -153,7 +166,7 @@ export function NumbersPage() {
           Ordinal Numbers
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
-          {NUMBERS_DATA.ORDINALS.map((item: any) => (
+          {NUMBERS_DATA.ORDINALS.map((item: NumberItem) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>
@@ -164,7 +177,7 @@ export function NumbersPage() {
           Big Numbers
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {NUMBERS_DATA.BIG.map((item: any) => (
+          {NUMBERS_DATA.BIG.map((item) => (
             <NumberCard key={item.digit} item={item} />
           ))}
         </div>

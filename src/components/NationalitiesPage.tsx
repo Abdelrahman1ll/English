@@ -10,38 +10,56 @@ export function NationalitiesPage() {
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
-  const rawNationalitiesData = levelData?.vocabulary?.NATIONALITIES_DATA || {
-    LANGUAGES: [],
-    PHRASES: [],
-  };
+  interface Language {
+    text: string;
+    translation: string;
+  }
 
-  const filteredNationalitiesData = useMemo(() => {
+  interface Phrase {
+    question: string;
+    translation: string;
+    answers: Array<{ text: string; translation: string }>;
+  }
+
+  interface NationalitiesData {
+    LANGUAGES: Language[];
+    PHRASES: Phrase[];
+  }
+
+  const { filteredNationalitiesData } = useMemo(() => {
+    const rawData = (levelData?.vocabulary?.NATIONALITIES_DATA as NationalitiesData) || {
+      LANGUAGES: [],
+      PHRASES: [],
+    };
+
     const filterTerm = searchQuery.toLowerCase();
 
-    const filterLanguages = (items: any[]) =>
+    const filterLanguages = (items: Language[]) =>
       items.filter(
         (item) =>
           item.text.toLowerCase().includes(filterTerm) ||
           item.translation.includes(searchQuery),
       );
 
-    const filterPhrases = (items: any[]) =>
+    const filterPhrases = (items: Phrase[]) =>
       items.filter(
         (item) =>
           item.question.toLowerCase().includes(filterTerm) ||
           item.translation.includes(searchQuery) ||
           item.answers?.some(
-            (ans: any) =>
+            (ans) =>
               ans.text.toLowerCase().includes(filterTerm) ||
               ans.translation.includes(searchQuery),
           ),
       );
 
     return {
-      LANGUAGES: filterLanguages(rawNationalitiesData.LANGUAGES || []),
-      PHRASES: filterPhrases(rawNationalitiesData.PHRASES || []),
+      filteredNationalitiesData: {
+        LANGUAGES: filterLanguages(rawData.LANGUAGES || []),
+        PHRASES: filterPhrases(rawData.PHRASES || []),
+      },
     };
-  }, [rawNationalitiesData, searchQuery]);
+  }, [levelData, searchQuery]);
 
   const NATIONALITIES_DATA = filteredNationalitiesData;
 
@@ -93,7 +111,7 @@ export function NationalitiesPage() {
           </h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {NATIONALITIES_DATA.LANGUAGES?.map((lang: any) => (
+          {NATIONALITIES_DATA.LANGUAGES?.map((lang) => (
             <button
               key={lang.text}
               onClick={() => handleItemClick(lang.text)}
@@ -134,7 +152,7 @@ export function NationalitiesPage() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {NATIONALITIES_DATA.PHRASES?.map((phrase: any, idx: number) => (
+          {NATIONALITIES_DATA.PHRASES?.map((phrase, idx) => (
             <div
               key={idx}
               className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl"
@@ -157,7 +175,7 @@ export function NationalitiesPage() {
                 </div>
               </button>
               <div className="p-6 space-y-4">
-                {phrase.answers?.map((ans: any, ansIdx: number) => (
+                {phrase.answers?.map((ans, ansIdx) => (
                   <button
                     key={ansIdx}
                     onClick={() => handleItemClick(ans.text)}
