@@ -14,6 +14,23 @@ import * as a1Describing from "./A1/describing";
 import * as a1Nationalities from "./A1/nationalities";
 import * as a1Basics from "./A1/basics";
 
+import * as a2Basics from "./A2/basics";
+import * as a2Sentences from "./A2/sentences";
+import * as a2Exercises from "./A2/exercises";
+import * as a2Family from "./A2/family";
+import * as a2Personality from "./A2/personality";
+import * as a2Routines from "./A2/routines";
+import * as a2Verbs from "./A2/verbs";
+import * as a2Calendar from "./A2/calendar";
+import * as a2Classroom from "./A2/classroom";
+import * as a2Pronunciation from "./A2/pronunciation";
+import * as a2Countries from "./A2/countries";
+import * as a2PartsOfSpeech from "./A2/partsOfSpeech";
+import * as a2Conversations from "./A2/conversations";
+import * as a2LifeStages from "./A2/lifeStages";
+
+// calendar.ts
+
 import type { LevelData } from "../levels";
 
 export const LEVEL_DATA: Record<string, LevelData> = {
@@ -35,5 +52,27 @@ export const LEVEL_DATA: Record<string, LevelData> = {
     sentences: a1Sentences,
     exercises: a1Exercises,
     conversations: a1Conversations,
+  },
+  A2: {
+    vocabulary: {
+      ...a2Family,
+      ...a2Personality,
+      ...a2Basics,
+      ...a2Routines,
+      ...a2Verbs,
+      ...a2Calendar,
+      ...a2Classroom,
+      ...a2Pronunciation,
+      ...a2Countries,
+      ...a2PartsOfSpeech,
+      ...a2LifeStages,
+    },
+    grammar: a2Basics,
+    sentences: {
+      ...a2Sentences,
+      ...a2Routines,
+    },
+    exercises: a2Exercises,
+    conversations: a2Conversations,
   },
 };

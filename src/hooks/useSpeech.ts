@@ -139,7 +139,12 @@ export function useSpeech() {
           expression.lang = "en-US";
           expression.rate = rate;
 
-          window.speechSynthesis.speak(expression);
+          // Reset state and add a tiny delay to prevent race conditions in Chromium
+          window.speechSynthesis.cancel();
+          
+          setTimeout(() => {
+            window.speechSynthesis.speak(expression);
+          }, 10);
           return;
         } catch (err) {
           console.error("SpeechSynthesis setup failed:", err);

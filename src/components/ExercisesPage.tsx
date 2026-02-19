@@ -46,11 +46,14 @@ export function ExercisesPage() {
   const currentQuestion = questions[currentStep] || {};
 
   const handleOptionClick = (option: string) => {
-    if (selectedOption !== null || !currentQuestion?.answer) return;
+    if (selectedOption !== null) return;
 
     setSelectedOption(option);
-    const correct =
-      option.toLowerCase() === currentQuestion.answer.toLowerCase();
+    
+    // If answer is empty, it's an open-ended question, always correct
+    const correct = !currentQuestion?.answer || 
+      option.toLowerCase().trim() === currentQuestion.answer.toLowerCase().trim();
+      
     setIsCorrect(correct);
     if (correct) setScore(score + 1);
 
@@ -221,44 +224,79 @@ export function ExercisesPage() {
             {currentQuestion.question}
           </h2>
 
+          {currentQuestion.note && (
+            <p className="text-blue-400 bg-blue-400/10 inline-block px-4 py-2 rounded-xl text-sm font-medium">
+              Note: {currentQuestion.note}
+            </p>
+          )}
+
           <div className="grid grid-cols-1 gap-4">
-            {options.map((option: string) => {
-              const isSelected = selectedOption === option;
+            {options.length > 0 ? (
+              options.map((option: string) => {
+                const isSelected = selectedOption === option;
 
-              const isCorrectOption =
-                option.toLowerCase() === currentQuestion.answer.toLowerCase();
+                const isCorrectOption =
+                  currentQuestion.answer &&
+                  option.toLowerCase() === currentQuestion.answer.toLowerCase();
 
-              return (
-                <button
-                  key={option}
-                  onClick={() => handleOptionClick(option)}
-                  disabled={selectedOption !== null}
-                  className={`
-                    w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center justify-between
-                    ${
-                      selectedOption === null
-                        ? "bg-[#141414] border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5"
-                        : isSelected
-                          ? isCorrect
-                            ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
-                            : "bg-rose-500/10 border-rose-500 text-rose-400"
-                          : isCorrectOption && selectedOption !== null
-                            ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400/50"
-                            : "bg-[#141414] border-white/5 opacity-50"
+                return (
+                  <button
+                    key={option}
+                    onClick={() => handleOptionClick(option)}
+                    disabled={selectedOption !== null}
+                    className={`
+                      w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center justify-between
+                      ${
+                        selectedOption === null
+                          ? "bg-[#141414] border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5"
+                          : isSelected
+                            ? isCorrect
+                              ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
+                              : "bg-rose-500/10 border-rose-500 text-rose-400"
+                            : isCorrectOption && selectedOption !== null
+                              ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400/50"
+                              : "bg-[#141414] border-white/5 opacity-50"
+                      }
+                    `}
+                  >
+                    <span className="text-xl font-bold">{option}</span>
+                    {selectedOption !== null &&
+                      isSelected &&
+                      (isCorrect ? (
+                        <CheckCircle2 size={24} />
+                      ) : (
+                        <XCircle size={24} />
+                      ))}
+                  </button>
+                );
+              })
+            ) : (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Type your answer here..."
+                  className="w-full bg-[#141414] border-2 border-white/5 rounded-2xl p-6 text-xl text-white focus:border-blue-500 focus:outline-hidden transition-all"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleOptionClick((e.target as HTMLInputElement).value);
+                      (e.target as HTMLInputElement).value = "";
                     }
-                  `}
+                  }}
+                  disabled={selectedOption !== null}
+                />
+                <button
+                  onClick={(e) => {
+                    const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                    handleOptionClick(input.value);
+                    input.value = "";
+                  }}
+                  disabled={selectedOption !== null}
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all disabled:opacity-50"
                 >
-                  <span className="text-xl font-bold">{option}</span>
-                  {selectedOption !== null &&
-                    isSelected &&
-                    (isCorrect ? (
-                      <CheckCircle2 size={24} />
-                    ) : (
-                      <XCircle size={24} />
-                    ))}
+                  Confirm Answer
                 </button>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
       </div>

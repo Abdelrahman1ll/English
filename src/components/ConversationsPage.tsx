@@ -14,9 +14,24 @@ import {
 } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
-import { type Conversation, type DialogueLine } from "../data/levels";
-
 import { LEVEL_DATA } from "../data/levels/index";
+
+interface UnifiedDialogueLine {
+  speaker: string;
+  text: string;
+  arabic?: string;
+  translation?: string;
+}
+
+interface UnifiedConversation {
+  id: string | number;
+  title: string;
+  category?: string;
+  description?: string;
+  arabicTitle?: string;
+  dialogue?: UnifiedDialogueLine[];
+  messages?: UnifiedDialogueLine[];
+}
 
 export function ConversationsPage() {
   const { levelId } = useParams();
@@ -52,20 +67,23 @@ export function ConversationsPage() {
 
   const filteredConversations = useMemo(() => {
     const term = searchQuery.toLowerCase();
-    return rawConversationsData.filter(
-      (conv: Conversation) =>
-        (!selectedCategory || conv.category === selectedCategory) &&
-        (conv.title.toLowerCase().includes(term) ||
-          conv.description.toLowerCase().includes(term) ||
-          conv.dialogue.some(
-            (line: DialogueLine) =>
-              line.text.toLowerCase().includes(term) ||
-              line.arabic.includes(searchQuery),
-          )),
-    );
+    return (rawConversationsData as UnifiedConversation[]).filter((conv) => {
+      const isMatch = (!selectedCategory || conv.category === selectedCategory);
+      const title = conv.title || conv.arabicTitle || "";
+      const description = conv.description || "";
+      const textMatch = title.toLowerCase().includes(term) || description.toLowerCase().includes(term);
+
+      const dialogue = conv.dialogue || conv.messages || [];
+      const dialogueMatch = dialogue.some((line) =>
+        (line.text || "").toLowerCase().includes(term) ||
+        (line.arabic || line.translation || "").includes(searchQuery)
+      );
+
+      return isMatch && (textMatch || dialogueMatch);
+    });
   }, [rawConversationsData, searchQuery, selectedCategory]);
 
-  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
+  const [selectedConv, setSelectedConv] = useState<UnifiedConversation | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const { setPracticeWord, activeWord } = usePractice();
   const { speak } = useSpeech();
@@ -78,9 +96,10 @@ export function ConversationsPage() {
 
   const playEntireConversation = async () => {
     if (!selectedConv) return;
+    const dialogue = selectedConv.dialogue || selectedConv.messages || [];
 
-    for (let i = 0; i < selectedConv.dialogue.length; i++) {
-      const line = selectedConv.dialogue[i];
+    for (let i = 0; i < dialogue.length; i++) {
+      const line = dialogue[i];
       setPlayingIndex(i);
       await new Promise<void>((resolve) => {
         speak(line.text, () => resolve());
@@ -90,6 +109,7 @@ export function ConversationsPage() {
   };
 
   if (selectedConv) {
+    const dialogue = selectedConv.dialogue || selectedConv.messages || [];
     return (
       <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-right duration-500 pb-20">
         <button
@@ -103,7 +123,7 @@ export function ConversationsPage() {
           <div className="flex justify-between items-start mb-12">
             <div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                {selectedConv.title}
+                {selectedConv.title || selectedConv.arabicTitle}
               </h2>
               <p className="text-neutral-400">{selectedConv.description}</p>
             </div>
@@ -116,7 +136,7 @@ export function ConversationsPage() {
           </div>
 
           <div className="space-y-6">
-            {selectedConv.dialogue.map((line: DialogueLine, index: number) => (
+            {dialogue.map((line: UnifiedDialogueLine, index: number) => (
               <div
                 key={index}
                 className={`flex gap-4 ${line.speaker === "A" ? "flex-row" : "flex-row-reverse"}`}
@@ -150,7 +170,7 @@ export function ConversationsPage() {
                     {line.text}
                   </p>
                   <p className="text-lg text-neutral-400 font-arabic dir-rtl border-t border-white/5 pt-2 mt-2">
-                    {line.arabic}
+                    {line.arabic || line.translation}
                   </p>
                   <Volume2
                     size={16}
@@ -252,7 +272,7 @@ export function ConversationsPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredConversations.map((conv: Conversation) => (
+            {filteredConversations.map((conv) => (
               <button
                 key={conv.id}
                 onClick={() => setSelectedConv(conv)}

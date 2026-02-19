@@ -22,6 +22,15 @@ import { ExercisesPage } from "./components/ExercisesPage";
 import { ConversationsPage } from "./components/ConversationsPage";
 import { SearchPage } from "./components/SearchPage";
 import { LandingPage } from "./components/LandingPage";
+import { FamilyPage } from "./components/FamilyPage";
+import { PersonalityPage } from "./components/PersonalityPage";
+import { TellingTimePage } from "./components/TellingTimePage";
+import { RoutinesPage } from "./components/RoutinesPage";
+import { VerbsPage } from "./components/VerbsPage";
+import { ClassroomPage } from "./components/ClassroomPage";
+import { PronunciationPage } from "./components/PronunciationPage";
+import { CountriesPage } from "./components/CountriesPage";
+import { PartsOfSpeechPage } from "./components/PartsOfSpeechPage";
 
 import { LevelProvider } from "./context/LevelContext";
 import { PracticeProvider } from "./context/PracticeContext";
@@ -49,6 +58,15 @@ function App() {
           <Route path="/:levelId/feelings" element={<FeelingsPage />} />
           <Route path="/:levelId/describing" element={<DescribingPage />} />
           <Route path="/:levelId/months" element={<MonthsPage />} />
+          <Route path="/:levelId/family" element={<FamilyPage />} />
+          <Route path="/:levelId/personality" element={<PersonalityPage />} />
+          <Route path="/:levelId/time" element={<TellingTimePage />} />
+          <Route path="/:levelId/routines" element={<RoutinesPage />} />
+          <Route path="/:levelId/verbs" element={<VerbsPage />} />
+          <Route path="/:levelId/classroom" element={<ClassroomPage />} />
+          <Route path="/:levelId/pronunciation" element={<PronunciationPage />} />
+          <Route path="/:levelId/countries" element={<CountriesPage />} />
+          <Route path="/:levelId/parts-of-speech" element={<PartsOfSpeechPage />} />
           <Route
             path="/:levelId/nationalities"
             element={<NationalitiesPage />}

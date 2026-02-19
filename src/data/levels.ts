@@ -1,19 +1,21 @@
 import {
-  CaseUpper,
+  Book,
   Calendar,
+  Clock,
+  MessageSquare,
+  Globe,
+  BookOpen,
+  User,
+  Brain,
+  MessageCircle,
+  Briefcase,
+  CaseUpper,
   Sparkles,
   Split,
   Hash,
   Palette,
-  Briefcase,
-  Book,
   Smile,
-  User,
   Shapes,
-  Globe,
-  MessageSquare,
-  Brain,
-  MessageCircle,
   Search,
   type LucideIcon,
 } from "lucide-react";
@@ -53,6 +55,7 @@ export interface Question {
   question: string;
   options: string[];
   answer: string;
+  note?: string;
 }
 
 export interface Test {
@@ -75,6 +78,18 @@ export interface Conversation {
   category: string;
   description: string;
   dialogue: DialogueLine[];
+}
+
+export interface ConversationItem {
+  id: string;
+  title: string;
+  arabicTitle: string;
+  participants: string[];
+  messages: Array<{
+    speaker: string;
+    text: string;
+    translation: string;
+  }>;
 }
 
 export interface GrammarData {
@@ -128,7 +143,7 @@ export interface ExercisesData {
 }
 
 export interface ConversationsData {
-  CONVERSATIONS_DATA: Conversation[];
+  CONVERSATIONS_DATA: (Conversation | ConversationItem)[];
   [key: string]: unknown;
 }
 
@@ -273,7 +288,88 @@ export const LEVELS: LevelConfig[] = [
       "Elementary communication: Daily routines, Family, and Basic Verbs.",
     color: "from-emerald-400 to-teal-400",
     fallback: "bg-emerald-500",
-    modules: [],
+    modules: [
+      SEARCH_MODULE("A2"),
+      {
+        to: "/A2/family",
+        icon: User,
+        title: "Family",
+        category: "words",
+      },
+      {
+        to: "/A2/months",
+        icon: Calendar,
+        title: "Calendar",
+        category: "words",
+      },
+      {
+        to: "/A2/countries",
+        icon: Globe,
+        title: "Countries",
+        category: "words",
+      },
+      {
+        to: "/A2/classroom",
+        icon: Briefcase,
+        title: "Classroom",
+        category: "words",
+      },
+      {
+        to: "/A2/personality",
+        icon: User,
+        title: "Personality",
+        category: "words",
+      },
+      {
+        to: "/A2/pronunciation",
+        icon: Brain,
+        title: "Pronunciation",
+        category: "grammar",
+      },
+      {
+        to: "/A2/parts-of-speech",
+        icon: BookOpen,
+        title: "Parts of Speech",
+        category: "grammar",
+      },
+      {
+        to: "/A2/time",
+        icon: Clock,
+        title: "Telling Time",
+        category: "words",
+      },
+      {
+        to: "/A2/routines",
+        icon: Clock,
+        title: "Daily Routines",
+        category: "words",
+      },
+      {
+        to: "/A2/verbs",
+        icon: Book,
+        title: "Basic Verbs",
+        category: "words",
+      },
+      { to: "/A2/grammar", icon: Book, title: "Grammar", category: "grammar" },
+      {
+        to: "/A2/exercises/grammar",
+        icon: Brain,
+        title: "Grammar Tests",
+        category: "tests",
+      },
+      {
+        to: "/A2/exercises/vocab",
+        icon: Brain,
+        title: "Vocabulary Tests",
+        category: "tests",
+      },
+      {
+        to: "/A2/conversations",
+        icon: MessageCircle,
+        title: "Conversations",
+        category: "tests",
+      },
+    ],
   },
   {
     id: "B1",

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { Search, Volume2, Brain, Sparkles, Filter } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
@@ -8,8 +7,7 @@ import type { SearchItem } from "../hooks/useSearch";
 import { SearchOverlay } from "./SearchOverlay";
 
 export function SearchPage() {
-  const { levelId } = useParams();
-  const { searchTerm, setSearchTerm, filteredItems } = useSearch(levelId);
+  const { searchTerm, setSearchTerm, filteredItems } = useSearch();
   const { speak } = useSpeech();
   const { setPracticeWord, activeWord } = usePractice();
   const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null);

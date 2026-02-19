@@ -16,9 +16,7 @@ import { SearchOverlay } from "./SearchOverlay";
 
 export function HomePage() {
   const { currentLevel } = useLevel();
-  const { searchTerm, setSearchTerm, filteredItems } = useSearch(
-    currentLevel?.id,
-  );
+  const { searchTerm, setSearchTerm, filteredItems } = useSearch();
   const { speak } = useSpeech();
   const { setPracticeWord, activeWord } = usePractice();
   const [selectedItem, setSelectedItem] = useState<SearchItem | null>(null);
@@ -45,6 +43,8 @@ export function HomePage() {
       Dialogues: { color: "text-amber-400", bg: "bg-amber-400/10" },
       "Word Bank": { color: "text-emerald-400", bg: "bg-emerald-400/10" },
       Phrases: { color: "text-pink-400", bg: "bg-pink-400/10" },
+      "Daily Routines": { color: "text-blue-400", bg: "bg-blue-400/10" },
+      "Basic Verbs": { color: "text-emerald-400", bg: "bg-emerald-400/10" },
     };
     return styles[title] || { color: "text-blue-400", bg: "bg-blue-400/10" };
   };

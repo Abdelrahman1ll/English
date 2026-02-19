@@ -188,6 +188,49 @@ export const GRAMMAR_TESTS = [
         answer: "Frank"
       }
     ]
+  },
+  {
+    id: "a2_plurals",
+    title: "Plural Forms",
+    description: "Test your knowledge of plural nouns.",
+    type: "multiple-choice",
+    questions: [
+      { question: "What is the plural of 'Star'?", options: ["Stars", "Stares", "Starries"], answer: "Stars" },
+      { question: "What is the plural of 'Box'?", options: ["Boxs", "Boxes", "Boxies"], answer: "Boxes" },
+      { question: "What is the plural of 'Fox'?", options: ["Foxes", "Foxs", "Foxies"], answer: "Foxes" },
+      { question: "What is the plural of 'Match'?", options: ["Matchs", "Matches", "Matchies"], answer: "Matches" },
+      { question: "What is the plural of 'Potato'?", options: ["Potatos", "Potatoes", "Potati"], answer: "Potatoes" },
+      { question: "What is the plural of 'Fish'?", options: ["Fish", "Fishes", "Fishs"], answer: "Fish" },
+      { question: "What is the plural of 'Watch'?", options: ["Watchs", "Watches", "Watchies"], answer: "Watches" },
+      { question: "What is the plural of 'Wolf'?", options: ["Wolfs", "Wolves", "Wolfies"], answer: "Wolves" }
+    ]
+  },
+  {
+    id: "a2_wh_questions_test",
+    title: "Wh- Questions",
+    description: "Fill in the blank with the correct Wh- word.",
+    type: "multiple-choice",
+    questions: [
+      { question: "___ are you? (Status/Feeling)", options: ["Who", "How", "Where", "When"], answer: "How" },
+      { question: "___ is your name?", options: ["What", "Whose", "Where", "Why"], answer: "What" },
+      { question: "___ are you from?", options: ["Where", "What", "When", "Who"], answer: "Where" },
+      { question: "___ is that man over there?", options: ["Who", "Whose", "What", "Where"], answer: "Who" },
+      { question: "___ is your birthday?", options: ["When", "What", "Where", "Why"], answer: "When" }
+    ]
+  },
+  {
+    id: "a2_auxiliaries_test",
+    title: "Auxiliaries (Be, Do, Have)",
+    description: "Choose the correct auxiliary verb.",
+    type: "multiple-choice",
+    questions: [
+      { question: "I ___ a doctor.", options: ["am", "is", "are"], answer: "am" },
+      { question: "She ___ like apples.", options: ["do", "does", "is"], answer: "does" },
+      { question: "They ___ a new car.", options: ["has", "have", "are"], answer: "have" },
+      { question: "He ___ playing football.", options: ["is", "are", "do"], answer: "is" },
+      { question: "We ___ not late.", options: ["am", "is", "are"], answer: "are" },
+      { question: "Jennifer ___ beautiful.", options: ["am", "is", "are"], answer: "is" }
+    ]
   }
 ];
 
@@ -209,9 +252,50 @@ export const VOCAB_TESTS = [
         answer: "Granddaughter"
       }
     ]
+  },
+  {
+    id: "a2_phonetics",
+    title: "Phonetics: Underlined Sounds",
+    description: "Write the correct sound for the underlined letters.",
+    type: "fill-blanks",
+    questions: [
+      { question: "Pre_c_e (Price)", options: ["s", "k"], answer: "s" },
+      { question: "Clo_th_ (Cloth)", options: ["θ", "ð"], answer: "θ" },
+      { question: "Bre_th_ (Breath)", options: ["θ", "ð"], answer: "θ" },
+      { question: "Rou_gh_ (Rough)", options: ["f", "v"], answer: "f" },
+      { question: "Se_ss_ion (Session)", options: ["ʃ", "s"], answer: "ʃ" },
+      { question: "_X_ylophone", options: ["z", "ks"], answer: "z" },
+      { question: "Breathi_ng_", options: ["ŋ", "n"], answer: "ŋ" },
+    ]
+  },
+  {
+    id: "a2_be_joke",
+    title: "Grammar: Verb to Be Joke",
+    description: "Complete the joke with the correct form of 'be'.",
+    type: "fill-blanks",
+    questions: [
+      { question: "Joan and her neighbor ___ talking about their daughters.", options: ["am", "is", "are"], answer: "are" },
+      { question: "Joan says, 'My daughter ___ at the university.'", options: ["am", "is", "are"], answer: "is" },
+      { question: "She ___ very intelligent. Every time we get a letter from her we have to go to the dictionary.'", options: ["am", "is", "are"], answer: "is" },
+      { question: "Her neighbor says, 'You ___ lucky. Every time we hear from our daughter we have to go to the bank.'", options: ["am", "is", "are"], answer: "are" },
+    ]
+  },
+  {
+    id: "a2_possessives_test",
+    title: "Possessives (Adjectives vs Pronouns)",
+    description: "Test your knowledge of 'My' vs 'Mine', etc.",
+    type: "multiple-choice",
+    questions: [
+      { question: "This is ___ car. (It belongs to me)", options: ["my", "mine", "me"], answer: "my" },
+      { question: "This car is ___.", options: ["my", "mine", "me"], answer: "mine" },
+      { question: "Is this Jennifer's hat? No, it's not ___.", options: ["her", "hers", "she"], answer: "hers" },
+      { question: "Are these Julie's and Pat's? No, they're not ___ T-shirts.", options: ["their", "theirs", "them"], answer: "their" },
+      { question: "But these socks are ___.", options: ["their", "theirs", "them"], answer: "theirs" }
+    ]
   }
 ];
 
 export const EXERCISES_DATA = [
-  ...GRAMMAR_TESTS[0].questions,
+  ...GRAMMAR_TESTS.flatMap(t => t.questions),
+  ...VOCAB_TESTS.flatMap(t => t.questions),
 ];
