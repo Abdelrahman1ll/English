@@ -20,6 +20,26 @@ interface DeviceInfo {
   timestamp: string;
 }
 
+interface UABrandEntity {
+  brand: string;
+  version: string;
+}
+
+interface NavigatorUAData {
+  brands: UABrandEntity[];
+  mobile: boolean;
+  platform: string;
+  getHighEntropyValues: (hints: string[]) => Promise<{
+    model?: string;
+    platformVersion?: string;
+    fullVersionList?: UABrandEntity[];
+  }>;
+}
+
+interface NavigatorWithUAData extends Navigator {
+  userAgentData?: NavigatorUAData;
+}
+
 export function useDeviceTracking() {
   const location = useLocation();
   const hasTracked = useRef(false);
@@ -81,10 +101,12 @@ export function useDeviceTracking() {
 
         // Try modern userAgentData API as a fallback (Chromium only)
         let debugUAData = "Not Supported";
-        const uaData = (navigator as any).userAgentData;
+        const uaData = (navigator as NavigatorWithUAData).userAgentData;
         if (uaData) {
           try {
-            const brands = uaData.brands.map((b: any) => b.brand).join(", ");
+            const brands = uaData.brands
+              .map((b: UABrandEntity) => b.brand)
+              .join(", ");
             const highEntropy = await uaData.getHighEntropyValues([
               "model",
               "platformVersion",
@@ -94,12 +116,16 @@ export function useDeviceTracking() {
 
             if (manufacturer === "Unknown") {
               if (/HP|Hewlett-Packard/i.test(brands)) manufacturer = "HP";
-              else if (/HP|Hewlett-Packard/i.test(highEntropy.model))
+              else if (
+                highEntropy.model &&
+                /HP|Hewlett-Packard/i.test(highEntropy.model)
+              )
                 manufacturer = "HP";
               else if (highEntropy.model && highEntropy.model !== "")
                 manufacturer = highEntropy.model;
             }
-          } catch (e: any) {
+          } catch (err) {
+            const e = err as Error;
             debugUAData = `Error: ${e.message}`;
           }
         }
@@ -141,7 +167,10 @@ export function useDeviceTracking() {
         );
 
         hasTracked.current = true;
-      } catch {}
+      } catch (err) {
+        const e = err as Error;
+        console.error("Error tracking device:", e.message);
+      }
     };
 
     trackDevice();

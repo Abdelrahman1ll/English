@@ -1,0 +1,28 @@
+import type { VocabularyItem } from "../../levels";
+
+export const FAMILY: VocabularyItem[] = [
+  { english: "Granddaughter", arabic: "حفيدة", note: "n" },
+  { english: "Grandfather", arabic: "الجد", note: "n" },
+  { english: "Grandpa", arabic: "الجد", note: "n" },
+  { english: "Grandmother", arabic: "الجدة", note: "n" },
+  { english: "Grandma", arabic: "الجدة", note: "n" },
+  { english: "Grandparent", arabic: "الجد / الجدة", note: "n" },
+  { english: "Divorce", arabic: "الطلاق / يطلق", note: "n/v" },
+  { english: "Divorced", arabic: "مطلقة / مطلق", note: "adj" },
+  { english: "Eldest", arabic: "الأكبر", note: "adj" },
+  { english: "Family name", arabic: "اسم الجد / اللقب", note: "n" },
+  { english: "Last name", arabic: "اللقب / اسم العائلة", note: "n" },
+  { english: "Family tree", arabic: "شجرة العائلة", note: "n" },
+  { english: "Acquaintances", arabic: "معارف", note: "n" },
+  { english: "Adoption", arabic: "التبني", note: "n" },
+  { english: "Adopt", arabic: "يتبنى", note: "v" },
+  { english: "Ancestors", arabic: "السلف / الأجداد", note: "n" },
+  { english: "Aunt", arabic: "العمة", note: "n" },
+  { english: "Background", arabic: "الخلفية", note: "n" },
+  { english: "Father / Dad", arabic: "الأب", note: "n" },
+  { english: "Mother / Mom", arabic: "الأم", note: "n" },
+  { english: "Brother", arabic: "الأخ", note: "n" },
+  { english: "Sister", arabic: "الأخت", note: "n" },
+  { english: "Son", arabic: "الابن", note: "n" },
+  { english: "Daughter", arabic: "الابنة", note: "n" },
+];

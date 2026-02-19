@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - Falls back to Audio TTS on unsupported browsers (Huawei, WebView)
  */
 export function useSpeech() {
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
@@ -36,7 +35,7 @@ export function useSpeech() {
       }
 
       const audio = new Audio(
-        `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(
+        `https://api.streamelements.com/kappa/v2/speech?voice=Salli&text=${encodeURIComponent(
           text,
         )}`,
       );
@@ -107,34 +106,31 @@ export function useSpeech() {
           expression.onerror = (e) => {
             console.error("SpeechSynthesis error:", e);
             clearTimeout(fallbackTimeout);
-            if (!hasStarted) playAudioFallback(text, onEnd);
+            if (!hasStarted) {
+              window.speechSynthesis.cancel(); // Critical to reset state on error
+              playAudioFallback(text, onEnd);
+            }
           };
 
-          // Enhanced Voice Selection:
-          // We want ONE natural voice. Let's prefer Google US English Male/Female 
-          // or Samantha/Daniel depending on availability.
+          // Voice Selection: Prioritize clear, high-quality voices
           const findVoice = () => {
-            // First choice: Google Natural/Premium English
-            const premiumMatch = voices.find(
-              (v) =>
-                v.lang.startsWith("en") &&
-                (v.name.includes("Premium") ||
-                  v.name.includes("Natural") ||
-                  v.name.includes("Google"))
+            // 1. Google US English (Extremely clear)
+            const googleVoice = voices.find(
+              (v) => v.lang === "en-US" && v.name.includes("Google")
             );
-            if (premiumMatch) return premiumMatch;
+            if (googleVoice) return googleVoice;
 
-            // Second choice: Samantha or Daniel (High quality macOS)
-            const samanthaDaniel = voices.find(
-              (v) => v.name.includes("Samantha") || v.name.includes("Daniel")
+            // 2. Samantha or Victoria (High quality macOS)
+            const premiumFemale = voices.find(
+              (v) => 
+                v.lang.startsWith("en") && 
+                (v.name.includes("Samantha") || v.name.includes("Victoria") || v.name.includes("Premium"))
             );
-            if (samanthaDaniel) return samanthaDaniel;
+            if (premiumFemale) return premiumFemale;
 
-            // Third choice: Any US English
-            const enUSMatch = voices.find((v) => v.lang === "en-US");
-            if (enUSMatch) return enUSMatch;
-
-            return voices.find((v) => v.lang.startsWith("en"));
+            // 3. Fallback to any US English
+            return voices.find((v) => v.lang === "en-US") || 
+                   voices.find((v) => v.lang.startsWith("en"));
           };
 
           const voice = findVoice();
@@ -143,7 +139,6 @@ export function useSpeech() {
           expression.lang = "en-US";
           expression.rate = rate;
 
-          utteranceRef.current = expression;
           window.speechSynthesis.speak(expression);
           return;
         } catch (err) {
