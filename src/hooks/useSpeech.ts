@@ -112,23 +112,37 @@ export function useSpeech() {
             }
           };
 
-          // Voice Selection: Prioritize clear, high-quality voices
+          // Voice Selection: Strictly prioritize female voices for a consistent experience
           const findVoice = () => {
-            // 1. Google US English (Extremely clear)
+            // 1. Premium Female Voices (macOS/iOS/Windows)
+            const premiumFemale = voices.find(
+              (v) => 
+                v.lang.startsWith("en") && 
+                (v.name.includes("Samantha") || 
+                 v.name.includes("Victoria") || 
+                 v.name.includes("Zira") || 
+                 v.name.includes("Aria") || 
+                 v.name.includes("Sonia") || 
+                 v.name.includes("Salli") || 
+                 v.name.includes("Joanna") ||
+                 v.name.includes("Khyati") ||
+                 v.name.includes("Premium"))
+            );
+            if (premiumFemale) return premiumFemale;
+
+            // 2. Google US English Female (if identifiable)
+            const googleFemale = voices.find(
+              (v) => v.lang === "en-US" && v.name.includes("Google") && v.name.includes("Female")
+            );
+            if (googleFemale) return googleFemale;
+
+            // 3. Any Google US English (as fallback, though may be male)
             const googleVoice = voices.find(
               (v) => v.lang === "en-US" && v.name.includes("Google")
             );
             if (googleVoice) return googleVoice;
 
-            // 2. Samantha or Victoria (High quality macOS)
-            const premiumFemale = voices.find(
-              (v) => 
-                v.lang.startsWith("en") && 
-                (v.name.includes("Samantha") || v.name.includes("Victoria") || v.name.includes("Premium"))
-            );
-            if (premiumFemale) return premiumFemale;
-
-            // 3. Fallback to any US English
+            // 4. Final fallback to any US English
             return voices.find((v) => v.lang === "en-US") || 
                    voices.find((v) => v.lang.startsWith("en"));
           };
