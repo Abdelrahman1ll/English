@@ -13,7 +13,10 @@ import {
 } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
+<<<<<<< HEAD
 // import { PracticeProvider } from "../context/PracticeContext";
+=======
+>>>>>>> 50b6ada (Add)
 import { PracticeWidget } from "./PracticeWidget";
 import { useSpeech } from "../hooks/useSpeech";
 import { usePractice } from "../context/PracticeContext";
@@ -67,7 +70,10 @@ export function Layout({ children }: PropsWithChildren) {
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
   const { currentLevel, setLevel } = useLevel();
+<<<<<<< HEAD
   // const [, setShowScrollTop] = useState(false);
+=======
+>>>>>>> 50b6ada (Add)
   const [prevPath, setPrevPath] = useState(location.pathname);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -108,6 +114,7 @@ export function Layout({ children }: PropsWithChildren) {
     }
   }, [location.pathname]);
 
+<<<<<<< HEAD
   // Auto-select Level A1 if nothing is selected (DISABLED for Landing Page)
   // useEffect(() => {
   //   if (!currentLevel) {
@@ -116,6 +123,8 @@ export function Layout({ children }: PropsWithChildren) {
   // }, [currentLevel, setLevel]);
 
 
+=======
+>>>>>>> 50b6ada (Add)
   const scrollToTop = () => {
     if (mainRef.current) {
       mainRef.current.scrollTo({

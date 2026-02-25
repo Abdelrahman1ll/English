@@ -116,6 +116,7 @@ export function useSpeech() {
           const findVoice = () => {
             // 1. Premium Female Voices (macOS/iOS/Windows)
             const premiumFemale = voices.find(
+<<<<<<< HEAD
               (v) => 
                 v.lang.startsWith("en") && 
                 (v.name.includes("Samantha") || 
@@ -127,24 +128,55 @@ export function useSpeech() {
                  v.name.includes("Joanna") ||
                  v.name.includes("Khyati") ||
                  v.name.includes("Premium"))
+=======
+              (v) =>
+                v.lang.startsWith("en") &&
+                (v.name.includes("Samantha") ||
+                  v.name.includes("Victoria") ||
+                  v.name.includes("Zira") ||
+                  v.name.includes("Aria") ||
+                  v.name.includes("Sonia") ||
+                  v.name.includes("Salli") ||
+                  v.name.includes("Joanna") ||
+                  v.name.includes("Khyati") ||
+                  v.name.includes("Premium")),
+>>>>>>> 50b6ada (Add)
             );
             if (premiumFemale) return premiumFemale;
 
             // 2. Google US English Female (if identifiable)
             const googleFemale = voices.find(
+<<<<<<< HEAD
               (v) => v.lang === "en-US" && v.name.includes("Google") && v.name.includes("Female")
+=======
+              (v) =>
+                v.lang === "en-US" &&
+                v.name.includes("Google") &&
+                v.name.includes("Female"),
+>>>>>>> 50b6ada (Add)
             );
             if (googleFemale) return googleFemale;
 
             // 3. Any Google US English (as fallback, though may be male)
             const googleVoice = voices.find(
+<<<<<<< HEAD
               (v) => v.lang === "en-US" && v.name.includes("Google")
+=======
+              (v) => v.lang === "en-US" && v.name.includes("Google"),
+>>>>>>> 50b6ada (Add)
             );
             if (googleVoice) return googleVoice;
 
             // 4. Final fallback to any US English
+<<<<<<< HEAD
             return voices.find((v) => v.lang === "en-US") || 
                    voices.find((v) => v.lang.startsWith("en"));
+=======
+            return (
+              voices.find((v) => v.lang === "en-US") ||
+              voices.find((v) => v.lang.startsWith("en"))
+            );
+>>>>>>> 50b6ada (Add)
           };
 
           const voice = findVoice();
@@ -155,7 +187,11 @@ export function useSpeech() {
 
           // Reset state and add a tiny delay to prevent race conditions in Chromium
           window.speechSynthesis.cancel();
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> 50b6ada (Add)
           setTimeout(() => {
             window.speechSynthesis.speak(expression);
           }, 10);
