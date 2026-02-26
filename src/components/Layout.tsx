@@ -13,10 +13,6 @@ import {
 } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
-<<<<<<< HEAD
-// import { PracticeProvider } from "../context/PracticeContext";
-=======
->>>>>>> 50b6ada (Add)
 import { PracticeWidget } from "./PracticeWidget";
 import { useSpeech } from "../hooks/useSpeech";
 import { usePractice } from "../context/PracticeContext";
@@ -70,10 +66,6 @@ export function Layout({ children }: PropsWithChildren) {
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
   const { currentLevel, setLevel } = useLevel();
-<<<<<<< HEAD
-  // const [, setShowScrollTop] = useState(false);
-=======
->>>>>>> 50b6ada (Add)
   const [prevPath, setPrevPath] = useState(location.pathname);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -114,17 +106,6 @@ export function Layout({ children }: PropsWithChildren) {
     }
   }, [location.pathname]);
 
-<<<<<<< HEAD
-  // Auto-select Level A1 if nothing is selected (DISABLED for Landing Page)
-  // useEffect(() => {
-  //   if (!currentLevel) {
-  //     setLevel("A1");
-  //   }
-  // }, [currentLevel, setLevel]);
-
-
-=======
->>>>>>> 50b6ada (Add)
   const scrollToTop = () => {
     if (mainRef.current) {
       mainRef.current.scrollTo({
@@ -138,200 +119,200 @@ export function Layout({ children }: PropsWithChildren) {
 
   return (
     <div className="h-screen bg-neutral-950 text-white flex flex-col lg:flex-row font-sans selection:bg-blue-500/30 overflow-hidden relative">
-        {/* Mobile Top Header */}
-        <div className="lg:hidden h-16 border-b border-white/10 bg-[#1a1a1a] flex items-center justify-between px-6 z-40 shrink-0">
-          <Link
-            to="/"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="flex items-center gap-2"
-          >
-            <h1 className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic">
-              English Master
-            </h1>
-          </Link>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 text-neutral-400 hover:text-white transition-colors"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+      {/* Mobile Top Header */}
+      <div className="lg:hidden h-16 border-b border-white/10 bg-[#1a1a1a] flex items-center justify-between px-6 z-40 shrink-0">
+        <Link
+          to="/"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="flex items-center gap-2"
+        >
+          <h1 className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic">
+            English Master
+          </h1>
+        </Link>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-neutral-400 hover:text-white transition-colors"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
-        {/* Sidebar Overlay for Mobile */}
-        {isMobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
+      {/* Sidebar Overlay for Mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
-        {/* Sidebar */}
-        <aside
-          className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-40
+      {/* Sidebar */}
+      <aside
+        className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-40
             border-r border-white/10 p-4 flex flex-col gap-6 bg-[#1a1a1a] transition-all duration-300
             ${isCollapsed ? "lg:w-20" : "lg:w-72"}
             ${isMobileMenuOpen ? "translate-x-0 w-72" : "-translate-x-full lg:translate-x-0"}
           `}
+      >
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="hidden lg:flex absolute -right-4 top-10 w-8 h-8 bg-[#1a1a1a] hover:bg-blue-600 rounded-lg items-center justify-center border border-white/10 text-neutral-400 hover:text-white transition-all z-50 shadow-2xl hover:shadow-blue-500/40 active:scale-95 group/toggle"
         >
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex absolute -right-4 top-10 w-8 h-8 bg-[#1a1a1a] hover:bg-blue-600 rounded-lg items-center justify-center border border-white/10 text-neutral-400 hover:text-white transition-all z-50 shadow-2xl hover:shadow-blue-500/40 active:scale-95 group/toggle"
-          >
-            {isCollapsed ? (
-              <PanelLeftOpen size={18} />
-            ) : (
-              <PanelLeftClose size={18} />
-            )}
-          </button>
+          {isCollapsed ? (
+            <PanelLeftOpen size={18} />
+          ) : (
+            <PanelLeftClose size={18} />
+          )}
+        </button>
 
-          <div
-            className={`px-2 transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:scale-75 lg:h-0 overflow-hidden" : "opacity-100"}`}
-          >
-            <Link to="/" className="block group">
-              <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic group-hover:from-blue-300 group-hover:to-indigo-300 transition-all text-nowrap">
-                English Master
-              </h1>
-            </Link>
-            {currentLevel && (
-              <div className="flex items-center gap-2 mt-2">
-                <div
-                  className={`px-2 py-0.5 rounded-md bg-linear-to-r ${currentLevel.color} text-[10px] font-black text-white uppercase tracking-wider shadow-sm`}
-                >
-                  {currentLevel.id}
-                </div>
-                <p className="text-xs text-neutral-400 font-bold tracking-wide uppercase">
-                  {currentLevel.title}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <nav className="flex flex-col gap-1.5 flex-1 overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-            <div
-              className={`px-3 mb-2 transition-all duration-300 ${isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"}`}
-            >
-              <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">
-                General
-              </h2>
-            </div>
-            <NavItem
-              to={currentLevel ? `/${currentLevel.id}/home` : "/"}
-              icon={House}
-              label="Home"
-              isCollapsed={isCollapsed}
-            />
-            {levelModules.length > 0 && (
-              <div className="flex flex-col gap-6">
-                {(
-                  [
-                    { key: "words", label: "Words & Letters" },
-                    { key: "sentences", label: "Sentences" },
-                    { key: "grammar", label: "Grammar" },
-                    { key: "tests", label: "Tests" },
-                  ] as const
-                ).map((category) => {
-                  const items = levelModules.filter(
-                    (m) => m.category === category.key,
-                  );
-                  if (items.length === 0) return null;
-
-                  return (
-                    <div key={category.key} className="flex flex-col gap-1.5">
-                      <div
-                        className={`px-3 mb-1.5 transition-all duration-300 ${
-                          isCollapsed
-                            ? "h-px bg-white/5 w-full"
-                            : "flex items-center gap-2"
-                        }`}
-                      >
-                        {!isCollapsed && (
-                          <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                            {category.label}
-                            {category.key === "words" && (
-                              <span
-                                className={`px-1.5 py-0.5 rounded bg-linear-to-r ${currentLevel?.color} text-[8px] text-white`}
-                              >
-                                {currentLevel?.id}
-                              </span>
-                            )}
-                          </h2>
-                        )}
-                      </div>
-                      {items.map((module) => (
-                        <NavItem
-                          key={module.to}
-                          to={module.to}
-                          icon={module.icon}
-                          label={module.title}
-                          isCollapsed={isCollapsed}
-                        />
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {levelModules.length === 0 && (
-              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4 opacity-50">
-                <BookOpen size={40} className="text-neutral-700" />
-                <p className="text-xs text-neutral-500 font-medium leading-relaxed">
-                  Select a level on the home page to start learning.
-                </p>
-                <Link
-                  to="/"
-                  className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400"
-                >
-                  Go to Home
-                </Link>
-              </div>
-            )}
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main
-          ref={mainRef}
-          className="flex-1 overflow-y-auto relative scroll-smooth bg-neutral-950/50"
+        <div
+          className={`px-2 transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:scale-75 lg:h-0 overflow-hidden" : "opacity-100"}`}
         >
-          <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12">
-            {children}
-
-            {/* Bottom Navigation */}
-            <div className="mt-20 pt-10 border-t border-white/5 flex flex-col items-center gap-6">
-              <button
-                onClick={scrollToTop}
-                className="flex flex-col items-center gap-2 group transition-all"
+          <Link to="/" className="block group">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic group-hover:from-blue-300 group-hover:to-indigo-300 transition-all text-nowrap">
+              English Master
+            </h1>
+          </Link>
+          {currentLevel && (
+            <div className="flex items-center gap-2 mt-2">
+              <div
+                className={`px-2 py-0.5 rounded-md bg-linear-to-r ${currentLevel.color} text-[10px] font-black text-white uppercase tracking-wider shadow-sm`}
               >
-                <div className="p-4 bg-blue-600/10 group-hover:bg-blue-600/20 border border-blue-500/20 rounded-full text-blue-400 group-hover:scale-110 transition-all">
-                  <ArrowUp size={32} />
-                </div>
-                <span className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent uppercase tracking-tight">
-                  Back to Top
-                </span>
-              </button>
-              <p className="text-neutral-500 text-sm">
-                Ready for the next lesson?
+                {currentLevel.id}
+              </div>
+              <p className="text-xs text-neutral-400 font-bold tracking-wide uppercase">
+                {currentLevel.title}
               </p>
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Floating Controls */}
-          <div className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 flex flex-col items-end gap-3 z-30">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-4 py-3 bg-[#1a1a1a]/80 hover:bg-white/10 border border-white/10 rounded-2xl text-neutral-400 hover:text-white transition-all shadow-xl backdrop-blur-md flex items-center gap-2 group"
-              title="Go Back"
-            >
-              <ArrowLeft
-                size={18}
-                className="group-hover:-translate-x-1 transition-transform"
-              />
-              <span className="text-sm font-bold">Back</span>
-            </button>
+        <nav className="flex flex-col gap-1.5 flex-1 overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          <div
+            className={`px-3 mb-2 transition-all duration-300 ${isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"}`}
+          >
+            <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">
+              General
+            </h2>
           </div>
-        </main>
-        <PracticeWidget key={`${activeWord}-${practiceMode}`} />
-      </div>
+          <NavItem
+            to={currentLevel ? `/${currentLevel.id}/home` : "/"}
+            icon={House}
+            label="Home"
+            isCollapsed={isCollapsed}
+          />
+          {levelModules.length > 0 && (
+            <div className="flex flex-col gap-6">
+              {(
+                [
+                  { key: "words", label: "Words & Letters" },
+                  { key: "sentences", label: "Sentences" },
+                  { key: "grammar", label: "Grammar" },
+                  { key: "tests", label: "Tests" },
+                ] as const
+              ).map((category) => {
+                const items = levelModules.filter(
+                  (m) => m.category === category.key,
+                );
+                if (items.length === 0) return null;
+
+                return (
+                  <div key={category.key} className="flex flex-col gap-1.5">
+                    <div
+                      className={`px-3 mb-1.5 transition-all duration-300 ${
+                        isCollapsed
+                          ? "h-px bg-white/5 w-full"
+                          : "flex items-center gap-2"
+                      }`}
+                    >
+                      {!isCollapsed && (
+                        <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                          {category.label}
+                          {category.key === "words" && (
+                            <span
+                              className={`px-1.5 py-0.5 rounded bg-linear-to-r ${currentLevel?.color} text-[8px] text-white`}
+                            >
+                              {currentLevel?.id}
+                            </span>
+                          )}
+                        </h2>
+                      )}
+                    </div>
+                    {items.map((module) => (
+                      <NavItem
+                        key={module.to}
+                        to={module.to}
+                        icon={module.icon}
+                        label={module.title}
+                        isCollapsed={isCollapsed}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {levelModules.length === 0 && (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4 opacity-50">
+              <BookOpen size={40} className="text-neutral-700" />
+              <p className="text-xs text-neutral-500 font-medium leading-relaxed">
+                Select a level on the home page to start learning.
+              </p>
+              <Link
+                to="/"
+                className="text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400"
+              >
+                Go to Home
+              </Link>
+            </div>
+          )}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main
+        ref={mainRef}
+        className="flex-1 overflow-y-auto relative scroll-smooth bg-neutral-950/50"
+      >
+        <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12">
+          {children}
+
+          {/* Bottom Navigation */}
+          <div className="mt-20 pt-10 border-t border-white/5 flex flex-col items-center gap-6">
+            <button
+              onClick={scrollToTop}
+              className="flex flex-col items-center gap-2 group transition-all"
+            >
+              <div className="p-4 bg-blue-600/10 group-hover:bg-blue-600/20 border border-blue-500/20 rounded-full text-blue-400 group-hover:scale-110 transition-all">
+                <ArrowUp size={32} />
+              </div>
+              <span className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent uppercase tracking-tight">
+                Back to Top
+              </span>
+            </button>
+            <p className="text-neutral-500 text-sm">
+              Ready for the next lesson?
+            </p>
+          </div>
+        </div>
+
+        {/* Floating Controls */}
+        <div className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 flex flex-col items-end gap-3 z-30">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-3 bg-[#1a1a1a]/80 hover:bg-white/10 border border-white/10 rounded-2xl text-neutral-400 hover:text-white transition-all shadow-xl backdrop-blur-md flex items-center gap-2 group"
+            title="Go Back"
+          >
+            <ArrowLeft
+              size={18}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-bold">Back</span>
+          </button>
+        </div>
+      </main>
+      <PracticeWidget key={`${activeWord}-${practiceMode}`} />
+    </div>
   );
 }

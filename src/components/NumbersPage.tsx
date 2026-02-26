@@ -19,13 +19,56 @@ interface NumbersDataStructure {
   BIG: NumberItem[];
 }
 
+interface NumberCardProps {
+  item: NumberItem;
+  isActive: boolean;
+  onCardClick: (item: NumberItem) => void;
+}
+
+const NumberCard = ({ item, isActive, onCardClick }: NumberCardProps) => {
+  return (
+    <button
+      type="button"
+      onClick={() => onCardClick(item)}
+      className={`group flex flex-col items-center justify-center p-6 rounded-3xl border transition-all ${
+        isActive
+          ? "bg-blue-500/10 border-blue-500/50 scale-105 shadow-xl shadow-blue-500/20 z-10"
+          : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20"
+      }`}
+    >
+      <div
+        className={`text-4xl font-black mb-3 transition-colors ${isActive ? "text-blue-400" : "text-blue-400/80"}`}
+      >
+        {item.digit}
+      </div>
+      <div
+        className={`flex flex-col items-center gap-1 text-sm font-bold ${isActive ? "text-white/90" : "text-neutral-400"}`}
+      >
+        <div className="flex items-center gap-2">
+          <span>{item.word}</span>
+          <Volume2
+            size={14}
+            className={`transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+          />
+        </div>
+        {item.arabic && (
+          <span className="text-xs opacity-50 font-arabic italic">
+            {item.arabic}
+          </span>
+        )}
+      </div>
+    </button>
+  );
+};
+
 export function NumbersPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredNumbersData = useMemo(() => {
-    const rawNumbersData = (levelData?.vocabulary?.NUMBERS_DATA as NumbersDataStructure) || {
+    const rawNumbersData = (levelData?.vocabulary
+      ?.NUMBERS_DATA as NumbersDataStructure) || {
       BASICS: [],
       TEENS: [],
       TENS: [],
@@ -59,43 +102,6 @@ export function NumbersPage() {
   const handleCardClick = (item: NumberItem) => {
     speak(item.word);
     setPracticeWord(item.word);
-  };
-
-  const NumberCard = ({ item }: { item: NumberItem }) => {
-    const isActive = activeWord === item.word;
-
-    return (
-      <button
-        onClick={() => handleCardClick(item)}
-        className={`group flex flex-col items-center justify-center p-6 rounded-3xl border transition-all ${
-          isActive
-            ? "bg-blue-500/10 border-blue-500/50 scale-105 shadow-xl shadow-blue-500/20 z-10"
-            : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20"
-        }`}
-      >
-        <div
-          className={`text-4xl font-black mb-3 transition-colors ${isActive ? "text-blue-400" : "text-blue-400/80"}`}
-        >
-          {item.digit}
-        </div>
-        <div
-          className={`flex flex-col items-center gap-1 text-sm font-bold ${isActive ? "text-white/90" : "text-neutral-400"}`}
-        >
-          <div className="flex items-center gap-2">
-            <span>{item.word}</span>
-            <Volume2
-              size={14}
-              className={`transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-            />
-          </div>
-          {item.arabic && (
-            <span className="text-xs opacity-50 font-arabic italic">
-              {item.arabic}
-            </span>
-          )}
-        </div>
-      </button>
-    );
   };
 
   return (
@@ -134,7 +140,12 @@ export function NumbersPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
           {NUMBERS_DATA.BASICS.map((item: NumberItem) => (
-            <NumberCard key={item.digit} item={item} />
+            <NumberCard
+              key={item.digit}
+              item={item}
+              isActive={activeWord === item.word}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
@@ -145,7 +156,12 @@ export function NumbersPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {NUMBERS_DATA.TEENS.map((item: NumberItem) => (
-            <NumberCard key={item.digit} item={item} />
+            <NumberCard
+              key={item.digit}
+              item={item}
+              isActive={activeWord === item.word}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
@@ -156,7 +172,12 @@ export function NumbersPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
           {NUMBERS_DATA.TENS.map((item: NumberItem) => (
-            <NumberCard key={item.digit} item={item} />
+            <NumberCard
+              key={item.digit}
+              item={item}
+              isActive={activeWord === item.word}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
@@ -167,7 +188,12 @@ export function NumbersPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
           {NUMBERS_DATA.ORDINALS.map((item: NumberItem) => (
-            <NumberCard key={item.digit} item={item} />
+            <NumberCard
+              key={item.digit}
+              item={item}
+              isActive={activeWord === item.word}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
@@ -178,7 +204,12 @@ export function NumbersPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {NUMBERS_DATA.BIG.map((item) => (
-            <NumberCard key={item.digit} item={item} />
+            <NumberCard
+              key={item.digit}
+              item={item}
+              isActive={activeWord === item.word}
+              onCardClick={handleCardClick}
+            />
           ))}
         </div>
       </div>
