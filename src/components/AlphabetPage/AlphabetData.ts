@@ -1,0 +1,195 @@
+export const ALPHABET_DATA: Record<
+  string,
+  {
+    name: string;
+    sound: string;
+    soundExample: string;
+    phoneme: string;
+    soundAlternatives: string[];
+  }
+> = {
+  A: {
+    name: "A",
+    sound: "Ah",
+    soundExample: "Apple",
+    phoneme: "a",
+    soundAlternatives: ["a", "ah", "apple", "at", "an", "as", "about"],
+  },
+  B: {
+    name: "B",
+    sound: "Buh",
+    soundExample: "Ball",
+    phoneme: "b",
+    soundAlternatives: ["ba", "buh", "ball", "be", "bee", "boy", "but"],
+  },
+  C: {
+    name: "C",
+    sound: "Kuh",
+    soundExample: "Cat",
+    phoneme: "c",
+    soundAlternatives: ["ka", "kuh", "cat", "car", "can", "come"],
+  },
+  D: {
+    name: "D",
+    sound: "Duh",
+    soundExample: "Dog",
+    phoneme: "d",
+    soundAlternatives: ["da", "duh", "dog", "day", "do", "dad"],
+  },
+  E: {
+    name: "E",
+    sound: "Eh",
+    soundExample: "Egg",
+    phoneme: "e",
+    soundAlternatives: ["e", "eh", "egg", "end", "elephant", "every"],
+  },
+  F: {
+    name: "F",
+    sound: "Fff",
+    soundExample: "Fish",
+    phoneme: "f",
+    soundAlternatives: ["f", "fff", "fish", "fox", "fan", "for"],
+  },
+  G: {
+    name: "G",
+    sound: "Guh",
+    soundExample: "Goat",
+    phoneme: "g",
+    soundAlternatives: ["ga", "guh", "goat", "game", "go", "good"],
+  },
+  H: {
+    name: "H",
+    sound: "Huh",
+    soundExample: "Hat",
+    phoneme: "h",
+    soundAlternatives: ["ha", "huh", "hat", "hot", "he", "hi"],
+  },
+  I: {
+    name: "I",
+    sound: "Ih",
+    soundExample: "Igloo",
+    phoneme: "i",
+    soundAlternatives: ["i", "ih", "igloo", "it", "is", "in"],
+  },
+  J: {
+    name: "J",
+    sound: "Juh",
+    soundExample: "Jam",
+    phoneme: "j",
+    soundAlternatives: ["ja", "juh", "jam", "jet", "jar", "joy"],
+  },
+  K: {
+    name: "K",
+    sound: "Kuh",
+    soundExample: "Kite",
+    phoneme: "k",
+    soundAlternatives: ["ka", "kuh", "kite", "key", "king", "kind"],
+  },
+  L: {
+    name: "L",
+    sound: "Lll",
+    soundExample: "Lion",
+    phoneme: "l",
+    soundAlternatives: ["la", "lll", "lion", "leg", "let", "look"],
+  },
+  M: {
+    name: "M",
+    sound: "Mmm",
+    soundExample: "Monkey",
+    phoneme: "m",
+    soundAlternatives: ["ma", "mmm", "monkey", "me", "my", "man"],
+  },
+  N: {
+    name: "N",
+    sound: "Nnn",
+    soundExample: "Nest",
+    phoneme: "n",
+    soundAlternatives: ["na", "nnn", "nest", "no", "not", "new"],
+  },
+  O: {
+    name: "O",
+    sound: "Aw",
+    soundExample: "Octopus",
+    phoneme: "o",
+    soundAlternatives: ["o", "aw", "octopus", "on", "off", "ox"],
+  },
+  P: {
+    name: "P",
+    sound: "Puh",
+    soundExample: "Pig",
+    phoneme: "p",
+    soundAlternatives: ["pa", "puh", "pig", "pen", "put", "pet"],
+  },
+  Q: {
+    name: "Q",
+    sound: "Kwuh",
+    soundExample: "Queen",
+    phoneme: "q",
+    soundAlternatives: ["kwa", "kwuh", "queen", "quick", "question"],
+  },
+  R: {
+    name: "R",
+    sound: "Rrr",
+    soundExample: "Rabbit",
+    phoneme: "r",
+    soundAlternatives: ["ra", "rrr", "rabbit", "run", "red", "rat"],
+  },
+  S: {
+    name: "S",
+    sound: "Sah",
+    soundExample: "Sun",
+    phoneme: "s",
+    soundAlternatives: ["sa", "sah", "sun", "see", "sit", "sing"],
+  },
+  T: {
+    name: "T",
+    sound: "Tuh",
+    soundExample: "Tiger",
+    phoneme: "t",
+    soundAlternatives: ["ta", "tuh", "tiger", "to", "ten", "top"],
+  },
+  U: {
+    name: "U",
+    sound: "Uh",
+    soundExample: "Umbrella",
+    phoneme: "u",
+    soundAlternatives: ["u", "uh", "umbrella", "up", "us", "under"],
+  },
+  V: {
+    name: "V",
+    sound: "Vvv",
+    soundExample: "Van",
+    phoneme: "v",
+    soundAlternatives: ["va", "vvv", "van", "very", "voice"],
+  },
+  W: {
+    name: "W",
+    sound: "Wuh",
+    soundExample: "Watch",
+    phoneme: "w",
+    soundAlternatives: ["wa", "wuh", "watch", "we", "was", "will"],
+  },
+  X: {
+    name: "X",
+    sound: "Ks",
+    soundExample: "Box",
+    phoneme: "x",
+    soundAlternatives: ["ks", "ex", "box", "six", "fox", "tax"],
+  },
+  Y: {
+    name: "Y",
+    sound: "Yuh",
+    soundExample: "Yo-yo",
+    phoneme: "y",
+    soundAlternatives: ["ya", "yuh", "yo-yo", "yes", "why", "wye", "you"],
+  },
+  Z: {
+    name: "Z",
+    sound: "Zzz",
+    soundExample: "Zebra",
+    phoneme: "z",
+    soundAlternatives: ["za", "zzz", "zebra", "zoo", "zip", "zero"],
+  },
+};
+
+export const ALPHABET = Object.keys(ALPHABET_DATA);

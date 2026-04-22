@@ -263,7 +263,7 @@ export function StudyModule({ items }: StudyModuleProps) {
           </div>
           <input
             type="text"
-            placeholder="Click here to hide and start typing..."
+            placeholder="Practice typing..."
             value={practiceInput}
             onChange={(e) => setPracticeInput(e.target.value)}
             onFocus={() => {

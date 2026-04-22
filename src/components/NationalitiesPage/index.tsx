@@ -1,0 +1,1 @@
+export { NationalitiesPage } from "./NationalitiesPage";

@@ -1,0 +1,1 @@
+export { DescribingSentencesPage } from "./DescribingSentencesPage";

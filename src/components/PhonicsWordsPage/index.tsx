@@ -1,0 +1,1 @@
+export { PhonicsWordsPage } from "./PhonicsWordsPage";

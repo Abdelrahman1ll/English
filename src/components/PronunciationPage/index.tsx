@@ -1,0 +1,1 @@
+export { PronunciationPage } from "./PronunciationPage";

@@ -1,0 +1,1 @@
+export { CommonSocialPage } from "./CommonSocialPage";

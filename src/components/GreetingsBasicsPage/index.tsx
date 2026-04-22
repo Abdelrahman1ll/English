@@ -1,0 +1,1 @@
+export { GreetingsBasicsPage } from "./GreetingsBasicsPage";

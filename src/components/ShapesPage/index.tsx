@@ -1,0 +1,1 @@
+export { ShapesPage } from "./ShapesPage";
