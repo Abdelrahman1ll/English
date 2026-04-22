@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Volume2, Split, Search } from "lucide-react";
+import { Volume2, Split, Search, LayoutGrid, Focus } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import { StudyModule, type StudyItem } from "./shared/StudyModule";
 
 interface ExampleWord {
   text: string;
@@ -60,6 +61,35 @@ export function DigraphsPage() {
   }, [levelData, searchQuery]);
 
   const DIGRAPHS_DATA = filteredDigraphsData;
+
+  const [isStudyMode, setIsStudyMode] = useState(false);
+
+  const studyItems: StudyItem[] = useMemo(() => {
+    const items: StudyItem[] = [];
+    const allDigraphs = [
+      ...(filteredDigraphsData.CONSONANTS || []),
+      ...(filteredDigraphsData.VOWELS || []),
+    ];
+
+    allDigraphs.forEach((d) => {
+      // Add the digraph itself
+      items.push({
+        primary: d.digraph,
+        secondary: d.pronunciation || d.sound || "",
+        category: "Digraph Sound",
+      });
+      // Add its examples
+      d.examples.forEach((ex) => {
+        items.push({
+          primary: ex.text,
+          secondary: ex.translation,
+          category: `Examples for ${d.digraph}`,
+        });
+      });
+    });
+
+    return items;
+  }, [filteredDigraphsData]);
 
   const [activeTab, setActiveTab] = useState<"consonants" | "vowels">(
     "consonants",
@@ -122,30 +152,60 @@ export function DigraphsPage() {
 
           <div className="flex bg-[#1e1e1e] p-1.5 rounded-2xl border border-white/5 shadow-inner shrink-0">
             <button
-              onClick={() => setActiveTab("consonants")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                activeTab === "consonants"
-                  ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/5"
-                  : "text-neutral-500 hover:text-white"
+              onClick={() => setIsStudyMode(false)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                !isStudyMode
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
             >
-              Consonants
+              <LayoutGrid size={18} />
+              <span className="font-bold">Grid View</span>
             </button>
             <button
-              onClick={() => setActiveTab("vowels")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
-                activeTab === "vowels"
-                  ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/5"
-                  : "border-transparent text-neutral-500 hover:text-white"
+              onClick={() => setIsStudyMode(true)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                isStudyMode
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
             >
-              Vowels
+              <Focus size={18} />
+              <span className="font-bold">Study Mode</span>
             </button>
           </div>
+
+          {!isStudyMode && (
+            <div className="flex bg-[#1e1e1e] p-1.5 rounded-2xl border border-white/5 shadow-inner shrink-0">
+              <button
+                onClick={() => setActiveTab("consonants")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === "consonants"
+                    ? "bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-lg shadow-blue-500/5"
+                    : "text-neutral-500 hover:text-white"
+                }`}
+              >
+                Consonants
+              </button>
+              <button
+                onClick={() => setActiveTab("vowels")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                  activeTab === "vowels"
+                    ? "bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/5"
+                    : "border-transparent text-neutral-500 hover:text-white"
+                }`}
+              >
+                Vowels
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {isStudyMode ? (
+        <StudyModule items={studyItems} onExit={() => setIsStudyMode(false)} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentData.map((item: DigraphItem) => (
           <div
             key={item.digraph}
@@ -156,6 +216,14 @@ export function DigraphsPage() {
                 : "border-white/5 shadow-lg"
             }`}
           >
+            {/* Matte Index Badge */}
+            <div className="absolute -top-1 -left-1 z-20">
+              <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                  #{String(studyItems.findIndex(s => s.primary === item.digraph) + 1).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
             <div
               className={`text-5xl font-black mb-8 transition-all ${activeWord === item.digraph ? "text-amber-400 scale-110" : "text-white group-hover:text-amber-400"}`}
             >
@@ -186,13 +254,21 @@ export function DigraphsPage() {
                 <button
                   key={ex.text}
                   onClick={(e) => handleExampleClick(e, ex.text)}
-                  className={`w-full rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between transition-all border ${
+                  className={`w-full rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between transition-all border relative overflow-hidden group/ex ${
                     activeWord === ex.text
                       ? "bg-amber-500/20 border-amber-500/50 text-white scale-[1.05] shadow-lg z-20"
                       : "bg-black/40 text-neutral-300 border-transparent hover:bg-white/10 hover:border-white/5"
                   }`}
                 >
-                  <div className="flex flex-col text-left">
+                  {/* Badge for Example Word */}
+                  <div className="absolute -top-1 -left-1 z-20">
+                    <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                      <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                        #{String(studyItems.findIndex(s => s.primary === ex.text) + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col text-left mt-1">
                     <span className="capitalize">{ex.text}</span>
                     <span
                       className={`text-[10px] font-arabic leading-none mt-1 ${activeWord === ex.text ? "text-white/80" : "text-neutral-500"}`}
@@ -202,7 +278,7 @@ export function DigraphsPage() {
                   </div>
                   <Volume2
                     size={14}
-                    className={`transition-all ${playingItem === ex.text ? "text-white scale-125 opacity-100" : activeWord === ex.text ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40"}`}
+                    className={`transition-all ${playingItem === ex.text ? "text-white scale-125 opacity-100" : activeWord === ex.text ? "text-white/60 opacity-100" : "opacity-0 group-hover/ex:opacity-40"}`}
                   />
                 </button>
               ))}
@@ -216,15 +292,17 @@ export function DigraphsPage() {
           </div>
         ))}
       </div>
+      )}
 
       {/* Instruction Card */}
-      <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
-        <h3 className="font-bold text-white uppercase tracking-widest text-sm opacity-50">
-          Practice Mode
+      <div className="bg-[#1e1e1e] p-10 rounded-[3rem] border border-white/5 shadow-2xl text-center space-y-6 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-amber-500 via-orange-500 to-yellow-500 opacity-30" />
+        <h3 className="font-black text-white uppercase tracking-[0.2em] text-sm opacity-50">
+          Immersion Practice
         </h3>
-        <p className="text-neutral-300 max-w-md mx-auto text-lg">
-          Click on a digraph or any example word to practice **Writing** or
-          **Speaking**.
+        <p className="text-neutral-300 max-w-xl mx-auto text-xl leading-relaxed">
+          Click on any digraph or example word to trigger the **Practice System**. <br />{" "}
+          Use the floating tools to master your pronunciation and writing.
         </p>
       </div>
     </div>

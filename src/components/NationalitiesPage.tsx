@@ -1,30 +1,66 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Globe, Languages, MessageSquare, Volume2, Search } from "lucide-react";
+import { Globe, Languages, MessageSquare, Volume2, Search, LayoutGrid, Focus } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
+import { StudyModule, type StudyItem } from "./shared/StudyModule";
+
+interface Language {
+  text: string;
+  translation: string;
+}
+
+interface Phrase {
+  question: string;
+  translation: string;
+  answers: Array<{ text: string; translation: string }>;
+}
+
+interface NationalitiesData {
+  LANGUAGES: Language[];
+  PHRASES: Phrase[];
+}
 
 export function NationalitiesPage() {
   const { levelId } = useParams();
   const levelData = levelId ? LEVEL_DATA[levelId] : null;
   const [searchQuery, setSearchQuery] = useState("");
+  const [isStudyMode, setIsStudyMode] = useState(false);
 
-  interface Language {
-    text: string;
-    translation: string;
-  }
+  const studyItems: StudyItem[] = useMemo(() => {
+    const rawData = (levelData?.vocabulary?.NATIONALITIES_DATA as NationalitiesData) || {
+      LANGUAGES: [],
+      PHRASES: [],
+    };
 
-  interface Phrase {
-    question: string;
-    translation: string;
-    answers: Array<{ text: string; translation: string }>;
-  }
+    const items: StudyItem[] = [];
 
-  interface NationalitiesData {
-    LANGUAGES: Language[];
-    PHRASES: Phrase[];
-  }
+    rawData.LANGUAGES?.forEach((l) =>
+      items.push({
+        primary: l.text,
+        secondary: l.translation,
+        category: "Languages",
+      })
+    );
+
+    rawData.PHRASES?.forEach((p) => {
+      items.push({
+        primary: p.question,
+        secondary: p.translation,
+        category: "Phrases (Q)",
+      });
+      p.answers?.forEach((a) => {
+        items.push({
+          primary: a.text,
+          secondary: a.translation,
+          category: "Phrases (A)",
+        });
+      });
+    });
+
+    return items;
+  }, [levelData]);
 
   const { filteredNationalitiesData } = useMemo(() => {
     const rawData = (levelData?.vocabulary?.NATIONALITIES_DATA as NationalitiesData) || {
@@ -84,130 +120,185 @@ export function NationalitiesPage() {
         </p>
       </div>
 
-      <div className="relative group max-w-2xl">
-        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
-        <div className="relative">
-          <Search
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
-            size={24}
-          />
-          <input
-            type="text"
-            placeholder="Search countries, languages or phrases..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
-          />
-        </div>
+      <div className="flex items-center gap-2 p-1.5 bg-[#1a1a1a] rounded-2xl border border-white/5 w-fit">
+        <button
+          onClick={() => setIsStudyMode(false)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            !isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <LayoutGrid size={20} />
+          <span className="font-bold">Grid View</span>
+        </button>
+        <button
+          onClick={() => setIsStudyMode(true)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Focus size={20} />
+          <span className="font-bold">Study Mode</span>
+        </button>
       </div>
 
-      <section className="space-y-8">
-        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-          <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400">
-            <Languages size={24} />
+      {isStudyMode ? (
+        <StudyModule items={studyItems} onExit={() => setIsStudyMode(false)} />
+      ) : (
+        <>
+          <div className="relative group max-w-2xl">
+            <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+            <div className="relative">
+              <Search
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+                size={24}
+              />
+              <input
+                type="text"
+                placeholder="Search countries, languages or phrases..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+              />
+            </div>
           </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            World Languages
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {NATIONALITIES_DATA.LANGUAGES?.map((lang) => (
-            <button
-              key={lang.text}
-              onClick={() => handleItemClick(lang.text)}
-              className={`p-6 rounded-3xl border transition-all text-center group relative overflow-hidden ${
-                activeWord === lang.text
-                  ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
-                  : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
-              }`}
-            >
-              <div
-                className={`text-xl font-black transition-colors ${activeWord === lang.text ? "text-white" : "text-blue-400"}`}
-              >
-                {lang.text}
-              </div>
-              <div
-                className={`text-sm font-arabic mt-2 ${activeWord === lang.text ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"}`}
-              >
-                {lang.translation}
-              </div>
 
-              <div
-                className={`absolute top-2 right-2 transition-all ${playingItem === lang.text ? "opacity-100 scale-125" : activeWord === lang.text ? "opacity-60" : "opacity-0"}`}
-              >
-                <Volume2 size={12} className="text-white" />
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+              <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400">
+                <Languages size={24} />
               </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-8">
-        <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-          <div className="p-2.5 bg-amber-500/20 rounded-xl text-amber-400">
-            <MessageSquare size={24} />
-          </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            Conversation Practice
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {NATIONALITIES_DATA.PHRASES?.map((phrase, idx) => (
-            <div
-              key={idx}
-              className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl"
-            >
-              <button
-                onClick={() => handleItemClick(phrase.question)}
-                className="p-8 bg-white/5 border-b border-white/5 text-left group hover:bg-white/10 transition-all relative"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-xl font-black text-white group-hover:text-amber-400 transition-colors uppercase tracking-tight max-w-[85%]">
-                    Q: {phrase.question}
-                  </span>
-                  <Volume2
-                    size={20}
-                    className={`transition-all ${playingItem === phrase.question ? "text-amber-400 scale-125" : activeWord === phrase.question ? "text-amber-400/60" : "text-neutral-600 group-hover:text-amber-400"}`}
-                  />
-                </div>
-                <div className="text-lg text-neutral-500 font-arabic italic">
-                  {phrase.translation}
-                </div>
-              </button>
-              <div className="p-6 space-y-4">
-                {phrase.answers?.map((ans, ansIdx) => (
-                  <button
-                    key={ansIdx}
-                    onClick={() => handleItemClick(ans.text)}
-                    className={`w-full text-left p-6 rounded-3xl transition-all group border ${
-                      activeWord === ans.text
-                        ? "bg-emerald-500/10 border-emerald-500/50 shadow-xl scale-[1.02] z-10"
-                        : "bg-black/20 hover:bg-black/40 border-white/5"
-                    }`}
+              <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+                World Languages
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {NATIONALITIES_DATA.LANGUAGES?.map((lang, idx) => (
+                <button
+                  key={lang.text}
+                  onClick={() => handleItemClick(lang.text)}
+                  className={`p-6 rounded-3xl border transition-all text-center group relative overflow-hidden ${
+                    activeWord === lang.text
+                      ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
+                      : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
+                  }`}
+                >
+                  {/* Matte Index Badge */}
+                  <div className="absolute -top-1 -left-1 z-20">
+                    <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                      <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                        #{String(studyItems.findIndex(s => s.primary === lang.text) + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    className={`text-xl font-black mt-2 transition-colors ${activeWord === lang.text ? "text-white" : "text-blue-400"}`}
                   >
-                    <div className={`flex justify-between items-center mb-1`}>
-                      <span
-                        className={`text-lg font-bold ${activeWord === ans.text ? "text-emerald-400" : "text-white group-hover:text-emerald-400"}`}
-                      >
-                        A: {ans.text}
+                    {lang.text}
+                  </div>
+                  <div
+                    className={`text-sm font-arabic mt-2 ${activeWord === lang.text ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"}`}
+                  >
+                    {lang.translation}
+                  </div>
+
+                  <div
+                    className={`absolute top-2 right-2 transition-all ${playingItem === lang.text ? "opacity-100 scale-125" : activeWord === lang.text ? "opacity-60" : "opacity-0"}`}
+                  >
+                    <Volume2 size={12} className="text-white" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+              <div className="p-2.5 bg-amber-500/20 rounded-xl text-amber-400">
+                <MessageSquare size={24} />
+              </div>
+              <h2 className="text-2xl font-black text-white uppercase tracking-wider">
+                Conversation Practice
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {NATIONALITIES_DATA.PHRASES?.map((phrase, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#1e1e1e] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl"
+                >
+                  <button
+                    onClick={() => handleItemClick(phrase.question)}
+                    className="p-8 bg-white/5 border-b border-white/5 text-left group hover:bg-white/10 transition-all relative"
+                  >
+                    {/* Matte Index Badge for Phrase */}
+                    <div className="absolute -top-1 -left-1 z-20">
+                      <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                        <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                          #{String(studyItems.findIndex(s => s.primary === phrase.question) + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-start mb-2 mt-2">
+                      <span className="text-xl font-black text-white group-hover:text-amber-400 transition-colors uppercase tracking-tight max-w-[85%]">
+                        Q: {phrase.question}
                       </span>
                       <Volume2
-                        size={16}
-                        className={`transition-all ${playingItem === ans.text ? "text-emerald-400 opacity-100 scale-125" : activeWord === ans.text ? "text-emerald-400/60 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                        size={20}
+                        className={`transition-all ${playingItem === phrase.question ? "text-amber-400 scale-125" : activeWord === phrase.question ? "text-amber-400/60" : "text-neutral-600 group-hover:text-amber-400"}`}
                       />
                     </div>
-                    <div
-                      className={`text-sm font-arabic mt-1 ${activeWord === ans.text ? "text-white/80" : "text-neutral-500"}`}
-                    >
-                      {ans.translation}
+                    <div className="text-lg text-neutral-500 font-arabic italic">
+                      {phrase.translation}
                     </div>
                   </button>
-                ))}
-              </div>
+                  <div className="p-6 space-y-4">
+                    {phrase.answers?.map((ans, ansIdx) => (
+                      <button
+                        key={ansIdx}
+                        onClick={() => handleItemClick(ans.text)}
+                        className={`w-full text-left p-6 rounded-3xl transition-all group border relative overflow-hidden ${
+                          activeWord === ans.text
+                            ? "bg-emerald-500/10 border-emerald-500/50 shadow-xl scale-[1.02] z-10"
+                            : "bg-black/20 hover:bg-black/40 border-white/5"
+                        }`}
+                      >
+                        {/* Matte Index Badge for Answer */}
+                        <div className="absolute -top-1 -left-1 z-20">
+                          <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                            <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                              #{String(studyItems.findIndex(s => s.primary === ans.text) + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`flex justify-between items-center mb-1`}>
+                          <span
+                            className={`text-lg font-bold ${activeWord === ans.text ? "text-emerald-400" : "text-white group-hover:text-emerald-400"}`}
+                          >
+                            A: {ans.text}
+                          </span>
+                          <Volume2
+                            size={16}
+                            className={`transition-all ${playingItem === ans.text ? "text-emerald-400 opacity-100 scale-125" : activeWord === ans.text ? "text-emerald-400/60 opacity-100" : "text-neutral-600 opacity-0 group-hover:opacity-100"}`}
+                          />
+                        </div>
+                        <div
+                          className={`text-sm font-arabic mt-1 ${activeWord === ans.text ? "text-white/80" : "text-neutral-500"}`}
+                        >
+                          {ans.translation}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* Egyptian Pride Section */}
       <div className="bg-linear-to-br from-red-600/10 via-white/5 to-black/20 border border-white/10 rounded-[3rem] p-12 flex flex-col items-center text-center space-y-6 shadow-2xl group relative overflow-hidden">

@@ -1,15 +1,47 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Volume2, User, Search, } from "lucide-react";
+import { Volume2, User, Search, LayoutGrid, Focus } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 import type { LevelData, Category, VocabularyItem } from "../data/levels";
+import { StudyModule, type StudyItem } from "./shared/StudyModule";
 
 export function DescribingPage() {
   const { levelId } = useParams();
   const levelData = levelId ? (LEVEL_DATA[levelId] as LevelData) : null;
   const [searchQuery, setSearchQuery] = useState("");
+  const [isStudyMode, setIsStudyMode] = useState(false);
+
+  const studyItems: StudyItem[] = useMemo(() => {
+    const rawData = (levelData?.vocabulary?.DESCRIBING_DATA as any) || {
+      PHYSICAL: [],
+      CHARACTER_SENTENCES: [],
+      VOCABULARY: [],
+    };
+
+    const items: StudyItem[] = [];
+
+    rawData.VOCABULARY.forEach((cat: any) => {
+      cat.items.forEach((i: any) => {
+        items.push({
+          primary: i.text,
+          secondary: i.translation,
+          category: cat.title,
+        });
+      });
+    });
+
+    rawData.PHYSICAL.forEach((i: any) => {
+      items.push({
+        primary: i.text,
+        secondary: i.translation,
+        category: "Physical Appearance",
+      });
+    });
+
+    return items;
+  }, [levelData]);
 
   const filteredDescribingData = useMemo(() => {
     const rawData = (levelData?.vocabulary?.DESCRIBING_DATA as {
@@ -63,6 +95,35 @@ export function DescribingPage() {
           Master the art of describing appearances and personalities.
         </p>
       </div>
+      <div className="flex items-center gap-2 p-1.5 bg-[#1a1a1a] rounded-2xl border border-white/5 w-fit">
+        <button
+          onClick={() => setIsStudyMode(false)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            !isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <LayoutGrid size={20} />
+          <span className="font-bold">Grid View</span>
+        </button>
+        <button
+          onClick={() => setIsStudyMode(true)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Focus size={20} />
+          <span className="font-bold">Study Mode</span>
+        </button>
+      </div>
+
+      {isStudyMode ? (
+        <StudyModule items={studyItems} onExit={() => setIsStudyMode(false)} />
+      ) : (
+        <>
 
       <div className="relative group max-w-2xl">
         <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
@@ -107,17 +168,24 @@ export function DescribingPage() {
                 </h3>
               </div>
               <div className="p-4 flex flex-col gap-2">
-                {category.items.map((item: VocabularyItem) => (
+                {category.items.map((item: VocabularyItem, idx: number) => (
                   <button
                     key={item.text}
                     onClick={() => handleCardClick(item.text || "")}
-                    className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group ${
+                    className={`w-full text-left p-4 rounded-2xl transition-all border flex items-center justify-between group relative overflow-hidden ${
                       activeWord === item.text
                         ? "bg-pink-500/10 border-pink-500/50 text-pink-400 scale-[1.02] shadow-lg z-10"
                         : "bg-transparent border-transparent hover:bg-white/5 text-neutral-300 hover:text-white"
                     }`}
                   >
-                    <div className="flex flex-col">
+                    <div className="absolute -top-1 -left-1 z-20">
+                      <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1 text-center min-w-[32px]">
+                        <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                          #{String(studyItems.findIndex(s => s.primary === item.text) + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col mt-3">
                       <span className="font-bold text-lg">{item.text}</span>
                       <span
                         className={`text-sm font-arabic ${activeWord === item.text ? "text-white/80" : "text-neutral-500"}`}
@@ -148,6 +216,8 @@ export function DescribingPage() {
           Use the floating tools to master your pronunciation and writing.
         </p>
       </div>
+        </>
+      )}
     </div>
   );
 }

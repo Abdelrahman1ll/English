@@ -5,6 +5,8 @@ import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 import type { VocabularyItem, GrammarData } from "../data/levels";
+import { StudyModule, type StudyItem } from "./shared/StudyModule";
+import { Focus, LayoutGrid } from "lucide-react";
 
 export interface GrammarItem extends VocabularyItem {
   readonly article: "a" | "an" | "none";
@@ -116,6 +118,95 @@ export function GrammarPage() {
     PREPOSITIONS_DATA,
   } = filteredGrammarData;
 
+  const [isStudyMode, setIsStudyMode] = useState(false);
+
+  const studyItems: StudyItem[] = useMemo(() => {
+    const items: StudyItem[] = [];
+
+    // 1. Articles
+    [...ARTICLES_DATA.A, ...ARTICLES_DATA.AN, ...ARTICLES_DATA.UNCOUNTABLE].forEach((item) => {
+      const article = item.article || "none";
+      const word = item.word || item.text || "";
+      items.push({
+        primary: article === "none" ? word : `${article} ${word}`,
+        secondary: item.arabic || item.ar || item.translation || "",
+        category: `Article: ${article === "none" ? "Uncountable" : article.toUpperCase()}`,
+      });
+    });
+
+    // 2. Plurals
+    PLURAL_EXAMPLES.forEach((item) => {
+      items.push({
+        primary: `${item.singular} → ${item.plural}`,
+        secondary: item.arabic,
+        category: "Singular & Plural",
+      });
+    });
+
+    // 3. Pronouns Quiz
+    PRONOUNS_QUIZ.forEach((q) => {
+      items.push({
+        primary: q.question,
+        secondary: `Answer: ${q.answer}`,
+        category: "Pronouns Quiz",
+      });
+    });
+
+    // 4. Verb To Be
+    [...VERB_TO_BE_DATA.SINGULAR, ...VERB_TO_BE_DATA.PLURAL].forEach((item) => {
+      items.push({
+        primary: item.en,
+        secondary: item.ar,
+        category: "Verb To Be",
+      });
+    });
+
+    // 5. Verb To Be Quiz
+    VERB_TO_BE_DATA.QUIZ.forEach((q) => {
+      items.push({
+        primary: q.question,
+        secondary: `Answer: ${q.answer}`,
+        category: "Verb To Be Quiz",
+      });
+    });
+
+    // 6. Demonstratives
+    DEMONSTRATIVES_DATA.forEach((group) => {
+      group.items.forEach((item) => {
+        items.push({
+          primary: item.text,
+          secondary: item.translation,
+          category: `Demonstratives (${group.title})`,
+        });
+      });
+      group.examples.forEach((ex) => {
+        items.push({
+          primary: ex.text,
+          secondary: ex.translation,
+          category: `Demonstrative Example (${group.title})`,
+        });
+      });
+    });
+
+    // 7. Prepositions
+    PREPOSITIONS_DATA.LIST.forEach((prep) => {
+      items.push({
+        primary: prep.text,
+        secondary: prep.translation,
+        category: "Prepositions",
+      });
+    });
+    PREPOSITIONS_DATA.EXPLANATION_EXAMPLES.forEach((ex) => {
+      items.push({
+        primary: ex.en,
+        secondary: ex.ar,
+        category: "Preposition Usage",
+      });
+    });
+
+    return items;
+  }, [ARTICLES_DATA, PLURAL_EXAMPLES, PRONOUNS_QUIZ, VERB_TO_BE_DATA, DEMONSTRATIVES_DATA, PREPOSITIONS_DATA]);
+
   const [playingItem, setPlayingItem] = useState<string | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: string }>({});
   const [toBeQuizAnswers, setToBeQuizAnswers] = useState<{
@@ -184,7 +275,14 @@ export function GrammarPage() {
             : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] shadow-lg"
         }`}
       >
-        <div className="flex justify-between items-start mb-2">
+        <div className="absolute -top-1 -left-1 z-20">
+          <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+            <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+              #{String(studyItems.findIndex(s => s.primary === displayText) + 1).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+        <div className="flex justify-between items-start mb-2 mt-2">
           <span
             className={`text-2xl font-black ${activeWord === displayText ? (color === "emerald" ? "text-emerald-400" : color === "amber" ? "text-amber-400" : "text-rose-400") : config.icon}`}
           >
@@ -213,31 +311,62 @@ export function GrammarPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in duration-500 pb-20">
-      <div className="border-b border-white/5 pb-8">
-        <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
-          <Book className="text-emerald-400" size={32} /> Grammar Essentials
-        </h1>
-        <p className="text-neutral-400 mt-3 text-lg leading-relaxed">
-          Master the foundation of English: Singular, Plural, and Articles.
-        </p>
-      </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+        <div>
+          <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
+            <Book className="text-emerald-400" size={32} /> Grammar Essentials
+          </h1>
+          <p className="text-neutral-400 mt-3 text-lg leading-relaxed">
+            Master the foundation of English: Singular, Plural, and Articles.
+          </p>
+        </div>
 
-      <div className="relative group max-w-2xl">
-        <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
-        <div className="relative">
-          <Search
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
-            size={24}
-          />
-          <input
-            type="text"
-            placeholder="Search grammar rules, words or examples..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
-          />
+        <div className="flex items-center gap-2 p-1.5 bg-[#1a1a1a] rounded-2xl border border-white/5 w-fit">
+          <button
+            onClick={() => setIsStudyMode(false)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              !isStudyMode
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                : "text-neutral-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <LayoutGrid size={20} />
+            <span className="font-bold">Grid View</span>
+          </button>
+          <button
+            onClick={() => setIsStudyMode(true)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              isStudyMode
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                : "text-neutral-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Focus size={20} />
+            <span className="font-bold">Study Mode</span>
+          </button>
         </div>
       </div>
+
+      {isStudyMode ? (
+        <StudyModule items={studyItems} onExit={() => setIsStudyMode(false)} />
+      ) : (
+        <>
+          <div className="relative group max-w-2xl">
+            <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2rem blur-xl opacity-10 group-focus-within:opacity-30 transition-opacity" />
+            <div className="relative">
+              <Search
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-500"
+                size={24}
+              />
+              <input
+                type="text"
+                placeholder="Search grammar rules, words or examples..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1a1a1a] border border-white/10 rounded-3xl py-5 pl-14 pr-6 text-white text-lg placeholder:text-neutral-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 transition-all font-arabic shadow-2xl"
+              />
+            </div>
+          </div>
 
       {/* Section 1: The Rule (A) */}
       {ARTICLES_DATA.A.length > 0 && (
@@ -362,40 +491,48 @@ export function GrammarPage() {
                 <button
                   key={item.singular}
                   onClick={() =>
-                    handleItemClick(`${item.singular}... ${item.plural}`)
+                    handleItemClick(`${item.singular} → ${item.plural}`)
                   }
                   className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 sm:p-6 rounded-3xl transition-all border group relative overflow-hidden ${
-                    activeWord === `${item.singular}... ${item.plural}`
+                    activeWord === `${item.singular} → ${item.plural}`
                       ? "bg-blue-500/10 border-blue-500/50 shadow-xl scale-[1.01] z-10"
                       : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525]"
                   }`}
                 >
-                  <div className="flex items-center gap-4 sm:gap-6">
+                  {/* Matte Index Badge */}
+                  <div className="absolute -top-1 -left-1 z-20">
+                    <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                      <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                        #{String(studyItems.findIndex(s => s.primary === `${item.singular} → ${item.plural}`) + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 sm:gap-6 mt-2 sm:mt-0">
                     <div
-                      className={`text-xl sm:text-2xl font-bold transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/60" : "text-neutral-600"}`}
+                      className={`text-xl sm:text-2xl font-bold transition-colors ${activeWord === `${item.singular} → ${item.plural}` ? "text-white/60" : "text-neutral-600"}`}
                     >
                       {item.singular}
                     </div>
                     <div
-                      className={`transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/40" : "text-neutral-800"}`}
+                      className={`transition-colors ${activeWord === `${item.singular} → ${item.plural}` ? "text-white/40" : "text-neutral-800"}`}
                     >
                       →
                     </div>
                     <div
-                      className={`text-2xl sm:text-3xl font-black transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white" : "text-blue-400"}`}
+                      className={`text-2xl sm:text-3xl font-black transition-colors ${activeWord === `${item.singular} → ${item.plural}` ? "text-white" : "text-blue-400"}`}
                     >
                       {item.plural}
                     </div>
                   </div>
                   <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-0">
                     <div
-                      className={`text-lg sm:text-xl font-arabic transition-colors ${activeWord === `${item.singular}... ${item.plural}` ? "text-white/80" : "text-neutral-500"}`}
+                      className={`text-lg sm:text-xl font-arabic transition-colors ${activeWord === `${item.singular} → ${item.plural}` ? "text-white/80" : "text-neutral-500"}`}
                     >
                       {item.arabic}
                     </div>
                     <Volume2
                       size={16}
-                      className={`transition-all ${playingItem === `${item.singular}... ${item.plural}` ? "text-white opacity-100 scale-125" : activeWord === `${item.singular}... ${item.plural}` ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40 text-neutral-400"}`}
+                      className={`transition-all ${playingItem === `${item.singular} → ${item.plural}` ? "text-white opacity-100 scale-125" : activeWord === `${item.singular} → ${item.plural}` ? "text-white/60 opacity-100" : "opacity-0 group-hover:opacity-40 text-neutral-400"}`}
                     />
                   </div>
                 </button>
@@ -431,12 +568,17 @@ export function GrammarPage() {
                 return (
                   <div
                     key={idx}
-                    className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md"
+                    className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md relative overflow-hidden"
                   >
-                    <p className="text-xl text-white font-bold mb-6 flex items-center gap-4">
-                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
-                        {idx + 1}
-                      </span>
+                    {/* Matte Index Badge */}
+                    <div className="absolute -top-1 -left-1 z-20">
+                      <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                        <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                          #{String(studyItems.findIndex(s => s.primary === q.question) + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xl text-white font-bold mb-6 flex items-center gap-4 mt-2">
                       {q.question}
                     </p>
                     <div className="flex flex-wrap gap-3">
@@ -488,19 +630,27 @@ export function GrammarPage() {
                       <button
                         key={item.en}
                         onClick={() => handleItemClick(item.en)}
-                        className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
-                          playingItem === item.en
+                        className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group relative overflow-hidden ${
+                          activeWord === item.en
                             ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
                             : "bg-white/2 border-transparent hover:bg-white/5"
                         }`}
                       >
+                        {/* Matte Index Badge */}
+                        <div className="absolute -top-1 -left-1 z-20">
+                          <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                            <span className="text-[8px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                              #{String(studyItems.findIndex(s => s.primary === item.en) + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
                         <span
-                          className={`text-xl font-bold transition-colors ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
+                          className={`text-xl font-bold transition-colors mt-1 ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
                         >
                           {item.en}
                         </span>
                         <span
-                          className={`text-sm font-arabic transition-colors ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
+                          className={`text-sm font-arabic transition-colors mt-1 ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
                         >
                           {item.ar}
                         </span>
@@ -519,19 +669,27 @@ export function GrammarPage() {
                       <button
                         key={item.en}
                         onClick={() => handleItemClick(item.en)}
-                        className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group ${
-                          playingItem === item.en
+                        className={`w-full text-left p-3 rounded-2xl transition-all border flex items-center justify-between group relative overflow-hidden ${
+                          activeWord === item.en
                             ? "bg-orange-500/10 border-orange-500/50 shadow-lg"
                             : "bg-white/2 border-transparent hover:bg-white/5"
                         }`}
                       >
+                        {/* Matte Index Badge */}
+                        <div className="absolute -top-1 -left-1 z-20">
+                          <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                            <span className="text-[8px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                              #{String(studyItems.findIndex(s => s.primary === item.en) + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
                         <span
-                          className={`text-xl font-bold transition-colors ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
+                          className={`text-xl font-bold transition-colors mt-1 ${activeWord === item.en ? "text-orange-400" : "text-white"}`}
                         >
                           {item.en}
                         </span>
                         <span
-                          className={`text-sm font-arabic transition-colors ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
+                          className={`text-sm font-arabic transition-colors mt-1 ${activeWord === item.en ? "text-white/70" : "text-neutral-500"}`}
                         >
                           {item.ar}
                         </span>
@@ -554,12 +712,17 @@ export function GrammarPage() {
                 return (
                   <div
                     key={idx}
-                    className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md"
+                    className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md relative overflow-hidden"
                   >
-                    <p className="text-xl text-white font-bold mb-6 flex items-center gap-4">
-                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
-                        {idx + 1}
-                      </span>
+                    {/* Matte Index Badge */}
+                    <div className="absolute -top-1 -left-1 z-20">
+                      <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                        <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                          #{String(studyItems.findIndex(s => s.primary === q.question) + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xl text-white font-bold mb-6 flex items-center gap-4 mt-2">
                       {q.question}
                     </p>
                     <div className="flex flex-wrap gap-3">
@@ -620,30 +783,35 @@ export function GrammarPage() {
                       <button
                         key={item.text}
                         onClick={() =>
-                          handleItemClick(
-                            `${item.text}... means ${item.translation}`,
-                          )
+                          handleItemClick(item.text)
                         }
                         className={`p-6 sm:p-8 rounded-3xl sm:rounded-4xl border transition-all text-center group flex flex-col items-center justify-center relative overflow-hidden ${
-                          activeWord ===
-                          `${item.text}... means ${item.translation}`
+                          activeWord === item.text
                             ? "bg-blue-500/10 border-blue-500/50 shadow-2xl scale-105 z-10"
                             : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-[1.02]"
                         }`}
                       >
+                        {/* Matte Index Badge */}
+                        <div className="absolute -top-1 -left-1 z-20">
+                          <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                            <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                              #{String(studyItems.findIndex(s => s.primary === item.text) + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
                         <span
-                          className={`text-2xl sm:text-3xl font-black ${activeWord === `${item.text}... means ${item.translation}` ? "text-blue-400" : "text-white group-hover:text-blue-400"}`}
+                          className={`text-2xl sm:text-3xl font-black mt-2 ${activeWord === item.text ? "text-blue-400" : "text-white group-hover:text-blue-400"}`}
                         >
                           {item.text}
                         </span>
                         <span
-                          className={`text-xs sm:text-sm font-arabic mt-2 ${activeWord === `${item.text}... means ${item.translation}` ? "text-white/70" : "text-neutral-500"}`}
+                          className={`text-xs sm:text-sm font-arabic mt-2 ${activeWord === item.text ? "text-white/70" : "text-neutral-500"}`}
                         >
                           {item.translation}
                         </span>
                         <div className="flex gap-2 mt-4">
                           <span
-                            className={`text-[9px] sm:text-[10px] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-black uppercase tracking-tighter ${activeWord === `${item.text}... means ${item.translation}` ? "bg-white/20 text-white" : "bg-blue-500/10 text-blue-400"}`}
+                            className={`text-[9px] sm:text-[10px] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-black uppercase tracking-tighter ${activeWord === item.text ? "bg-white/20 text-white" : "bg-blue-500/10 text-blue-400"}`}
                           >
                             {item.rule}
                           </span>
@@ -657,13 +825,21 @@ export function GrammarPage() {
                       <button
                         key={ex.text}
                         onClick={() => handleItemClick(ex.text)}
-                        className={`w-full text-left flex items-center justify-between group p-4 rounded-2xl transition-all border ${
+                        className={`w-full text-left flex items-center justify-between group p-4 rounded-2xl transition-all border relative overflow-hidden ${
                           activeWord === ex.text
                             ? "bg-blue-500/10 border-blue-500/50 shadow-lg"
                             : "hover:bg-white/5 border-transparent"
                         }`}
                       >
-                        <div>
+                        {/* Matte Index Badge */}
+                        <div className="absolute -top-1 -left-1 z-20">
+                          <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                            <span className="text-[8px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                              #{String(studyItems.findIndex(s => s.primary === ex.text) + 1).padStart(2, "0")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-1">
                           <div
                             className={`text-lg font-bold group-hover:text-blue-400 transition-colors ${activeWord === ex.text ? "text-blue-400" : "text-white"}`}
                           >
@@ -716,8 +892,16 @@ export function GrammarPage() {
                       : "bg-white/5 border-white/5 hover:bg-white/10 hover:scale-105 hover:border-white/10 shadow-lg"
                   }`}
                 >
+                  {/* Matte Index Badge */}
+                  <div className="absolute -top-1 -left-1 z-20">
+                    <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                      <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                        #{String(studyItems.findIndex(s => s.primary === prep.text) + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
                   <div
-                    className={`text-xl sm:text-2xl font-black transition-colors ${activeWord === prep.text ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+                    className={`text-xl sm:text-2xl font-black mt-1 transition-colors ${activeWord === prep.text ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
                   >
                     {prep.text}
                   </div>
@@ -747,8 +931,16 @@ export function GrammarPage() {
                           : "bg-black/20 border-white/5 hover:bg-black/30 hover:border-purple-500/30 shadow-lg"
                       }`}
                     >
+                      {/* Matte Index Badge */}
+                      <div className="absolute -top-1 -left-1 z-20">
+                        <div className="px-1.5 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                          <span className="text-[9px] font-black text-neutral-500 tracking-tighter tabular-nums">
+                            #{String(studyItems.findIndex(s => s.primary === ex.en) + 1).padStart(2, "0")}
+                          </span>
+                        </div>
+                      </div>
                       <div
-                        className={`text-lg sm:text-xl font-bold leading-relaxed ${activeWord === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
+                        className={`text-lg sm:text-xl font-bold leading-relaxed mt-1 ${activeWord === ex.en ? "text-purple-400" : "text-white group-hover:text-purple-400"}`}
                       >
                         {ex.en}
                       </div>
@@ -770,8 +962,11 @@ export function GrammarPage() {
         </section>
       )}
 
+        </>
+      )}
+
       {/* Final Instruction Card */}
-      <div className="bg-[#1e1e1e] p-8 sm:p-12 rounded-4xl sm:rounded-[4rem] border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden group">
+      <div className="bg-[#1e1e1e] p-8 sm:p-12 rounded-4xl sm:rounded-[4rem] border border-white/5 shadow-2xl text-center space-y-8 relative overflow-hidden group mt-16">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-emerald-500 via-blue-500 to-rose-500 opacity-40" />
         <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 group-hover:scale-110 transition-transform duration-500">
           <Book className="text-blue-400" size={32} />
@@ -781,7 +976,7 @@ export function GrammarPage() {
         </h3>
         <p className="text-neutral-300 max-w-2xl mx-auto text-2xl leading-relaxed font-light">
           English rules are sets of patterns. Click on any pattern, sentence, or
-          word to trigger the **Global Practice Suite**. <br /> Mastery comes
+          word to trigger the **Practice System**. <br /> Mastery comes
           through repetitive interaction.
         </p>
       </div>

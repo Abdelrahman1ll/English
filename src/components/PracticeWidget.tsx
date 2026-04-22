@@ -291,46 +291,7 @@ export function PracticeWidget() {
 
   return (
     <>
-      {/* Floating Buttons */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
-        <button
-          onClick={() => setPracticeMode("writing")}
-          className={`p-4 rounded-2xl border transition-all shadow-xl backdrop-blur-md group ${
-            practiceMode === "writing"
-              ? "bg-amber-500 border-amber-400 text-black scale-110"
-              : "bg-[#1a1a1a]/80 border-white/10 text-amber-500 hover:bg-amber-500/10 hover:scale-105"
-          }`}
-          title="Practice Writing"
-        >
-          <PenLine size={24} />
-          <div className="absolute right-full mr-4 px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-2xl border border-white/5">
-            Practice Writing: {activeWord}
-          </div>
-        </button>
-
-        <button
-          onClick={() => setPracticeMode("speaking")}
-          className={`p-4 rounded-2xl border transition-all shadow-xl backdrop-blur-md group ${
-            practiceMode === "speaking"
-              ? "bg-rose-500 border-rose-400 text-white scale-110"
-              : "bg-[#1a1a1a]/80 border-white/10 text-rose-500 hover:bg-rose-500/10 hover:scale-105"
-          }`}
-          title="Practice Speaking"
-        >
-          <Mic size={24} />
-          <div className="absolute right-full mr-4 px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-2xl border border-white/5">
-            Practice Speaking: {activeWord}
-          </div>
-        </button>
-
-        <button
-          onClick={clearPractice}
-          className="p-4 rounded-2xl bg-neutral-800/80 border border-white/10 text-neutral-400 hover:text-white hover:bg-neutral-700/80 transition-all shadow-xl backdrop-blur-md"
-          title="Clear Selection"
-        >
-          <X size={24} />
-        </button>
-      </div>
+      {/* Practice Modal/Overlay - Floating buttons removed, moved to Layout dock */}
 
       {/* Practice Modal/Overlay */}
       {practiceMode && (

@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Sparkles, Volume2, Quote } from "lucide-react";
+import { Sparkles, Volume2, Quote, LayoutGrid, Focus } from "lucide-react";
 import { usePractice } from "../context/PracticeContext";
 import { useSpeech } from "../hooks/useSpeech";
 import { LEVEL_DATA } from "../data/levels/index";
 import type { Question } from "../data/levels";
+import { StudyModule, type StudyItem } from "./shared/StudyModule";
 
 interface BasicItem {
   word: string;
@@ -33,8 +34,23 @@ export function BasicsPage() {
   const { setPracticeWord, activeWord } = usePractice();
   const [speakingItem, setSpeakingItem] = useState<string | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: string }>({});
+  const [isStudyMode, setIsStudyMode] = useState(false);
   const { speak } = useSpeech();
   const lastSpeechId = useRef<number>(0);
+
+  const studyItems: StudyItem[] = useMemo(() => {
+    const all = [
+      ...BASICS_DATA.ARTICLES,
+      ...BASICS_DATA.PRONOUNS,
+      ...BASICS_DATA.POSSESSIVES,
+    ];
+    return all.map((item) => ({
+      primary: item.word,
+      secondary: item.arabic,
+      note: item.example,
+      category: "Basics",
+    }));
+  }, [BASICS_DATA]);
 
   const handleItemClick = (item: BasicItem) => {
     setSpeakingItem(item.word);
@@ -64,7 +80,15 @@ export function BasicsPage() {
     setQuizAnswers((prev) => ({ ...prev, [questionIndex]: option }));
   };
 
-  const BasicCard = ({ item, color }: { item: BasicItem; color: string }) => {
+  const BasicCard = ({
+    item,
+    color,
+    index,
+  }: {
+    item: BasicItem;
+    color: string;
+    index: number;
+  }) => {
     const isActive = activeWord === item.word;
     const isSpeaking = speakingItem === item.word;
 
@@ -79,12 +103,19 @@ export function BasicsPage() {
     return (
       <button
         onClick={() => handleItemClick(item)}
-        className={`group flex flex-col p-6 rounded-3xl border transition-all text-left ${
+        className={`group relative flex flex-col p-6 rounded-3xl border transition-all text-left ${
           isActive
             ? `${colorClasses[color]} scale-[1.02] z-10 shadow-xl`
             : "bg-[#1e1e1e] border-white/5 hover:bg-[#252525] hover:border-white/20"
         }`}
       >
+        <div className="absolute -top-3 -left-3 z-20">
+          <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl">
+            <span className="text-[10px] font-black text-neutral-400 tracking-tighter">
+              #{String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
         <div className="flex justify-between items-start mb-2">
           <div
             className={`text-2xl font-black ${isActive ? "" : "text-white"}`}
@@ -125,92 +156,136 @@ export function BasicsPage() {
         </p>
       </div>
 
-      <section className="space-y-6">
-        <h2 className="font-bold text-white pl-4 border-l-4 border-blue-500 uppercase tracking-widest text-sm">
-          Articles (أدوات التعريف والنكرة)
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {BASICS_DATA.ARTICLES.map((item: BasicItem) => (
-            <BasicCard key={item.word} item={item} color="blue" />
-          ))}
-        </div>
-      </section>
+      <div className="flex items-center gap-2 p-1.5 bg-[#1a1a1a] rounded-2xl border border-white/5 w-fit">
+        <button
+          onClick={() => setIsStudyMode(false)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            !isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <LayoutGrid size={20} />
+          <span className="font-bold">Grid View</span>
+        </button>
+        <button
+          onClick={() => setIsStudyMode(true)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+            isStudyMode
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+              : "text-neutral-400 hover:text-white hover:bg-white/5"
+          }`}
+        >
+          <Focus size={20} />
+          <span className="font-bold">Study Mode</span>
+        </button>
+      </div>
 
-      <section className="space-y-6">
-        <h2 className="font-bold text-white pl-4 border-l-4 border-emerald-500 uppercase tracking-widest text-sm">
-          Subject Pronouns (ضمائر الفاعل)
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {BASICS_DATA.PRONOUNS.map((item: BasicItem) => (
-            <BasicCard key={item.word} item={item} color="emerald" />
-          ))}
-        </div>
-      </section>
+      {isStudyMode ? (
+        <StudyModule items={studyItems} onExit={() => setIsStudyMode(false)} />
+      ) : (
+        <>
+          <section className="space-y-6">
+            <h2 className="font-bold text-white pl-4 border-l-4 border-blue-500 uppercase tracking-widest text-sm">
+              Articles (أدوات التعريف والنكرة)
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {BASICS_DATA.ARTICLES.map((item: BasicItem) => (
+                <BasicCard key={item.word} item={item} color="blue" index={studyItems.findIndex(s => s.primary === item.word)} />
+              ))}
+            </div>
+          </section>
 
-      <section className="space-y-6">
-        <h2 className="font-bold text-white pl-4 border-l-4 border-purple-500 uppercase tracking-widest text-sm">
-          Possessive Adjectives (صفات الملكية)
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {BASICS_DATA.POSSESSIVES.map((item: BasicItem) => (
-            <BasicCard key={item.word} item={item} color="purple" />
-          ))}
-        </div>
-      </section>
+          <section className="space-y-6">
+            <h2 className="font-bold text-white pl-4 border-l-4 border-emerald-500 uppercase tracking-widest text-sm">
+              Subject Pronouns (ضمائر الفاعل)
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {BASICS_DATA.PRONOUNS.map((item: BasicItem) => (
+                <BasicCard
+                  key={item.word}
+                  item={item}
+                  color="emerald"
+                  index={studyItems.findIndex(s => s.primary === item.word)}
+                />
+              ))}
+            </div>
+          </section>
 
-      {/* Quiz Section */}
-      <section className="space-y-8 pt-10 border-t border-white/5">
-        <h2 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
-          <Sparkles size={24} className="text-amber-400" /> Quick Basics Quiz
-        </h2>
-        <div className="grid grid-cols-1 gap-6">
-          {BASICS_DATA.QUIZ.map((q: Question, idx: number) => {
-            const isAnswered = quizAnswers[idx] !== undefined;
-            const isCorrect =
-              quizAnswers[idx]?.toLowerCase() === q.answer.toLowerCase();
+          <section className="space-y-6">
+            <h2 className="font-bold text-white pl-4 border-l-4 border-purple-500 uppercase tracking-widest text-sm">
+              Possessive Adjectives (صفات الملكية)
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {BASICS_DATA.POSSESSIVES.map((item: BasicItem) => (
+                <BasicCard
+                  key={item.word}
+                  item={item}
+                  color="purple"
+                  index={studyItems.findIndex(s => s.primary === item.word)}
+                />
+              ))}
+            </div>
+          </section>
 
-            return (
-              <div
-                key={idx}
-                className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md space-y-6"
-              >
-                <p className="text-xl text-white font-bold flex items-center gap-4">
-                  <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
-                    {idx + 1}
-                  </span>
-                  {q.question}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  {q.options.map((option: string) => (
-                    <button
-                      key={option}
-                      onClick={() => handleQuizOptionClick(idx, option)}
-                      disabled={isAnswered && isCorrect}
-                      className={`px-6 py-3 rounded-2xl font-black transition-all border-2 ${
-                        quizAnswers[idx] === option
-                          ? isCorrect
-                            ? "bg-emerald-600 border-transparent text-white shadow-lg shadow-emerald-500/20"
-                            : "bg-rose-600 border-transparent text-white"
-                          : "bg-white/5 border-transparent text-neutral-400 hover:bg-white/10 hover:text-white"
-                      } ${isAnswered && option.toLowerCase() === q.answer.toLowerCase() ? "bg-emerald-600 border-transparent text-white" : ""}`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+          {/* Quiz Section */}
+          <section className="space-y-8 pt-10 border-t border-white/5">
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-3">
+              <Sparkles size={24} className="text-amber-400" /> Quick Basics
+              Quiz
+            </h2>
+            <div className="grid grid-cols-1 gap-6">
+              {BASICS_DATA.QUIZ.map((q: Question, idx: number) => {
+                const isAnswered = quizAnswers[idx] !== undefined;
+                const isCorrect =
+                  quizAnswers[idx]?.toLowerCase() === q.answer.toLowerCase();
 
-      <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
-        <h3 className="text-xl font-bold text-white italic">
-          Start with the Basics
+                return (
+                  <div
+                    key={idx}
+                    className="bg-[#1e1e1e] p-6 rounded-4xl border border-white/5 shadow-md space-y-6"
+                  >
+                    <p className="text-xl text-white font-bold flex items-center gap-4">
+                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-sm text-neutral-500">
+                        {idx + 1}
+                      </span>
+                      {q.question}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {q.options.map((option: string) => (
+                        <button
+                          key={option}
+                          onClick={() => handleQuizOptionClick(idx, option)}
+                          disabled={isAnswered && isCorrect}
+                          className={`px-6 py-3 rounded-2xl font-black transition-all border-2 ${
+                            quizAnswers[idx] === option
+                              ? isCorrect
+                                ? "bg-emerald-600 border-transparent text-white shadow-lg shadow-emerald-500/20"
+                                : "bg-rose-600 border-transparent text-white"
+                              : "bg-white/5 border-transparent text-neutral-400 hover:bg-white/10 hover:text-white"
+                          } ${isAnswered && option.toLowerCase() === q.answer.toLowerCase() ? "bg-emerald-600 border-transparent text-white" : ""}`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* Instruction Card */}
+      <div className="bg-[#1e1e1e] p-10 rounded-[3rem] border border-white/5 shadow-2xl text-center space-y-6 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-indigo-500 to-sky-500 opacity-30" />
+        <h3 className="font-black text-white uppercase tracking-[0.2em] text-sm opacity-50">
+          Immersion Practice
         </h3>
-        <p className="text-neutral-400 max-w-md mx-auto">
-          These words are used in almost every English sentence. Practice them
-          daily!
+        <p className="text-neutral-300 max-w-xl mx-auto text-xl leading-relaxed">
+          Click on any word to trigger the **Practice System**. <br />{" "}
+          Use the floating tools to master your pronunciation and writing.
         </p>
       </div>
     </div>

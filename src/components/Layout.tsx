@@ -10,6 +10,8 @@ import {
   PanelLeftOpen,
   Menu,
   X,
+  Mic,
+  PenLine,
 } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useLevel } from "../context/LevelContext";
@@ -69,7 +71,7 @@ export function Layout({ children }: PropsWithChildren) {
   const [prevPath, setPrevPath] = useState(location.pathname);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { activeWord, practiceMode } = usePractice();
+  const { activeWord, practiceMode, setPracticeMode } = usePractice();
 
   // Sync mobile menu/prevPath state during render when location changes
   if (location.pathname !== prevPath) {
@@ -297,21 +299,52 @@ export function Layout({ children }: PropsWithChildren) {
           </div>
         </div>
 
-        {/* Floating Controls */}
-        <div className="fixed bottom-6 right-6 lg:bottom-10 lg:right-10 flex flex-col items-end gap-3 z-30">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-4 py-3 bg-[#1a1a1a]/80 hover:bg-white/10 border border-white/10 rounded-2xl text-neutral-400 hover:text-white transition-all shadow-xl backdrop-blur-md flex items-center gap-2 group"
-            title="Go Back"
-          >
-            <ArrowLeft
-              size={18}
-              className="group-hover:-translate-x-1 transition-transform"
-            />
-            <span className="text-sm font-bold">Back</span>
-          </button>
-        </div>
+
       </main>
+
+      {/* Universal Bottom Dock - Centered, Pill-shaped, Matte */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 h-16 bg-[#1a1a1a]/90 backdrop-blur-2xl border-2 border-white/10 z-50 flex items-center justify-around px-2 sm:px-4 rounded-full shadow-2xl shadow-black/50 transition-all duration-300 w-[90%] sm:w-[60%] lg:w-[25%] min-w-[280px]">
+        <button
+          onClick={() => setPracticeMode("writing")}
+          className={`p-2.5 rounded-full transition-all flex-1 flex justify-center items-center ${
+            practiceMode === "writing"
+              ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20 scale-110"
+              : activeWord
+                ? "text-amber-500 hover:bg-white/5"
+                : "text-neutral-700 opacity-40 cursor-not-allowed"
+          }`}
+          disabled={!activeWord}
+          title="Writing Practice"
+        >
+          <PenLine size={22} />
+        </button>
+
+        <button
+          onClick={() => setPracticeMode("speaking")}
+          className={`p-2.5 rounded-full transition-all flex-1 flex justify-center items-center ${
+            practiceMode === "speaking"
+              ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-110"
+              : activeWord
+                ? "text-rose-500 hover:bg-white/5"
+                : "text-neutral-700 opacity-40 cursor-not-allowed"
+          }`}
+          disabled={!activeWord}
+          title="Speaking Practice"
+        >
+          <Mic size={22} />
+        </button>
+
+        <div className="w-px h-6 bg-white/10 mx-2" />
+
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2.5 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full transition-all flex-1 flex justify-center items-center"
+          title="Go Back"
+        >
+          <ArrowLeft size={22} />
+        </button>
+      </div>
+
       <PracticeWidget key={`${activeWord}-${practiceMode}`} />
     </div>
   );

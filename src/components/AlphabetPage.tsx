@@ -242,6 +242,14 @@ export function AlphabetPage() {
                 : "bg-[#1e1e1e] text-neutral-300 border-white/5 hover:bg-[#2a2a2a]"
             }`}
           >
+            {/* Matte Index Badge */}
+            <div className="absolute -top-1 -left-1 z-20">
+              <div className="px-2 py-0.5 bg-neutral-900 border border-white/10 rounded-lg shadow-xl translate-x-1 translate-y-1">
+                <span className="text-[10px] font-black text-neutral-400 tracking-tighter tabular-nums">
+                  #{String(ALPHABET.indexOf(letter) + 1).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
             <span className="text-xl sm:text-2xl md:text-3xl font-bold">
               {letter}
               {letter.toLowerCase()}
@@ -256,11 +264,14 @@ export function AlphabetPage() {
       </div>
 
       {/* Instruction Card */}
-      <div className="bg-[#1e1e1e] p-8 rounded-3xl border border-white/5 shadow-lg text-center space-y-4">
-        <h3 className="text-xl font-bold text-white">Practice Mode</h3>
-        <p className="text-neutral-400 max-w-md mx-auto">
-          Click on any letter, then use the floating menu on the right to
-          practice **Writing** or **Speaking**.
+      <div className="bg-[#1e1e1e] p-10 rounded-[3rem] border border-white/5 shadow-2xl text-center space-y-6 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-indigo-500 to-sky-500 opacity-30" />
+        <h3 className="font-black text-white uppercase tracking-[0.2em] text-sm opacity-50">
+          Immersion Practice
+        </h3>
+        <p className="text-neutral-300 max-w-xl mx-auto text-xl leading-relaxed">
+          Click on any letter to trigger the **Practice System**. <br />{" "}
+          Use the floating tools to master your pronunciation and writing.
         </p>
       </div>
     </div>
