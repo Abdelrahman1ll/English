@@ -168,7 +168,7 @@ export function DescribingPage() {
                 </h3>
               </div>
               <div className="p-4 flex flex-col gap-2">
-                {category.items.map((item: VocabularyItem, idx: number) => (
+                {category.items.map((item: VocabularyItem) => (
                   <button
                     key={item.text}
                     onClick={() => handleCardClick(item.text || "")}
