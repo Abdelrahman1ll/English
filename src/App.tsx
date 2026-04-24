@@ -14,6 +14,7 @@ const ExercisesPage = lazy(() => import("./components/ExercisesPage").then((m) =
 const ConversationsPage = lazy(() => import("./components/ConversationsPage").then((m) => ({ default: m.ConversationsPage })));
 const SearchPage = lazy(() => import("./components/SearchPage").then((m) => ({ default: m.SearchPage })));
 const LandingPage = lazy(() => import("./components/LandingPage").then((m) => ({ default: m.LandingPage })));
+const MindMapPage = lazy(() => import("./components/MindMapPage").then((m) => ({ default: m.MindMapPage })));
 
 // --- Level A1 Pages ---
 const BasicsPage = lazy(() => import("./components/A1/BasicsPage").then((m) => ({ default: m.BasicsPage })));
@@ -72,6 +73,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/:levelId/home" element={<HomePage />} />
               <Route path="/:levelId/search" element={<SearchPage />} />
+              <Route path="/:levelId/mindmap" element={<MindMapPage />} />
               
               {/* ============================== */}
               {/* Level A1 Routes                */}

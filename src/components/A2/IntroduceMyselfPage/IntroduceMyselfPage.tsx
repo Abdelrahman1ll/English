@@ -7,7 +7,7 @@ import { LEVEL_DATA } from "../../../data/levels/index";
 import type { SentenceItem } from "../../../data/levels";
 import { StudyModule, type StudyItem } from "../../shared/StudyModule";
 import { InstructionCard } from "../../shared/InstructionCard";
-import { TopicCard } from "../TopicSentencesPage/TopicCard";
+import { TopicCard } from "../../A1/TopicSentencesPage/TopicCard";
 
 export function IntroduceMyselfPage() {
   const { levelId } = useParams();

@@ -78,8 +78,12 @@ export function Layout({ children }: PropsWithChildren) {
         </div>
       </main>
 
-      <BottomDock activeWord={activeWord} practiceMode={practiceMode} onSetPracticeMode={setPracticeMode} onBack={() => navigate(-1)} />
-      <PracticeWidget key={`${activeWord}-${practiceMode}`} />
+      {!location.pathname.includes("/mindmap") && (
+        <>
+          <BottomDock activeWord={activeWord} practiceMode={practiceMode} onSetPracticeMode={setPracticeMode} onBack={() => navigate(-1)} />
+          <PracticeWidget key={`${activeWord}-${practiceMode}`} />
+        </>
+      )}
     </div>
   );
 }
