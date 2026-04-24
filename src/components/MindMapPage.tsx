@@ -401,7 +401,7 @@ export const MindMapPage = () => {
       height,
       0.1, // min zoom
       2, // max zoom
-      0, // padding
+      0.2, // padding
     );
 
     import("html-to-image").then(({ toPng }) => {
@@ -504,10 +504,7 @@ export const MindMapPage = () => {
           className="bg-[#0a0a0a]"
         >
           <Background color="#262626" gap={20} size={1.5} />
-          <Controls
-            position="bottom-center"
-            className="!flex !flex-row items-center justify-around !bg-[#1a1a1a]/95 backdrop-blur-2xl !border-2 !border-white/5 !shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full px-2 sm:px-4 h-16 w-[90%] sm:w-[60%] lg:w-[30%] min-w-[280px] mb-8 [&>button]:flex-1 [&>button]:flex [&>button]:justify-center [&>button]:items-center [&>button]:!bg-transparent [&>button]:!border-none [&>button]:!p-3 [&>button]:!w-auto [&>button]:!h-auto [&>button]:rounded-full hover:[&>button]:!bg-white/5 [&>button>svg]:!fill-neutral-500 hover:[&>button>svg]:!fill-blue-400 [&>button>svg]:!w-[24px] [&>button>svg]:!h-[24px] transition-all duration-300 pointer-events-auto"
-          />
+          <Controls className="!bg-[#1a1a1a]/95 backdrop-blur-2xl !border-2 !border-white/5 !shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full h-24 w- [&>button]:!bg-transparent [&>button]:!border-none" />
         </ReactFlow>
       </div>
     </div>
