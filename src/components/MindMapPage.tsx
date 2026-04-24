@@ -428,7 +428,7 @@ export const MindMapPage = () => {
   }, [nodes]);
 
   return (
-    <div className="w-full h-screen bg-[#0a0a0a] flex flex-col animate-in fade-in duration-700 fixed inset-0 z-50">
+    <div className="w-full h-[100dvh] bg-[#0a0a0a] flex flex-col animate-in fade-in duration-700 fixed inset-0 z-50">
       {/* Floating Transparent UI */}
       <div className="absolute top-4 md:top-6 left-0 w-full px-4 md:px-8 z-10 pointer-events-none flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-0">
         {/* Title Area */}
@@ -504,7 +504,7 @@ export const MindMapPage = () => {
           className="bg-[#0a0a0a]"
         >
           <Background color="#262626" gap={20} size={1.5} />
-          <Controls className="!bg-[#1a1a1a]/95 backdrop-blur-2xl !border-2 !border-white/5 !shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-full h-24 w- [&>button]:!bg-transparent [&>button]:!border-none" />
+          <Controls className="!bg-[#1a1a1a]/95 backdrop-blur-2xl !border-2 !border-white/5 !shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl !mb-8 lg:!mb-6 !ml-4 [&>button]:!bg-transparent [&>button]:!border-none [&>button]:transition-colors py-1" />
         </ReactFlow>
       </div>
     </div>
