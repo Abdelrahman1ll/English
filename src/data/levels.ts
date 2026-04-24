@@ -109,8 +109,14 @@ export interface GrammarData {
     readonly options: readonly string[];
   }>;
   readonly VERB_TO_BE_DATA?: {
-    readonly SINGULAR: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
-    readonly PLURAL: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
+    readonly SINGULAR: ReadonlyArray<{
+      readonly en: string;
+      readonly ar: string;
+    }>;
+    readonly PLURAL: ReadonlyArray<{
+      readonly en: string;
+      readonly ar: string;
+    }>;
     readonly QUIZ: ReadonlyArray<{
       readonly question: string;
       readonly answer: string;
@@ -131,8 +137,14 @@ export interface GrammarData {
     }>;
   }>;
   readonly PREPOSITIONS_DATA?: {
-    readonly LIST: ReadonlyArray<{ readonly text: string; readonly translation: string }>;
-    readonly EXPLANATION_EXAMPLES: ReadonlyArray<{ readonly en: string; readonly ar: string }>;
+    readonly LIST: ReadonlyArray<{
+      readonly text: string;
+      readonly translation: string;
+    }>;
+    readonly EXPLANATION_EXAMPLES: ReadonlyArray<{
+      readonly en: string;
+      readonly ar: string;
+    }>;
   };
 }
 
@@ -207,15 +219,16 @@ export const LEVELS: LevelConfig[] = [
         title: "Word Bank",
         category: "words",
       },
-      { to: "/A1/numbers", icon: Hash, title: "Numbers", category: "words" },
-      { to: "/A1/colors", icon: Palette, title: "Colors", category: "words" },
-      { to: "/A1/shapes", icon: Shapes, title: "Shapes", category: "words" },
       {
         to: "/A1/months",
         icon: Calendar,
         title: "Calendar",
         category: "words",
       },
+      { to: "/A1/numbers", icon: Hash, title: "Numbers", category: "words" },
+      { to: "/A1/colors", icon: Palette, title: "Colors", category: "words" },
+      { to: "/A1/shapes", icon: Shapes, title: "Shapes", category: "words" },
+
       { to: "/A1/feelings", icon: Smile, title: "Feelings", category: "words" },
       { to: "/A1/jobs", icon: Briefcase, title: "Jobs", category: "words" },
       {
@@ -230,7 +243,48 @@ export const LEVELS: LevelConfig[] = [
         title: "Describing People",
         category: "words",
       },
-      { to: "/A1/grammar", icon: Book, title: "Grammar", category: "grammar" },
+      {
+        to: "/A1/grammar",
+        icon: Book,
+        title: "Grammar Index",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/articles",
+        icon: Book,
+        title: "Articles",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/plurals",
+        icon: Book,
+        title: "Singular & Plural",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/pronouns",
+        icon: Book,
+        title: "Pronouns Quiz",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/verb-to-be",
+        icon: Book,
+        title: "Verb To Be",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/demonstratives",
+        icon: Book,
+        title: "Demonstratives",
+        category: "grammar",
+      },
+      {
+        to: "/A1/grammar/prepositions",
+        icon: Book,
+        title: "Prepositions",
+        category: "grammar",
+      },
       {
         to: "/A1/digraphs",
         icon: Split,
@@ -350,7 +404,48 @@ export const LEVELS: LevelConfig[] = [
         title: "Basic Verbs",
         category: "words",
       },
-      { to: "/A2/grammar", icon: Book, title: "Grammar", category: "grammar" },
+      {
+        to: "/A2/grammar",
+        icon: Book,
+        title: "Grammar Index",
+        category: "grammar",
+      },
+      {
+        to: "/A2/grammar/plurals",
+        icon: Book,
+        title: "Singular & Plural",
+        category: "grammar",
+      },
+      {
+        to: "/A2/grammar/pronouns",
+        icon: Book,
+        title: "Pronouns Quiz",
+        category: "grammar",
+      },
+      {
+        to: "/A2/grammar/verb-to-be",
+        icon: Book,
+        title: "Verb To Be",
+        category: "grammar",
+      },
+      {
+        to: "/A2/grammar/demonstratives",
+        icon: Book,
+        title: "Demonstratives",
+        category: "grammar",
+      },
+      {
+        to: "/A2/grammar/prepositions",
+        icon: Book,
+        title: "Prepositions",
+        category: "grammar",
+      },
+      {
+        to: "/A2/present-continuous",
+        icon: BookOpen,
+        title: "Present Continuous",
+        category: "tests",
+      },
       {
         to: "/A2/exercises/grammar",
         icon: Brain,
@@ -363,11 +458,12 @@ export const LEVELS: LevelConfig[] = [
         title: "Vocabulary Tests",
         category: "tests",
       },
+
       {
-        to: "/A2/conversations",
+        to: "/A2/introduce-myself",
         icon: MessageCircle,
-        title: "Conversations",
-        category: "tests",
+        title: "Introduce Myself",
+        category: "sentences",
       },
     ],
   },

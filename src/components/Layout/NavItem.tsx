@@ -6,7 +6,7 @@ interface NavItemProps {
   readonly icon: LucideIcon;
   readonly label: string;
   readonly isCollapsed: boolean;
-  readonly onClick?: () => void;
+  readonly onClick?: (e: React.MouseEvent) => void;
 }
 
 export function NavItem({

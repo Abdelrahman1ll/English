@@ -32,8 +32,8 @@ export function VerbToBeSection({
           <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400">
             <AlertCircle size={20} />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
-            6. The Verb "To Be"
+          <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+            6. The Verb "To Be" <span className="text-orange-400/50 font-arabic text-lg">(فعل يكون)</span>
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
@@ -42,7 +42,7 @@ export function VerbToBeSection({
         </div>
 
         <h3 className="text-xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-2">
-          <Quote size={18} className="text-orange-500" /> Quiz: Am, Is, or Are?
+          <Quote size={18} className="text-orange-500" /> Quiz: Am, Is, or Are? <span className="text-orange-400/50 font-arabic text-sm">(اختبار)</span>
         </h3>
         <div className="space-y-4">
           {data.QUIZ.map((q, idx) => {

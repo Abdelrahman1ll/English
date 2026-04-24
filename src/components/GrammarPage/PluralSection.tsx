@@ -26,17 +26,19 @@ export function PluralSection({
           <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
             <AlertCircle size={20} />
           </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            4. Singular & Plural
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+            4. Singular & Plural <span className="text-blue-400/50 font-arabic text-lg">(المفرد والجمع)</span>
           </h2>
         </div>
-        <p className="text-neutral-300 text-xl leading-relaxed mb-8">
-          To make most words plural (more than one), we usually add{" "}
-          <span className="text-blue-400 font-black text-2xl px-2 bg-blue-500/10 rounded-lg">
-            S
-          </span>{" "}
-          at the end.
-        </p>
+        <div className="text-right" dir="rtl">
+          <p className="text-neutral-300 text-xl leading-relaxed mb-8">
+            لتحويل معظم الكلمات إلى جمع، نضيف عادةً حرف{" "}
+            <span className="text-blue-400 font-black text-2xl px-2 bg-blue-500/10 rounded-lg" dir="ltr">
+              S
+            </span>{" "}
+            في النهاية.
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-4">
           {items.map((item) => {
             const displayText = `${item.singular} → ${item.plural}`;

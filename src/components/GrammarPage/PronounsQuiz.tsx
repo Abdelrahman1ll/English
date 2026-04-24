@@ -24,15 +24,16 @@ export function PronounsQuiz({
           <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
             <AlertCircle size={20} />
           </div>
-          <h2 className="text-2xl font-black text-white uppercase tracking-wider">
-            5. Subject Pronouns Quiz
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+            5. Subject Pronouns Quiz <span className="text-purple-400/50 font-arabic text-lg">(اختبار الضمائر)</span>
           </h2>
         </div>
-        <p className="text-neutral-300 text-lg mb-8 bg-white/5 p-4 rounded-xl border border-white/5">
-          Choose the correct pronoun:{" "}
+        <p className="text-neutral-300 text-lg mb-8 bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <span>Choose the correct pronoun:{" "}
           <span className="font-black text-purple-400 px-2">
             He, She, It, They, We
-          </span>
+          </span></span>
+          <span className="font-arabic text-neutral-400" dir="rtl">اختر الضمير الصحيح.</span>
         </p>
         <div className="space-y-4">
           {quizData.map((q, idx) => {

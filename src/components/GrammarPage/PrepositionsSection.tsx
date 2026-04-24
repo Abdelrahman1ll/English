@@ -29,13 +29,15 @@ export function PrepositionsSection({
           <div className="p-2 bg-purple-600/20 rounded-lg text-purple-400">
             <AlertCircle size={20} />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
-            8. Prepositions (حروف الجر)
+          <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+            8. Prepositions <span className="text-purple-400/50 font-arabic text-lg">(حروف الجر)</span>
           </h2>
         </div>
-        <p className="text-neutral-300 text-lg mb-10 leading-relaxed">
-          Words that show the relationship between things in space or time:
-        </p>
+        <div className="text-right" dir="rtl">
+          <p className="text-neutral-300 text-lg mb-10 leading-relaxed">
+            كلمات تُستخدم لتوضيح العلاقة بين الأشياء من حيث المكان أو الزمان:
+          </p>
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {data.LIST.map((prep) => (
@@ -59,7 +61,7 @@ export function PrepositionsSection({
 
         <div className="mt-12 pt-10 border-t border-white/5 space-y-6">
           <h3 className="text-lg sm:text-xl font-black text-white flex items-center gap-3">
-            <Quote size={20} className="text-purple-500" /> Usage: "In the world"
+            <Quote size={20} className="text-purple-500" /> Usage Examples <span className="text-purple-400/50 font-arabic text-sm">(أمثلة على الاستخدام)</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data.EXPLANATION_EXAMPLES.map((ex) => (

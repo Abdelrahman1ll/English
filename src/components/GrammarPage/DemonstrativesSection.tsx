@@ -31,7 +31,7 @@ export function DemonstrativesSection({
             <span className="text-white/40 font-arabic text-lg sm:text-xl">(الإشارة)</span>
           </h2>
         </div>
-        <p className="text-neutral-300 text-lg mb-10">We use these words to point things out based on distance:</p>
+        <div className="text-neutral-300 text-lg mb-10 text-right" dir="rtl">نستخدم هذه الكلمات للإشارة إلى الأشياء بناءً على المسافة (للقريب أو للبعيد):</div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {data.map((group) => (
