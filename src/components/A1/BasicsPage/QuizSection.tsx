@@ -34,6 +34,15 @@ export function QuizSection({
                 </span>
                 {q.question}
               </p>
+
+              {isAnswered && q.translation && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2">
+                  <p className="text-blue-200 text-lg font-bold text-right" dir="rtl">
+                    {q.translation}
+                  </p>
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-3">
                 {q.options.map((option) => (
                   <button

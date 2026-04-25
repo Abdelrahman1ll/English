@@ -1,0 +1,1 @@
+﻿export { PronounsPage } from './PronounsPage';

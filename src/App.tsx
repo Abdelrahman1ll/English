@@ -9,12 +9,19 @@ import { Layout } from "./components/Layout";
 // --- General & Shared Pages ---
 const HomePage = lazy(() => import("./components/HomePage").then((m) => ({ default: m.HomePage })));
 const MonthsPage = lazy(() => import("./components/MonthsPage").then((m) => ({ default: m.MonthsPage })));
-const GrammarPage = lazy(() => import("./components/GrammarPage").then((m) => ({ default: m.GrammarPage })));
 const ExercisesPage = lazy(() => import("./components/ExercisesPage").then((m) => ({ default: m.ExercisesPage })));
 const ConversationsPage = lazy(() => import("./components/ConversationsPage").then((m) => ({ default: m.ConversationsPage })));
 const SearchPage = lazy(() => import("./components/SearchPage").then((m) => ({ default: m.SearchPage })));
 const LandingPage = lazy(() => import("./components/LandingPage").then((m) => ({ default: m.LandingPage })));
 const MindMapPage = lazy(() => import("./components/MindMapPage").then((m) => ({ default: m.MindMapPage })));
+
+// --- Grammar Pages ---
+const ArticlesPage = lazy(() => import("./components/A1/ArticlesPage").then((m) => ({ default: m.ArticlesPage })));
+const PluralsPage = lazy(() => import("./components/Grammar/PluralsPage").then((m) => ({ default: m.PluralsPage })));
+const PronounsPage = lazy(() => import("./components/Grammar/PronounsPage").then((m) => ({ default: m.PronounsPage })));
+const VerbToBePage = lazy(() => import("./components/Grammar/VerbToBePage").then((m) => ({ default: m.VerbToBePage })));
+const DemonstrativesPage = lazy(() => import("./components/Grammar/DemonstrativesPage").then((m) => ({ default: m.DemonstrativesPage })));
+const PrepositionsPage = lazy(() => import("./components/Grammar/PrepositionsPage").then((m) => ({ default: m.PrepositionsPage })));
 
 // --- Level A1 Pages ---
 const BasicsPage = lazy(() => import("./components/A1/BasicsPage").then((m) => ({ default: m.BasicsPage })));
@@ -45,6 +52,7 @@ const CountriesPage = lazy(() => import("./components/A2/CountriesPage").then((m
 const PartsOfSpeechPage = lazy(() => import("./components/A2/PartsOfSpeechPage").then((m) => ({ default: m.PartsOfSpeechPage })));
 const IntroduceMyselfPage = lazy(() => import("./components/A2/IntroduceMyselfPage").then((m) => ({ default: m.IntroduceMyselfPage })));
 const PresentContinuousWorksheetPage = lazy(() => import("./components/A2/PresentContinuousWorksheetPage").then((m) => ({ default: m.PresentContinuousWorksheetPage })));
+const SentenceStructurePage = lazy(() => import("./components/A2/SentenceStructurePage"));
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -113,12 +121,19 @@ function App() {
               />
 
               {/* ============================== */}
-              {/* Shared Routes (A1 & A2)        */}
+              {/* Grammar Routes (A1 & A2)       */}
               {/* ============================== */}
-              <Route path="/:levelId/grammar" element={<GrammarPage />} />
+              <Route path="/:levelId/articles" element={<ArticlesPage />} />
+              <Route path="/:levelId/plurals" element={<PluralsPage />} />
+              <Route path="/:levelId/pronouns" element={<PronounsPage />} />
+              <Route path="/:levelId/verb-to-be" element={<VerbToBePage />} />
               <Route
-                path="/:levelId/grammar/:topicId"
-                element={<GrammarPage />}
+                path="/:levelId/demonstratives"
+                element={<DemonstrativesPage />}
+              />
+              <Route
+                path="/:levelId/prepositions"
+                element={<PrepositionsPage />}
               />
               <Route path="/:levelId/months" element={<MonthsPage />} />
 
@@ -126,6 +141,7 @@ function App() {
               {/* Level A2 Routes                */}
               {/* ============================== */}
               <Route path="/:levelId/family" element={<FamilyPage />} />
+              <Route path="/:levelId/sentence-structure" element={<SentenceStructurePage />} />
               <Route
                 path="/:levelId/personality"
                 element={<PersonalityPage />}

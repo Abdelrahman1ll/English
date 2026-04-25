@@ -56,6 +56,7 @@ export interface Question {
   options: string[];
   answer: string;
   note?: string;
+  translation?: string;
 }
 
 export interface Test {
@@ -102,11 +103,24 @@ export interface GrammarData {
     readonly singular: string;
     readonly plural: string;
     readonly arabic: string;
+    readonly highlight?: string;
+  }>;
+  readonly PLURAL_RULES?: ReadonlyArray<{
+    readonly title: string;
+    readonly rule: string;
+    readonly arabicRule?: string;
+    readonly examples: ReadonlyArray<{
+      readonly singular: string;
+      readonly plural: string;
+      readonly arabic: string;
+      readonly highlight?: string;
+    }>;
   }>;
   readonly PRONOUNS_QUIZ?: ReadonlyArray<{
     readonly question: string;
     readonly answer: string;
     readonly options: readonly string[];
+    readonly translation?: string;
   }>;
   readonly VERB_TO_BE_DATA?: {
     readonly SINGULAR: ReadonlyArray<{
@@ -121,6 +135,7 @@ export interface GrammarData {
       readonly question: string;
       readonly answer: string;
       readonly options: readonly string[];
+      readonly translation?: string;
     }>;
   };
   readonly DEMONSTRATIVES_DATA?: ReadonlyArray<{
@@ -244,46 +259,46 @@ export const LEVELS: LevelConfig[] = [
         category: "words",
       },
       {
-        to: "/A1/grammar",
-        icon: Book,
-        title: "Grammar Index",
-        category: "grammar",
-      },
-      {
-        to: "/A1/grammar/articles",
+        to: "/A1/articles",
         icon: Book,
         title: "Articles",
         category: "grammar",
+        description: "Learn about A, An, and Uncountable nouns. أدوات النكرة والأسماء التي لا تُعد",
       },
       {
-        to: "/A1/grammar/plurals",
+        to: "/A1/plurals",
         icon: Book,
         title: "Singular & Plural",
         category: "grammar",
+        description: "Master singular and plural forms. المفرد والجمع",
       },
       {
-        to: "/A1/grammar/pronouns",
+        to: "/A1/pronouns",
         icon: Book,
         title: "Pronouns Quiz",
         category: "grammar",
+        description: "Practice personal pronouns with interactive quizzes. اختبار الضمائر",
       },
       {
-        to: "/A1/grammar/verb-to-be",
+        to: "/A1/verb-to-be",
         icon: Book,
         title: "Verb To Be",
         category: "grammar",
+        description: "Master the most important verb in English. فعل يكون",
       },
       {
-        to: "/A1/grammar/demonstratives",
+        to: "/A1/demonstratives",
         icon: Book,
         title: "Demonstratives",
         category: "grammar",
+        description: "Learn how to point at things (This, That, These, Those). أسماء الإشارة",
       },
       {
-        to: "/A1/grammar/prepositions",
+        to: "/A1/prepositions",
         icon: Book,
         title: "Prepositions",
         category: "grammar",
+        description: "Learn common prepositions of place and time. حروف الجر",
       },
       {
         to: "/A1/digraphs",
@@ -405,40 +420,32 @@ export const LEVELS: LevelConfig[] = [
         category: "words",
       },
       {
-        to: "/A2/grammar",
-        icon: Book,
-        title: "Grammar Index",
-        category: "grammar",
-      },
-      {
-        to: "/A2/grammar/plurals",
+        to: "/A2/plurals",
         icon: Book,
         title: "Singular & Plural",
         category: "grammar",
+        description: "Advanced plural rules and exceptions. قواعد الجمع المتقدمة",
       },
       {
-        to: "/A2/grammar/pronouns",
-        icon: Book,
-        title: "Pronouns Quiz",
-        category: "grammar",
-      },
-      {
-        to: "/A2/grammar/verb-to-be",
+        to: "/A2/verb-to-be",
         icon: Book,
         title: "Verb To Be",
         category: "grammar",
+        description: "Review and practice the Verb To Be. مراجعة فعل يكون",
       },
       {
-        to: "/A2/grammar/demonstratives",
+        to: "/A2/demonstratives",
         icon: Book,
         title: "Demonstratives",
         category: "grammar",
+        description: "Using demonstrative pronouns in context. استخدام أسماء الإشارة",
       },
       {
-        to: "/A2/grammar/prepositions",
+        to: "/A2/sentence-structure",
         icon: Book,
-        title: "Prepositions",
+        title: "Sentence Structure",
         category: "grammar",
+        description: "Learn how to form correct English sentences step-by-step. تكوين الجملة",
       },
       {
         to: "/A2/present-continuous",

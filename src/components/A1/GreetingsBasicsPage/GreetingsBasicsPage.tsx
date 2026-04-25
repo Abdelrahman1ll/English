@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { MessageSquare, Search, BookOpen, Hash, Focus, LayoutGrid } from "lucide-react";
+import { MessageSquare, Search, BookOpen, Focus, LayoutGrid } from "lucide-react";
 import { usePractice } from "../../../context/PracticeContext";
 import { useSpeech } from "../../../hooks/useSpeech";
 import { LEVEL_DATA } from "../../../data/levels/index";
@@ -21,11 +21,8 @@ export function GreetingsBasicsPage() {
 
   const filteredSentences = useMemo(() => {
     const SENTENCES_DATA = (levelData?.sentences as any)?.SENTENCES_DATA || [];
-    const NUMBERS_DATA = (levelData?.vocabulary?.NUMBERS_DATA as any) || { BASICS: [] };
-    const numberSentences: SentenceItem[] = NUMBERS_DATA.BASICS.map((n: any) => ({ english: n.word, arabic: n.digit.toString(), category: "Numbers (0-10)", icon: Hash }));
-    const categories = ["Simple Greetings", "Time-Based", "Greeting", "Personal Info", "Verb To Be Practice", "Numbers (0-10)", "Appearance Phrases", "Personality Phrases", "Social", "Travel", "Common"];
-    const allData = [...SENTENCES_DATA, ...numberSentences];
-    return allData.filter((s: any) => categories.includes(s.category) && (s.english.toLowerCase().includes(searchQuery.toLowerCase()) || s.arabic.includes(searchQuery)));
+    const categories = ["Simple Greetings", "Time-Based", "Greeting", "Personal Info", "Verb To Be Practice", "Appearance Phrases", "Personality Phrases", "Social", "Travel", "Common"];
+    return SENTENCES_DATA.filter((s: any) => categories.includes(s.category) && (s.english.toLowerCase().includes(searchQuery.toLowerCase()) || s.arabic.includes(searchQuery)));
   }, [levelData, searchQuery]);
 
   const groupedSentences = useMemo(() => {
@@ -37,7 +34,7 @@ export function GreetingsBasicsPage() {
     return groups;
   }, [filteredSentences]);
 
-  const studyItems: StudyItem[] = useMemo(() => filteredSentences.map(s => ({ primary: s.english, secondary: s.arabic, category: s.category, note: s.note })), [filteredSentences]);
+  const studyItems: StudyItem[] = useMemo(() => filteredSentences.map((s: SentenceItem) => ({ primary: s.english, secondary: s.arabic, category: s.category, note: s.note })), [filteredSentences]);
 
   const handleSpeak = (text: string) => { speak(text, () => setPlayingItem(null)); setPlayingItem(text); setPracticeWord(text); };
 

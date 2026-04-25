@@ -1,0 +1,1 @@
+﻿export { PluralsPage } from './PluralsPage';

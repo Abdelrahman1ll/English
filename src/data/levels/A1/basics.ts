@@ -109,39 +109,46 @@ export const BASICS_DATA = {
   ],
   QUIZ: [
     {
-      question: "___ apple a day keeps the doctor away.",
+      question: "I eat ___ apple.",
       answer: "An",
       options: ["A", "An", "The"],
+      translation: "أنا آكل تفاحة.",
     },
     {
-      question: "___ sun rises in the east.",
+      question: "___ sky is blue.",
       answer: "The",
       options: ["A", "An", "The"],
+      translation: "السماء زرقاء.",
     },
     {
       question: "Ahmed is my friend. ___ is a student.",
       answer: "He",
       options: ["He", "She", "It", "They"],
+      translation: "أحمد صديقي. هو طالب.",
     },
     {
       question: "My sister is smart. ___ loves reading.",
       answer: "She",
       options: ["He", "She", "It", "We"],
+      translation: "أختي ذكية. هي تحب القراءة.",
     },
     {
       question: "This is my dog. ___ name is Rex.",
       answer: "Its",
       options: ["His", "Her", "Its", "Our"],
+      translation: "هذا كلبي. اسمه ريكس.",
     },
     {
       question: "We live here. This is ___ house.",
       answer: "our",
       options: ["my", "your", "our", "their"],
+      translation: "نحن نعيش هنا. هذا منزلنا.",
     },
     {
-      question: "Where is Sara? I have ___ book.",
+      question: "This is Sara. ___ book is new.",
       answer: "her",
       options: ["his", "her", "its", "your"],
+      translation: "هذه سارة. كتابها جديد.",
     },
   ],
 };
