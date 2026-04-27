@@ -588,12 +588,17 @@ export const BASICS_DATA = {
     example: `${p.en} is a student.`,
     exampleArabic: `${p.ar} طالب/طالبة.`,
   })),
-  POSSESSIVES: PRONOUNS_DATA.POSSESSIVE_ADJECTIVES.map((p) => ({
-    word: p.en,
-    arabic: p.ar,
-    example: `This is ${p.en.toLowerCase()} book.`,
-    exampleArabic: `هذا كتاب${p.ar.replace("لي", "ي").replace("له", "ه").replace("لها", "ها").replace("لك", "ك").replace("لنا", "نا").replace("لهم", "هم")}.`,
-  })),
+  POSSESSIVES: PRONOUNS_DATA.POSSESSIVE_ADJECTIVES.map((p) => {
+    const suffixes: Record<string, string> = {
+      My: "ي", His: "ه", Her: "ها", Its: "ه", Your: "ك", Our: "نا", Their: "هم"
+    };
+    return {
+      word: p.en,
+      arabic: p.ar,
+      example: `This is ${p.en.toLowerCase()} book.`,
+      exampleArabic: `هذا كتاب${suffixes[p.en] || ""}.`,
+    };
+  }),
   DEMONSTRATIVES: DEMONSTRATIVES_DATA.flatMap((g) => g.items).map((i) => ({
     word: i.text,
     arabic: i.translation,

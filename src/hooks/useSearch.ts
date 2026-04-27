@@ -5,6 +5,7 @@ export type SearchItem = {
   text: string;
   translation: string;
   source: string;
+  note?: string;
 };
 
 export function useSearch() {
@@ -34,11 +35,12 @@ export function useSearch() {
               item.english;
             const translation =
               item.arabic || item.translation || item.ar || item.plural;
+            const note = item.note || item.category;
 
             if (text && translation) {
               // Include the level ID in the source for more context
               const displaySource = `${lId} - ${source}`;
-              items.push({ text, translation, source: displaySource });
+              items.push({ text, translation, source: displaySource, note });
             }
 
             if (item.examples && Array.isArray(item.examples)) {
@@ -120,7 +122,7 @@ export function useSearch() {
           item.text?.toLowerCase().includes(term) ||
           item.translation?.toLowerCase().includes(term),
       )
-      .slice(0, 50);
+      .slice(0, 100);
   }, [searchTerm, allItems]);
 
   return {

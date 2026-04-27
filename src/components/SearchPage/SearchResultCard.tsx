@@ -37,6 +37,11 @@ export function SearchResultCard({
           <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] font-black text-neutral-500 uppercase tracking-wider shrink-0">
             {item.source}
           </span>
+          {item.note && (
+            <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-[10px] font-black text-blue-400 uppercase tracking-wider shrink-0">
+              {item.note}
+            </span>
+          )}
         </div>
         <p className="text-lg text-neutral-500 font-arabic">{item.translation}</p>
       </div>

@@ -37,15 +37,17 @@ export function LevelBanner({ level }: LevelBannerProps) {
         <div className="flex gap-4">
           <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 text-center space-y-2">
             <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">
-              Progress
+              Modules
             </p>
-            <p className="text-3xl font-black text-white">45%</p>
+            <p className="text-3xl font-black text-white">{level.modules.length}</p>
           </div>
           <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 text-center space-y-2">
             <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">
-              Points
+              Tests
             </p>
-            <p className="text-3xl font-black text-blue-400">1,250</p>
+            <p className="text-3xl font-black text-blue-400">
+              {level.modules.filter(m => m.category === 'tests').length || 0}
+            </p>
           </div>
         </div>
       </div>

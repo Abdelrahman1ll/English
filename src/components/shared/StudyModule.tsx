@@ -47,12 +47,8 @@ export function StudyModule({ items }: StudyModuleProps) {
     }
   }, [currentIndex, items]);
 
-  useEffect(() => {
-    // Reset state on navigation to ensure a clean slate for each card
-    setPracticeInput("");
-    setIsWordVisible(true);
-    setHasSpokenCorrect(false);
-  }, [currentIndex, items]);
+  // State reset is now handled atomically in navigation functions to avoid flickering
+
 
   const handleSpeak = (text: string) => {
     const audioText = items[currentIndex].audio || text;
@@ -63,12 +59,18 @@ export function StudyModule({ items }: StudyModuleProps) {
 
   const handleNext = () => {
     if (currentIndex < items.length - 1) {
+      setPracticeInput("");
+      setIsWordVisible(true);
+      setHasSpokenCorrect(false);
       setCurrentIndex((prev) => prev + 1);
     }
   };
 
   const handlePrev = () => {
     if (currentIndex > 0) {
+      setPracticeInput("");
+      setIsWordVisible(true);
+      setHasSpokenCorrect(false);
       setCurrentIndex((prev) => prev - 1);
     }
   };
@@ -81,6 +83,9 @@ export function StudyModule({ items }: StudyModuleProps) {
     const num = parseInt(trimmed);
     if (!isNaN(num)) {
       const index = Math.max(0, Math.min(items.length - 1, num - 1));
+      setPracticeInput("");
+      setIsWordVisible(true);
+      setHasSpokenCorrect(false);
       setCurrentIndex(index);
       setSearchQuery("");
       return;
@@ -94,6 +99,9 @@ export function StudyModule({ items }: StudyModuleProps) {
     );
 
     if (foundIndex !== -1) {
+      setPracticeInput("");
+      setIsWordVisible(true);
+      setHasSpokenCorrect(false);
       setCurrentIndex(foundIndex);
       setSearchQuery("");
     }
@@ -135,10 +143,10 @@ export function StudyModule({ items }: StudyModuleProps) {
 
   return (
     <div className="max-w-3xl mx-auto w-full animate-in slide-in-from-bottom-4 duration-500">
-      <div className="space-y-4 sm:space-y-6 pb-6 sm:pb-10">
+      <div className="space-y-3 sm:space-y-4 pb-2 sm:pb-4">
         {/* Matte Search/Jump Bar */}
-        <div className="relative max-w-xl mx-auto mb-4 sm:mb-4 px-4 sm:px-0">
-          <div className="relative flex items-center gap-2 sm:gap-3 bg-[#1e1e1e] border border-white/10 rounded-2xl p-1.5 sm:p-2 focus-within:border-white/20 transition-all shadow-inner overflow-hidden">
+        <div className="relative max-w-xl mx-auto mb-2 sm:mb-2 px-4 sm:px-0">
+          <div className="relative flex items-center gap-2 sm:gap-3 bg-[#1e1e1e] border border-white/10 rounded-2xl p-1 sm:p-1.5 focus-within:border-white/20 transition-all shadow-inner overflow-hidden">
             <div className="pl-2 sm:pl-4 text-neutral-500">
               <SearchIcon className="size-4 sm:size-5" />
             </div>
@@ -160,9 +168,9 @@ export function StudyModule({ items }: StudyModuleProps) {
         </div>
 
         {/* Study Card */}
-        <div className="relative group min-h-[250px] sm:min-h-[450px]">
+        <div className="relative group min-h-[250px] sm:min-h-[350px]">
           <div className="absolute -inset-4 bg-linear-to-b from-blue-500/10 to-indigo-500/10 rounded-[3rem] blur-2xl opacity-50" />
-          <div className="relative bg-[#1a1a1a] border border-white/10 rounded-[3rem] p-4 sm:p-8 md:p-12 shadow-2xl space-y-2 sm:space-y-10 h-full flex flex-col justify-center text-center">
+          <div className="relative bg-[#1a1a1a] border border-white/10 rounded-[3rem] p-4 sm:p-6 md:p-8 shadow-2xl space-y-2 sm:space-y-6 h-full flex flex-col justify-center text-center">
             {/* Category & Peek */}
             <div className="flex items-center justify-between gap-2 px-1">
               <div className="flex-none">
@@ -226,7 +234,7 @@ export function StudyModule({ items }: StudyModuleProps) {
 
               <div className="relative">
                 <h2
-                  className={`text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight transition-all duration-500 ${shouldHide ? "opacity-0 blur-xl scale-95" : "opacity-100 blur-0 scale-100"}`}
+                  className={`text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight transition-all duration-500 ${shouldHide ? "opacity-0 blur-xl scale-95" : "opacity-100 blur-0 scale-100"}`}
                 >
                   {currentItem.primary}
                 </h2>
@@ -239,8 +247,8 @@ export function StudyModule({ items }: StudyModuleProps) {
             </div>
 
             {/* Arabic Translation */}
-            <div className="pt-2 sm:pt-4">
-              <p className="text-xl sm:text-2xl md:text-3xl text-neutral-400 font-arabic dir-rtl leading-relaxed">
+            <div className="pt-1 sm:pt-2">
+              <p className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-arabic dir-rtl leading-relaxed">
                 {currentItem.secondary}
               </p>
             </div>
@@ -249,10 +257,21 @@ export function StudyModule({ items }: StudyModuleProps) {
 
         {/* Practice Input Area */}
         <div className="space-y-2 sm:space-y-4">
-          <div className="flex items-center justify-between px-4">
-            <label className="text-[10px] sm:text-sm font-bold text-neutral-500 uppercase tracking-widest">
-              Type what you hear/remember
-            </label>
+          <div className="flex items-center justify-between px-4 min-h-[24px]">
+            <div className="flex items-center gap-3">
+              <label className="text-[10px] sm:text-xs font-black text-neutral-500 uppercase tracking-widest">
+                {isWordVisible ? "Practice Mode" : "Type what you hear/remember"}
+              </label>
+              {isWordVisible && (
+                <div 
+                  onClick={() => setIsWordVisible(false)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full cursor-pointer hover:bg-blue-500/20 transition-all animate-in fade-in slide-in-from-left-2"
+                >
+                  <EyeOff size={10} className="text-blue-400" />
+                  <span className="text-[8px] sm:text-[10px] font-black text-blue-400 uppercase tracking-tight">Word hides when you type</span>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setPracticeInput("")}
               className="text-neutral-500 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold"
@@ -261,21 +280,27 @@ export function StudyModule({ items }: StudyModuleProps) {
               CLEAR
             </button>
           </div>
-          <input
-            type="text"
-            placeholder="Practice typing..."
-            value={practiceInput}
-            onChange={(e) => setPracticeInput(e.target.value)}
-            onFocus={() => {
-              setIsWordVisible(false);
-            }}
-            onBlur={() => {}}
-            className={`w-full bg-[#1a1a1a]/50 border rounded-2xl py-3 px-4 sm:py-6 sm:px-8 text-lg sm:text-xl transition-all focus:outline-hidden focus:ring-4 focus:ring-blue-500/20 ${
-              isCorrect
-                ? "border-green-500/50 text-green-400 bg-green-500/5 shadow-lg shadow-green-500/10"
-                : "border-white/5 focus:border-blue-500/50 text-white"
-            }`}
-          />
+          <div className="relative group/input">
+            <input
+              type="text"
+              placeholder="Practice typing..."
+              value={practiceInput}
+              onChange={(e) => {
+                if (isWordVisible) {
+                  setIsWordVisible(false);
+                }
+                setPracticeInput(e.target.value);
+              }}
+              onFocus={() => {
+                setIsWordVisible(false);
+              }}
+              className={`w-full bg-[#1a1a1a]/50 border rounded-2xl py-2 px-4 sm:py-4 sm:px-6 text-base sm:text-lg transition-all focus:outline-hidden focus:ring-4 focus:ring-blue-500/20 ${
+                isCorrect
+                  ? "border-green-500/50 text-green-400 bg-green-500/5 shadow-lg shadow-green-500/10"
+                  : "border-white/5 focus:border-blue-500/50 text-white"
+              } ${isWordVisible && !isCorrect ? "border-blue-500/20" : ""}`}
+            />
+          </div>
 
           {/* Spelling Guide - Small & Pretty Single Character Hint */}
           {hasError && (
@@ -304,27 +329,27 @@ export function StudyModule({ items }: StudyModuleProps) {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="flex items-center justify-center gap-3 sm:gap-6 pt-0 sm:pt-4">
+        <div className="flex items-center justify-center gap-3 sm:gap-6 pt-0 sm:pt-2">
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="p-3 sm:p-5 rounded-3xl bg-[#1a1a1a] border border-white/5 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-800 transition-all hover:scale-105 active:scale-95"
+            className="p-2 sm:p-4 rounded-3xl bg-[#1a1a1a] border border-white/5 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-800 transition-all hover:scale-105 active:scale-95"
           >
-            <ChevronLeft className="size-6 sm:size-8" />
+            <ChevronLeft className="size-5 sm:size-6" />
           </button>
-          <div className="px-4 py-2 sm:px-8 sm:py-4 bg-black/40 border border-white/10 rounded-2xl backdrop-blur-xl">
-            <span className="text-lg sm:text-2xl font-black text-blue-400">
+          <div className="px-3 py-1.5 sm:px-6 sm:py-3 bg-black/40 border border-white/10 rounded-2xl backdrop-blur-xl">
+            <span className="text-base sm:text-xl font-black text-blue-400">
               {currentIndex + 1}
             </span>
             <span className="text-neutral-600 font-bold mx-2 sm:mx-3">/</span>
-            <span className="text-neutral-500 font-bold text-sm sm:text-base">{items.length}</span>
+            <span className="text-neutral-500 font-bold text-xs sm:text-sm">{items.length}</span>
           </div>
           <button
             onClick={handleNext}
             disabled={currentIndex === items.length - 1}
-            className="p-3 sm:p-5 rounded-3xl bg-[#1a1a1a] border border-white/5 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-800 transition-all hover:scale-105 active:scale-95 shadow-xl"
+            className="p-2 sm:p-4 rounded-3xl bg-[#1a1a1a] border border-white/5 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-800 transition-all hover:scale-105 active:scale-95 shadow-xl"
           >
-            <ChevronRight className="size-6 sm:size-8" />
+            <ChevronRight className="size-5 sm:size-6" />
           </button>
         </div>
       </div>
