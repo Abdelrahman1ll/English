@@ -71,7 +71,7 @@ export const SubscriptionPage: React.FC = () => {
 
   if (paymentStatus === "error") {
     return (
-      <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center p-4 md:p-6">
+      <div className="min-h-screen rounded-[20px] bg-[#0f172a] text-white flex items-center justify-center p-4 md:p-6">
         <div className="w-full max-w-[340px] md:max-w-sm bg-[#1e293b] border border-red-500/20 rounded-3xl p-6 md:p-8 text-center shadow-2xl relative z-10">
           <div className="w-12 h-12 md:w-16 md:h-16 bg-red-500/10 rounded-full mx-auto flex items-center justify-center mb-4 md:mb-6">
             <Shield className="text-red-400" size={28} />
@@ -106,7 +106,7 @@ export const SubscriptionPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white py-8 md:py-20 px-4 md:px-6 overflow-hidden relative">
+    <div className="min-h-screen bg-[#0f172a] rounded-[20px] text-white py-8 md:py-20 px-4 md:px-6 overflow-hidden relative">
       {/* Background Orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/20 rounded-full blur-[100px] md:blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-600/20 rounded-full blur-[100px] md:blur-[120px] pointer-events-none" />
