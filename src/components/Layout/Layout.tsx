@@ -160,7 +160,9 @@ export function Layout({ children }: PropsWithChildren) {
           {children}
           <div
             className={`fixed bottom-24 lg:bottom-10 right-6 lg:right-10 z-50 transition-all duration-300 ${
-              showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+              showScrollTop
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-10 pointer-events-none"
             }`}
           >
             <button

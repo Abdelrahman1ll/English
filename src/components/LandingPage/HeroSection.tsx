@@ -1,4 +1,5 @@
-import { Sparkles, BookOpen, Trophy } from "lucide-react";
+import { Sparkles, BookOpen, Trophy, Crown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function HeroSection() {
   const features = [
@@ -26,6 +27,22 @@ export function HeroSection() {
         The most interactive way to learn English. From basic greetings to
         advanced academic discussions, we prepare you for the real world.
       </p>
+
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <Link
+          to="/A1/home"
+          className="w-full sm:w-auto px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-xl transition-all shadow-2xl shadow-blue-600/20"
+        >
+          Get Started
+        </Link>
+        <Link
+          to="/A1/subscription"
+          className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-2"
+        >
+          <Crown className="text-yellow-400" size={24} />
+          Go Premium
+        </Link>
+      </div>
 
       <div className="flex flex-wrap justify-center gap-8 pt-8 text-neutral-500">
         {features.map((f, i) => (

@@ -1,6 +1,6 @@
 import type { Level } from "./types";
 import { Link } from "react-router-dom";
-import { Map } from "lucide-react";
+import { Map, Crown } from "lucide-react";
 
 interface LevelBannerProps {
   readonly level: Level;
@@ -25,13 +25,22 @@ export function LevelBanner({ level }: LevelBannerProps) {
           <p className="text-neutral-400 text-lg max-w-xl font-medium leading-relaxed">
             {level.description}
           </p>
-          <Link
-            to={`/${level.id}/mindmap`}
-            className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold transition-all w-fit"
-          >
-            <Map className="w-5 h-5" />
-            Explore Mind Map
-          </Link>
+          <div className="flex flex-wrap gap-4 mt-4">
+            <Link
+              to={`/${level.id}/mindmap`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold transition-all w-fit"
+            >
+              <Map className="w-5 h-5" />
+              Explore Mind Map
+            </Link>
+            <Link
+              to={`/${level.id}/subscription`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/20 text-yellow-400 font-bold transition-all w-fit"
+            >
+              <Crown className="w-5 h-5" />
+              Upgrade to Premium
+            </Link>
+          </div>
         </div>
 
         <div className="flex gap-4">

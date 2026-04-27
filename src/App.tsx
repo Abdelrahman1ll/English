@@ -53,6 +53,7 @@ const PartsOfSpeechPage = lazy(() => import("./components/A2/PartsOfSpeechPage")
 const IntroduceMyselfPage = lazy(() => import("./components/A2/IntroduceMyselfPage").then((m) => ({ default: m.IntroduceMyselfPage })));
 const PresentContinuousWorksheetPage = lazy(() => import("./components/A2/PresentContinuousWorksheetPage").then((m) => ({ default: m.PresentContinuousWorksheetPage })));
 const SentenceStructurePage = lazy(() => import("./components/A2/SentenceStructurePage"));
+const SubscriptionPage = lazy(() => import("./components/SubscriptionPage/SubscriptionPage").then((m) => ({ default: m.SubscriptionPage })));
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -182,6 +183,10 @@ function App() {
               <Route
                 path="/:levelId/conversations"
                 element={<ConversationsPage />}
+              />
+              <Route
+                path="/:levelId/subscription"
+                element={<SubscriptionPage />}
               />
             </Routes>
           </Suspense>
