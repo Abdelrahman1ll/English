@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Check, Crown, Zap, Shield, Star, Sparkles } from "lucide-react";
 import GooglePayButton from "@google-pay/button-react";
 import { useParams, Link } from "react-router-dom";
+import { createPaymentIntent } from "../../services/paymob";
 
 export const SubscriptionPage: React.FC = () => {
   const { levelId } = useParams();
@@ -38,14 +39,16 @@ export const SubscriptionPage: React.FC = () => {
 
   if (paymentStatus === "success") {
     return (
-      <div className="min-h-screen bg-[#0f172a] rounded-[20px] text-white flex items-center justify-center p-6">
-        <div className="max-w-sm w-full bg-[#1e293b] border border-white/10 rounded-2xl p-8 text-center shadow-2xl relative z-10">
-          <div className="w-16 h-16 bg-blue-600 rounded-full mx-auto flex items-center justify-center mb-6">
+      <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center p-4 md:p-6">
+        <div className="w-full max-w-[340px] md:max-w-sm bg-[#1e293b] border border-white/10 rounded-3xl p-6 md:p-8 text-center shadow-2xl relative z-10">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-600 rounded-full mx-auto flex items-center justify-center mb-4 md:mb-6">
             <Check size={32} className="text-white" />
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">Payment Successful</h2>
-          <p className="text-gray-400 mb-8 leading-relaxed">
+          <h2 className="text-xl md:text-2xl font-bold mb-2">
+            Payment Successful
+          </h2>
+          <p className="text-sm md:text-base text-gray-400 mb-6 md:mb-8 leading-relaxed">
             Welcome to Premium! You now have full access to all professional
             English learning tools.
           </p>
@@ -53,7 +56,7 @@ export const SubscriptionPage: React.FC = () => {
           <div className="space-y-4">
             <Link
               to={`/${levelId}/home`}
-              className="block w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 text-center"
+              className="block w-full py-3 md:py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-lg md:text-xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 text-center"
             >
               Start Learning Now
             </Link>
@@ -68,10 +71,10 @@ export const SubscriptionPage: React.FC = () => {
 
   if (paymentStatus === "error") {
     return (
-      <div className="min-h-screen bg-[#0f172a] rounded-[20px] text-white flex items-center justify-center p-6">
-        <div className="max-w-sm w-full bg-[#1e293b] border border-red-500/20 rounded-2xl p-8 text-center shadow-2xl relative z-10">
-          <div className="w-16 h-16 bg-red-500/10 rounded-full mx-auto flex items-center justify-center mb-6">
-            <Shield className="text-red-400" size={32} />
+      <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center p-4 md:p-6">
+        <div className="w-full max-w-[340px] md:max-w-sm bg-[#1e293b] border border-red-500/20 rounded-3xl p-6 md:p-8 text-center shadow-2xl relative z-10">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-red-500/10 rounded-full mx-auto flex items-center justify-center mb-4 md:mb-6">
+            <Shield className="text-red-400" size={28} />
           </div>
 
           <h2 className="text-2xl font-bold mb-2 text-red-400">
@@ -103,31 +106,31 @@ export const SubscriptionPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] rounded-[20px] text-white py-20 px-6 overflow-hidden relative">
+    <div className="min-h-screen bg-[#0f172a] text-white py-8 md:py-20 px-4 md:px-6 overflow-hidden relative">
       {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-blue-600/20 rounded-full blur-[100px] md:blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-600/20 rounded-full blur-[100px] md:blur-[120px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="text-center mb-16 space-y-4">
+        <div className="text-center mb-10 md:mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium animate-pulse">
             <Sparkles size={16} />
             <span>Limited Time Offer</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-6xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Upgrade to Premium
           </h1>
-          <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+          <p className="text-gray-400 text-base md:text-xl max-w-2xl mx-auto px-4">
             Get full access to all features and accelerate your English journey
             with professional tools.
           </p>
 
           {/* Toggle */}
-          <div className="flex items-center justify-center mt-10">
+          <div className="flex items-center justify-center mt-8 md:mt-10">
             <div className="bg-white/5 p-1 rounded-xl border border-white/10 flex items-center gap-1">
               <button
                 onClick={() => setBillingCycle("monthly")}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-medium transition-all ${
                   billingCycle === "monthly"
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : "text-gray-400 hover:text-white"
@@ -137,14 +140,14 @@ export const SubscriptionPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setBillingCycle("yearly")}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all relative ${
+                className={`px-4 md:px-6 py-2 rounded-lg text-xs md:text-sm font-medium transition-all relative ${
                   billingCycle === "yearly"
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
                 Yearly
-                <span className="absolute -top-3 -right-3 bg-green-500 text-[10px] text-white px-2 py-0.5 rounded-full font-bold">
+                <span className="absolute -top-3 -right-3 bg-green-500 text-[8px] md:text-[10px] text-white px-2 py-0.5 rounded-full font-bold">
                   BEST VALUE
                 </span>
               </button>
@@ -152,16 +155,18 @@ export const SubscriptionPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-stretch">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
           {/* Main Card */}
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-between hover:border-blue-500/30 transition-all duration-500 group">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-blue-500/30 transition-all duration-500 group">
             <div>
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">
+              <div className="flex justify-between items-start mb-6 md:mb-8">
+                <div className="flex-1">
+                  <h3 className="text-lg md:text-2xl font-bold mb-1">
                     {currentPlan.label} Plan
                   </h3>
-                  <p className="text-gray-400">{currentPlan.description}</p>
+                  <p className="text-gray-400 text-xs md:text-base">
+                    {currentPlan.description}
+                  </p>
                 </div>
                 <div className="p-3 bg-blue-500/10 rounded-2xl border border-blue-500/20 group-hover:scale-110 transition-transform">
                   {billingCycle === "monthly" ? (
@@ -172,32 +177,36 @@ export const SubscriptionPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mb-8">
-                <span className="text-5xl font-bold">{currentPlan.amount}</span>
-                <span className="text-2xl font-bold ml-1 text-blue-400">
+              <div className="mb-6 md:mb-8">
+                <span className="text-4xl md:text-5xl font-bold">
+                  {currentPlan.amount}
+                </span>
+                <span className="text-xl md:text-2xl font-bold ml-1 text-blue-400">
                   EGP
                 </span>
-                <span className="text-gray-400 ml-2">
+                <span className="text-sm md:text-gray-400 ml-2">
                   /{billingCycle === "monthly" ? "mo" : "yr"}
                 </span>
               </div>
 
               <div className="space-y-4 mb-10">
                 {features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <div className="bg-green-500/20 p-1 rounded-full">
-                      <Check size={14} className="text-green-400" />
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="bg-green-500/20 p-1 rounded-full mt-1">
+                      <Check size={12} className="text-green-400" />
                     </div>
-                    <span className="text-gray-300">{feature}</span>
+                    <span className="text-gray-300 text-sm md:text-base">
+                      {feature}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="w-full h-16 overflow-hidden rounded-3xl flex justify-center">
+              <div className="w-full h-[52px] md:h-16 overflow-hidden rounded-2xl md:rounded-3xl flex justify-center">
                 <GooglePayButton
-                  environment="TEST"
+                  environment="PRODUCTION" // غيرها لـ "PRODUCTION" عند الجاهزية
                   buttonColor="white"
                   buttonType="subscribe"
                   buttonSizeMode="fill"
@@ -222,13 +231,16 @@ export const SubscriptionPage: React.FC = () => {
                         tokenizationSpecification: {
                           type: "PAYMENT_GATEWAY",
                           parameters: {
-                            gateway: "example",
-                            gatewayMerchantId: "exampleGatewayMerchantId",
+                            // اسم شركة الدفع (مثلاً: "stripe")
+                            gateway: "Paymob",
+                            // الـ ID من شركة الدفع
+                            gatewayMerchantId: "4046668",
                           },
                         },
                       },
                     ],
                     merchantInfo: {
+                      // الـ ID من جوجل (Google Merchant ID)
                       merchantId: "BCR2DN5T43H2NESC",
                       merchantName: "Abdelrahman English",
                     },
@@ -240,9 +252,30 @@ export const SubscriptionPage: React.FC = () => {
                       countryCode: "EG",
                     },
                   }}
-                  onLoadPaymentData={(paymentData) => {
+                  onLoadPaymentData={async (paymentData) => {
                     console.log("Payment Success", paymentData);
-                    setPaymentStatus("success");
+                    try {
+                      // 2. هنا نربط مع السيرفر الخاص بك
+                      // نقوم بإنشاء الطلب في Paymob بعد نجاح Google Pay أو لتسجيله
+                      const response = await createPaymentIntent(
+                        parseFloat(currentPlan.amount),
+                        [
+                          {
+                            name: `${currentPlan.label} Subscription`,
+                            amount_cents: parseFloat(currentPlan.amount) * 100,
+                          },
+                        ],
+                      );
+                      if (response.success) {
+                        console.log("Paymob Order Created:", response);
+                        setPaymentStatus("success");
+                      } else {
+                        throw new Error(response.message);
+                      }
+                    } catch (error) {
+                      console.error("Backend Error:", error);
+                      setPaymentStatus("error");
+                    }
                   }}
                   onError={(error) => {
                     console.error("Payment Error", error);
@@ -291,24 +324,58 @@ export const SubscriptionPage: React.FC = () => {
                 Join over 5,000+ students learning on our platform.
               </p>
               <div className="flex -space-x-3 mb-6">
-                {[1, 2, 3, 4].map((i) => (
+                {[
+                  {
+                    level: "A1",
+                    bg: "bg-emerald-500/20",
+                    text: "text-emerald-400",
+                    border: "border-emerald-500/30",
+                  },
+                  {
+                    level: "A2",
+                    bg: "bg-blue-500/20",
+                    text: "text-blue-400",
+                    border: "border-blue-500/30",
+                  },
+                  {
+                    level: "B1",
+                    bg: "bg-indigo-500/20",
+                    text: "text-indigo-400",
+                    border: "border-indigo-500/30",
+                  },
+                  {
+                    level: "B2",
+                    bg: "bg-purple-500/20",
+                    text: "text-purple-400",
+                    border: "border-purple-500/30",
+                  },
+                  {
+                    level: "C1",
+                    bg: "bg-pink-500/20",
+                    text: "text-pink-400",
+                    border: "border-pink-500/30",
+                  },
+                  {
+                    level: "C2",
+                    bg: "bg-amber-500/20",
+                    text: "text-amber-400",
+                    border: "border-amber-500/30",
+                  },
+                ].map((item, i) => (
                   <div
                     key={i}
-                    className="w-10 h-10 rounded-full border-2 border-[#0f172a] bg-gray-700 flex items-center justify-center text-[10px] font-bold"
+                    className={`w-12 h-12 rounded-full border-2 ${item.border} ${item.bg} backdrop-blur-md flex items-center justify-center text-xs font-black shadow-lg shadow-black/20 hover:scale-110 hover:z-20 transition-all cursor-default ${item.text}`}
                   >
-                    U{i}
+                    {item.level}
                   </div>
                 ))}
-                <div className="w-10 h-10 rounded-full border-2 border-[#0f172a] bg-blue-600 flex items-center justify-center text-[10px] font-bold">
-                  +5k
-                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* FAQ/Trust Section */}
-        <div className="mt-20 text-center">
+        <div className="mt-10 mb-10 text-center">
           <p className="text-gray-500 text-sm">
             Questions? Contact our support at{" "}
             <a
