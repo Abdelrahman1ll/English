@@ -17,6 +17,7 @@ import {
   Smile,
   Shapes,
   Search,
+  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -348,6 +349,13 @@ export const LEVELS: LevelConfig[] = [
         title: "Describing Phrases",
         category: "sentences",
       },
+      {
+        to: "/A1/comprehensive-exam",
+        icon: Award,
+        title: "Comprehensive Exam",
+        category: "tests",
+        description: "Test your knowledge of the entire level. امتحان شامل للمستوى الأول",
+      },
     ],
   },
   {
@@ -471,6 +479,13 @@ export const LEVELS: LevelConfig[] = [
         icon: MessageCircle,
         title: "Introduce Myself",
         category: "sentences",
+      },
+      {
+        to: "/A2/comprehensive-exam",
+        icon: Award,
+        title: "Comprehensive Exam",
+        category: "tests",
+        description: "Test your knowledge of the entire level. امتحان شامل للمستوى الثاني",
       },
     ],
   },

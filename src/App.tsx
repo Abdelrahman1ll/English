@@ -39,6 +39,8 @@ const GreetingsBasicsPage = lazy(() => import("./components/A1/GreetingsBasicsPa
 const CommonSocialPage = lazy(() => import("./components/A1/CommonSocialPage").then((m) => ({ default: m.CommonSocialPage })));
 const TopicSentencesPage = lazy(() => import("./components/A1/TopicSentencesPage").then((m) => ({ default: m.TopicSentencesPage })));
 const DescribingSentencesPage = lazy(() => import("./components/A1/DescribingSentencesPage").then((m) => ({ default: m.DescribingSentencesPage })));
+const A1ComprehensiveExamPage = lazy(() => import("./components/A1/ComprehensiveExamPage").then((m) => ({ default: m.ComprehensiveExamPage })));
+const A2ComprehensiveExamPage = lazy(() => import("./components/A2/ComprehensiveExamPage").then((m) => ({ default: m.ComprehensiveExamPage })));
 
 // --- Level A2 Pages ---
 const FamilyPage = lazy(() => import("./components/A2/FamilyPage").then((m) => ({ default: m.FamilyPage })));
@@ -119,6 +121,14 @@ function App() {
               <Route
                 path="/:levelId/describing-sentences"
                 element={<DescribingSentencesPage />}
+              />
+              <Route
+                path="/A1/comprehensive-exam"
+                element={<A1ComprehensiveExamPage />}
+              />
+              <Route
+                path="/A2/comprehensive-exam"
+                element={<A2ComprehensiveExamPage />}
               />
 
               {/* ============================== */}
