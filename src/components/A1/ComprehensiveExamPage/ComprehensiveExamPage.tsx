@@ -97,8 +97,8 @@ export const ComprehensiveExamPage: React.FC = () => {
 
     if (showWrongOnly) {
       return (
-        <div className="min-h-screen bg-white dark:bg-black py-8 px-1">
-          <div className="max-w-3xl mx-auto">
+        <div className="min-h-screen bg-white dark:bg-black py-8 px-0">
+          <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white">
                 Review Mistakes
@@ -123,7 +123,7 @@ export const ComprehensiveExamPage: React.FC = () => {
                 wrongQuestions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className="bg-slate-50 dark:bg-neutral-900 p-2 md:p-8 rounded-[2rem] border border-slate-200 dark:border-white/5 relative overflow-hidden"
+                    className="bg-slate-50 dark:bg-neutral-900 p-1 md:p-8 rounded-xl md:rounded-[2rem] border border-slate-200 dark:border-white/5 relative overflow-hidden"
                   >
                     <div className="absolute top-0 left-0 w-2 h-full bg-rose-500" />
                     <div className="flex gap-4 mb-6">
@@ -135,12 +135,12 @@ export const ComprehensiveExamPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 md:ml-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 ml-0">
                       <div className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-rose-50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10">
                         <p className="text-xs font-black text-rose-500 uppercase tracking-widest mb-2">
                           Your Answer
                         </p>
-                        <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
+                        <p className={`text-slate-700 dark:text-slate-300 ${q.type === "writing" ? "text-base font-medium" : "text-lg font-bold"}`}>
                           {Array.isArray(q.userAnswer)
                             ? q.userAnswer.join(", ")
                             : q.userAnswer || "(Empty)"}
@@ -150,7 +150,7 @@ export const ComprehensiveExamPage: React.FC = () => {
                         <p className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-2">
                           Correct Answer
                         </p>
-                        <p className="text-lg font-bold text-slate-700 dark:text-slate-300">
+                        <p className={`text-slate-700 dark:text-slate-300 ${q.type === "writing" ? "text-base font-medium" : "text-lg font-bold"}`}>
                           {Array.isArray(q.correctAnswer)
                             ? q.correctAnswer.join(", ")
                             : q.correctAnswer}
@@ -279,14 +279,14 @@ export const ComprehensiveExamPage: React.FC = () => {
         </div>
 
         {/* Page Container */}
-        <div className="bg-slate-50 dark:bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] shadow-3xl border border-slate-200 dark:border-white/5 overflow-hidden relative">
+        <div className="bg-slate-50 dark:bg-slate-900 rounded-xl md:rounded-[2.5rem] shadow-3xl border border-slate-200 dark:border-white/5 overflow-hidden relative">
           {/* Page Number Indicator */}
           <div className="absolute top-10 right-10 flex items-center gap-2 text-slate-400 dark:text-neutral-600 font-black text-xs opacity-50">
             <FileText size={14} />
             SECTION {currentPageIndex + 1}
           </div>
 
-          <div className="p-3 md:p-6">
+          <div className="p-1 md:p-14">
             {currentPage.sections.map((section, sIdx) => (
               <div key={sIdx} className={`${sIdx > 0 ? "mt-16" : ""}`}>
                 <div className="flex items-center gap-4 mb-10">
