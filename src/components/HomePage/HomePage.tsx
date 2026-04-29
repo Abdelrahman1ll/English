@@ -26,7 +26,7 @@ export function HomePage() {
   const hasModules = currentLevel?.modules && currentLevel.modules.length > 0;
 
   return (
-    <div className="space-y-16 py-8 animate-in fade-in duration-700">
+    <div className="space-y-16 pt-8 pb-32 animate-in fade-in duration-700">
       {currentLevel && <LevelBanner level={currentLevel as any} />}
 
       {hasModules ? (

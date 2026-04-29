@@ -114,7 +114,7 @@ export function Layout({ children }: PropsWithChildren) {
             </div>
           )}
         </div>
-        <nav className="flex flex-col gap-1.5 flex-1 overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin">
+        <nav className="flex flex-col gap-1.5 flex-1 overflow-y-auto overflow-x-hidden pr-2 pb-32 scrollbar-thin">
           {levelId && currentLevel && (
             <NavItem
               to={`/${currentLevel.id}/home`}
@@ -156,7 +156,7 @@ export function Layout({ children }: PropsWithChildren) {
         ref={mainRef}
         className="flex-1 overflow-y-auto relative scroll-smooth bg-neutral-950/50"
       >
-        <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto p-6 pb-32 sm:p-8 sm:pb-32 lg:p-12">
           {children}
           <div
             className={`fixed bottom-24 lg:bottom-10 right-6 lg:right-10 z-50 transition-all duration-300 ${
