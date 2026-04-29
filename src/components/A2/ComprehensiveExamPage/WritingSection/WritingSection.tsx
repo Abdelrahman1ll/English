@@ -74,7 +74,7 @@ export const WritingSection: React.FC<WritingSectionProps> = ({
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-white dark:bg-black/40 rounded-3xl p-8 border-2 border-violet-100 dark:border-violet-500/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
+      <div className="bg-white dark:bg-black/40 rounded-3xl p-5 md:p-8 border-2 border-violet-100 dark:border-violet-500/20 shadow-xl shadow-violet-500/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4">
           <PenTool className="w-12 h-12 text-violet-500/10 -rotate-12" />
         </div>
@@ -106,9 +106,9 @@ export const WritingSection: React.FC<WritingSectionProps> = ({
           />
         </div>
 
-        <div className="mt-8 pt-6 border-t border-violet-100 dark:border-white/5 flex items-center justify-between gap-4">
+        <div className="mt-8 pt-6 border-t border-violet-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-violet-500/60 dark:text-violet-400/40">
-            <Info className="w-4 h-4" />
+            <Info className="w-4 h-4 flex-shrink-0" />
             <p className="text-[10px] font-black uppercase tracking-[0.1em]">
               The AI will automatically evaluate your writing quality. Each grammar or spelling error will reduce your total score by 0.1 points.
             </p>
@@ -135,7 +135,7 @@ export const WritingSection: React.FC<WritingSectionProps> = ({
 
       {/* AI Grammar Analysis Results */}
       {grammarErrors.length > 0 && (
-        <div className="bg-rose-50 dark:bg-rose-500/5 rounded-3xl p-8 border-2 border-rose-100 dark:border-rose-500/10 animate-in zoom-in-95 duration-500">
+        <div className="bg-rose-50 dark:bg-rose-500/5 rounded-3xl p-5 md:p-8 border-2 border-rose-100 dark:border-rose-500/10 animate-in zoom-in-95 duration-500">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-rose-500 rounded-xl">
               <XCircle className="w-6 h-6 text-white" />
