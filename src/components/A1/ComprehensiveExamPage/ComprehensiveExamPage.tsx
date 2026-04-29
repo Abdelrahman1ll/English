@@ -97,10 +97,10 @@ export const ComprehensiveExamPage: React.FC = () => {
 
     if (showWrongOnly) {
       return (
-        <div className="min-h-screen bg-white dark:bg-black py-8 px-4">
+        <div className="min-h-screen bg-white dark:bg-black py-8 px-1">
           <div className="max-w-3xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-black text-slate-800 dark:text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+              <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white">
                 Review Mistakes
               </h2>
               <button
@@ -123,7 +123,7 @@ export const ComprehensiveExamPage: React.FC = () => {
                 wrongQuestions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className="bg-slate-50 dark:bg-neutral-900 p-5 md:p-8 rounded-[2rem] border border-slate-200 dark:border-white/5 relative overflow-hidden"
+                    className="bg-slate-50 dark:bg-neutral-900 p-2 md:p-8 rounded-[2rem] border border-slate-200 dark:border-white/5 relative overflow-hidden"
                   >
                     <div className="absolute top-0 left-0 w-2 h-full bg-rose-500" />
                     <div className="flex gap-4 mb-6">
@@ -135,8 +135,8 @@ export const ComprehensiveExamPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:ml-12">
-                      <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 md:ml-12">
+                      <div className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-rose-50 dark:bg-rose-500/5 border border-rose-100 dark:border-rose-500/10">
                         <p className="text-xs font-black text-rose-500 uppercase tracking-widest mb-2">
                           Your Answer
                         </p>
@@ -146,7 +146,7 @@ export const ComprehensiveExamPage: React.FC = () => {
                             : q.userAnswer || "(Empty)"}
                         </p>
                       </div>
-                      <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
+                      <div className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
                         <p className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-2">
                           Correct Answer
                         </p>
@@ -167,7 +167,7 @@ export const ComprehensiveExamPage: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-white dark:bg-black py-8 px-2 md:px-4 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black py-8 pb-32 px-1 flex items-center justify-center">
         <div className="max-w-md w-full bg-slate-50 dark:bg-neutral-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200 dark:border-white/5">
           <div className="bg-blue-600 py-10 px-6 text-center text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
@@ -238,13 +238,13 @@ export const ComprehensiveExamPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black py-6 pb-32 px-2 md:py-12 md:px-8">
+    <div className="min-h-screen bg-white dark:bg-black py-6 pb-32 md:py-12 md:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <span className="bg-blue-600 text-white px-2.5 py-0.5 rounded-lg text-xs font-black tracking-widest">
+              <span className="bg-blue-600 text-white px-1.5 py-0.5 rounded-lg text-xs font-black tracking-widest">
                 A1
               </span>
               <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-white tracking-tight">
@@ -286,7 +286,7 @@ export const ComprehensiveExamPage: React.FC = () => {
             SECTION {currentPageIndex + 1}
           </div>
 
-          <div className="p-5 md:p-14">
+          <div className="p-3 md:p-6">
             {currentPage.sections.map((section, sIdx) => (
               <div key={sIdx} className={`${sIdx > 0 ? "mt-16" : ""}`}>
                 <div className="flex items-center gap-4 mb-10">
@@ -384,31 +384,31 @@ export const ComprehensiveExamPage: React.FC = () => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="p-4 md:p-10 bg-slate-100 dark:bg-neutral-900/50 border-t border-slate-200 dark:border-white/5 flex justify-between items-center">
+          <div className="p-2 md:p-10 bg-slate-100 dark:bg-neutral-900/50 border-t border-slate-200 dark:border-white/5 flex justify-between items-center">
             <button
               onClick={prevSection}
               disabled={currentPageIndex === 0}
-              className="flex items-center gap-2 px-6 py-3 text-slate-500 dark:text-neutral-500 font-black disabled:opacity-30 hover:text-blue-600 transition-all text-sm uppercase tracking-widest rounded-xl hover:bg-slate-200 dark:hover:bg-white/5"
+              className="flex items-center gap-1.5 px-4 py-2.5 text-slate-500 dark:text-neutral-500 font-black disabled:opacity-30 hover:text-blue-600 transition-all text-xs md:text-sm uppercase tracking-widest rounded-xl hover:bg-slate-200 dark:hover:bg-white/5"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
               Back
             </button>
 
             {currentPageIndex < examPages.length - 1 ? (
               <button
                 onClick={nextSection}
-                className="flex items-center gap-3 px-10 py-3.5 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 shadow-2xl shadow-blue-500/20 transition-all active:scale-95 text-sm uppercase tracking-widest"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-blue-700 shadow-xl shadow-blue-500/20 transition-all active:scale-95 text-xs md:text-sm uppercase tracking-widest"
               >
-                Next Page
-                <ChevronRight size={20} />
+                Next
+                <ChevronRight size={18} />
               </button>
             ) : (
               <button
                 onClick={calculateScore}
-                className="flex items-center gap-3 px-10 py-3.5 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 shadow-2xl shadow-emerald-500/20 transition-all active:scale-95 text-sm uppercase tracking-widest"
+                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-black rounded-xl md:rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-500/20 transition-all active:scale-95 text-xs md:text-sm uppercase tracking-widest"
               >
-                Submit Exam
-                <Send size={18} />
+                Submit
+                <Send size={16} />
               </button>
             )}
           </div>
